@@ -1,0 +1,8 @@
+<table class="table">
+    {% for tllog in logs %}
+        <tr {% if tllog.requires_attention %} class="table-warning" {% endif %}>
+            <td>{{ tllog.simple_timestamp }}</td>
+            <td>Sample text goes here...</td>
+        </tr>
+    {% endfor %}
+</table>

@@ -22,8 +22,8 @@
         <tbody>
         {% for project in projects %}
             <tr>
-                <td>{{ project.nr }}</td>
-                <td>{{ project.title }}</td>
+                <td><a href="{% url 'bp:project_detail' project.pk %}">{{ project.nr }}</a></td>
+                <td><a href="{% url 'bp:project_detail' project.pk %}">{{ project.title }}</a></td>
                 <td>{{ project.tl }}</td>
                 <td><a href="mailto:{{ project.ag_mail }}">{{ project.ag }}</a></td>
                 <td>{{ project.student_list }}</td>

@@ -1,0 +1,35 @@
+{% extends "bp/base.html" %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item"><a href="{% url "bp:index" %}">Übersicht</a></li>
+    <li class="breadcrumb-item active">Projekte</li>
+{% endblock %}
+
+
+{% block content %}
+    <h1>Teamleitungen</h1>
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Anzahl Gruppen</th>
+            <th>Gruppen</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for tl in tls %}
+            <tr>
+                <td><a href="{% url 'bp:tl_detail' tl.pk %}">{{ tl.name }}</a></td>
+                <td>{{ tl.project_set.count }}</td>
+                <td>
+                    {% for project in tl.project_set.all %}
+                        <a href="{% url 'bp:project_detail' project.pk %}">{{ project.nr }}: {{ project.title }}</a>{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

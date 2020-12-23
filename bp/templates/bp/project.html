@@ -1,0 +1,29 @@
+{% extends "bp/base.html" %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item"><a href="{% url "bp:index" %}">Übersicht</a></li>
+    <li class="breadcrumb-item"><a href="{% url "bp:project_list" %}">Projekte</a></li>
+    <li class="breadcrumb-item active">{{ project.nr }}: {{ project.title }}</li>
+{% endblock %}
+
+
+{% block content %}
+    <h1>{{ project.nr }}: {{ project.title }}</h1>
+
+    <table class="table">
+        <tr>
+            <td>TL:</td><td>{{ project.tl }}</td>
+        </tr>
+        <tr>
+            <td>Mitglieder:</td><td>{{ project.student_list }}</td>
+        </tr>
+        <tr>
+            <td>AG:</td><td><a href="mailto:{{ project.ag_mail }}">{{ project.ag }}</a></td>
+        </tr>
+    </table>
+
+    <h2>Logs ({{ project.tllog_set.count }})</h2>
+
+    {% include "bp/render_logs.html" with logs=project.tllog_set.all %}
+
+{% endblock %}

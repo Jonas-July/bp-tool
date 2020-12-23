@@ -88,6 +88,7 @@ class TLLog(models.Model):
     class Meta:
         verbose_name = "TL Log"
         verbose_name_plural = "TL Logs"
+        ordering = ['-timestamp']
 
     bp = models.ForeignKey(BP, on_delete=models.CASCADE)
     group = models.ForeignKey(Project, on_delete=models.CASCADE)
