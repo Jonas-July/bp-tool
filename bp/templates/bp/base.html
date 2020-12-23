@@ -1,0 +1,39 @@
+{% load static %}
+{% load bootstrap4 %}
+{% load fontawesome_5 %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% block meta %}{% endblock%}
+
+    <title>{% block title %}BP Tool{% endblock %}</title>
+
+    {# Load Bootstrap CSS and JavaScript as well as font awesome #}
+    {% bootstrap_css %}
+    {% bootstrap_javascript jquery='slim' %}
+    {% fontawesome_5_static %}
+
+    <link rel="stylesheet" href="{% static 'bp/css/custom.css' %}">
+
+    {% block imports %}{% endblock %}
+</head>
+<body>
+    <div class="container" style="margin-top:15px;margin-bottom: 30px;">
+        {% include "bp/navbar.html" %}
+        <ol class="breadcrumb">
+            {% block breadcrumbs %}
+                <ol class="breadcrumb">
+                  <li class="breadcrumb-item active">Übersicht</li>
+                </ol>
+            {% endblock %}
+        </ol>
+
+        {% block content %}
+        {% endblock %}
+    </div>
+{% block bottom_script %}{% endblock %}
+
+</body>
+</html>
