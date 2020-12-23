@@ -82,3 +82,23 @@ class Student(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class TLLog(models.Model):
+    class Meta:
+        verbose_name = "TL Log"
+        verbose_name_plural = "TL Logs"
+
+    bp = models.ForeignKey(BP, on_delete=models.CASCADE)
+    group = models.ForeignKey(Project, on_delete=models.CASCADE)
+    tl = models.ForeignKey(TL, on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(auto_now_add=True, blank=True)
+    requires_attention = models.BooleanField(verbose_name="Besondere Aufmerksamkeit", blank=True, default=False,
+                    help_text="Benötigt diese Gruppe aktuell besondere Aufmerksamkeit durch das Organisationsteam?")
+
+    @property
+    def simple_timestamp(self):
+        return self.timestamp.strftime('%d.%m.%y %H:%M')
+
+    def __str__(self):
+        return f"{self.tl} für Gruppe {self.group.nr} am {self.simple_timestamp}"
