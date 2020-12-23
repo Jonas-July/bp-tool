@@ -11,7 +11,8 @@ class BPAdmin(admin.ModelAdmin):
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
     list_filter = ['bp']
-    list_display = ['nr', 'title', 'bp']
+    list_display = ['nr', 'title', 'tl', 'student_list', 'bp']
+    list_display_links = ['nr', 'title']
 
 
 @admin.register(TL)

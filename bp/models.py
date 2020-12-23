@@ -13,7 +13,7 @@ class BP(models.Model):
 
     @staticmethod
     def get_active():
-        BP.objects.get(active=True)
+        return BP.objects.get(active=True)
 
     def __str__(self):
         if self.active:
@@ -41,6 +41,10 @@ class Project(models.Model):
     def get_active():
         return Project.objects.filter(bp=BP.get_active())
 
+    @property
+    def student_list(self):
+        return ", ".join(s.name for s in self.student_set.all())
+
     def __str__(self):
         return f"{self.nr}: {self.title}"
 
@@ -53,6 +57,10 @@ class TL(models.Model):
 
     name = models.CharField(verbose_name="Name", max_length=100)
     bp = models.ForeignKey(BP, verbose_name="Zugehöriges BP", on_delete=models.CASCADE)
+
+    @staticmethod
+    def get_active():
+        return TL.objects.filter(bp=BP.get_active())
 
     def __str__(self):
         return self.name
@@ -67,6 +75,10 @@ class Student(models.Model):
     name = models.CharField(verbose_name="Name", max_length=100)
     bp = models.ForeignKey(BP, verbose_name="Zugehöriges BP", on_delete=models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.SET_NULL, blank=True, null=True, verbose_name="Projekt")
+
+    @staticmethod
+    def get_active():
+        return Student.objects.filter(bp=BP.get_active())
 
     def __str__(self):
         return self.name
