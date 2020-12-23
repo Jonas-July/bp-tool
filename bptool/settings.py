@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'bootstrap4',
+    'fontawesome_5',
     'bp',
 ]
 
@@ -120,3 +122,23 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+# Settings for Bootstrap
+BOOTSTRAP4 = {
+    # Use custom CSS
+    "css_url": {
+        "href": STATIC_URL + "bp/css/bootstrap.css",
+    },
+    "javascript_url": {
+        "url": STATIC_URL + "bp/vendor/bootstrap/bootstrap-4.3.1.min.js",
+    },
+    "jquery_slim_url": {
+        "url": STATIC_URL + "bp/vendor/jquery/jquery-3.3.1.slim.min.js",
+    },
+    "popper_url": {
+        "url": STATIC_URL + "bp/vendor/popper/popper-1.14.7.min.js",
+    },
+}
+
+# Settings for FontAwesome
+FONTAWESOME_5_CSS_URL = STATIC_URL + "bp/vendor/fontawesome-5/all.min.css"
+FONTAWESOME_5_PREFIX = "fa"
