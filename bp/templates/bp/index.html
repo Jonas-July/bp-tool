@@ -1,0 +1,44 @@
+{% extends "bp/base.html" %}
+
+{% block content %}
+    <h1>BP Übersicht</h1>
+
+    <h2 class="text-info mb-3">{{ bp.name }}</h2>
+
+    <div class="row">
+        <div class="card text-white bg-primary mb-3 mx-2 col-md-4" style="max-width: 20rem;">
+            <div class="card-header">Projekte</div>
+            <div class="card-body">
+                <h4 class="card-title">{{ projects.count}} Projekte</h4>
+                <p class="card-text"><a href="{% url "bp:project_list" %}" class="btn btn-secondary">Zur Liste</a></p>
+            </div>
+        </div>
+
+        <div class="card bg-secondary mb-3 mx-2 col-md-4" style="max-width: 20rem;">
+            <div class="card-header">Teamleitungen</div>
+            <div class="card-body">
+                <h4 class="card-title">{{ tls.count}} Teamleitungen</h4>
+                <p class="card-text"></p>
+            </div>
+        </div>
+
+        {% if students_without_project == 0 %}
+            <div class="card text-white bg-success mb-3 mx-2 col-md-4" style="max-width: 20rem;">
+                <div class="card-header">Teilnehmende</div>
+                <div class="card-body">
+                    <h4 class="card-title">{{ students.count}} Teilnehmende</h4>
+                    <p class="card-text">Alle Studierenden sind Teil von Projektgruppen.</p>
+                </div>
+            </div>
+        {% else %}
+        <div class="card text-white bg-danger mb-3 mx-2 col-md-4" style="max-width: 20rem;">
+            <div class="card-header">Teilnehmende</div>
+            <div class="card-body">
+                <h4 class="card-title">{{ students.count}} Teilnehmende</h4>
+                <p class="card-text">{{ students_without_project.count}} Studierende sind nicht Teil einer Projektgruppe.</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+{% endblock %}

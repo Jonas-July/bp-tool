@@ -1,8 +1,10 @@
 from django.urls import path
-from django.views.generic import TemplateView
+
+from bp.views import IndexView, ProjectListView
 
 app_name = "bp"
 
 urlpatterns = [
-    path('', TemplateView.as_view(template_name="bp/base.html"), name="index"),
+    path('', IndexView.as_view(), name="index"),
+    path('projects/', ProjectListView.as_view(), name="project_list"),
 ]

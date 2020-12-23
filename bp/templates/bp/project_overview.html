@@ -1,0 +1,35 @@
+{% extends "bp/base.html" %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item"><a href="{% url "bp:index" %}">Übersicht</a></li>
+    <li class="breadcrumb-item active">Projekte</li>
+{% endblock %}
+
+
+{% block content %}
+    <h1>Projekte</h1>
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Nr</th>
+            <th>Title</th>
+            <th>TL</th>
+            <td>AG</td>
+            <td>Studierende</td>
+        </tr>
+        </thead>
+        <tbody>
+        {% for project in projects %}
+            <tr>
+                <td>{{ project.nr }}</td>
+                <td>{{ project.title }}</td>
+                <td>{{ project.tl }}</td>
+                <td><a href="mailto:{{ project.ag_mail }}">{{ project.ag }}</a></td>
+                <td>{{ project.student_list }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}
