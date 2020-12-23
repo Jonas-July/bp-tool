@@ -39,10 +39,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'bootstrap4',
     'fontawesome_5',
+    'debug_toolbar',
     'bp',
 ]
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -110,7 +112,7 @@ LANGUAGE_CODE = 'de-DE'
 
 TIME_ZONE = 'UTC'
 
-USE_I18N = False
+USE_I18N = True
 
 USE_L10N = True
 
@@ -142,3 +144,9 @@ BOOTSTRAP4 = {
 # Settings for FontAwesome
 FONTAWESOME_5_CSS_URL = STATIC_URL + "bp/vendor/fontawesome-5/all.min.css"
 FONTAWESOME_5_PREFIX = "fa"
+
+# Used for Debug Toolbar
+INTERNAL_IPS = [
+    '127.0.0.1',
+]
+
