@@ -26,6 +26,7 @@ class Project(models.Model):
         verbose_name = "Projekt"
         verbose_name_plural = "Projekte"
         ordering = ['bp', 'nr']
+        unique_together = [('bp', 'order_id'), ('bp', 'nr')]
 
     nr = models.PositiveSmallIntegerField(verbose_name="Projekt-/Gruppennummer")
     title = models.CharField(max_length=255, verbose_name="Titel")
