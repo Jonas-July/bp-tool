@@ -10,18 +10,18 @@
 {% block content %}
     <h1 class="mb-4">BP: Bewerten</h1>
 
-    {% bootstrap_alert "Bewertung gespeichert!" "success" False %}
+    <turbo-frame id="form">
+        {% bootstrap_alert "Bewertung gespeichert!" "success" False %}
 
-    <p class="mt-4">Vielen Dank für das Eintragen der Bewertung. Über den Link ist eine Anpassung von Punktzahl und Begründung
-        bis zur Deadline weiterhin möglich.</p>
+        <p class="mt-4">Vielen Dank für das Eintragen der Bewertung. Über den Link ist eine Anpassung von Punktzahl und Begründung
+            bis zur Deadline weiterhin möglich.</p>
 
-    <h5 class="mt-5">Wir haben folgende Bewertung gespeichert:</h5>
+        <h5 class="mt-5">Wir haben folgende Bewertung gespeichert:</h5>
 
-    <table class="mt-4 table table-striped">
-        <tr><td>Projekt:</td><td>{{ project.title }}</td></tr>
-        <tr><td>Punkte:</td><td>{{ project.ag_points }}</td></tr>
-        <tr><td>Begründung:</td><td>{{ project.ag_points_justification }}</td></tr>
-    </table>
-
-
+        <table class="mt-4 table table-striped">
+            <tr><td>Projekt:</td><td>{{ project.title }}</td></tr>
+            <tr><td>Punkte:</td><td>{{ project.ag_points }}</td></tr>
+            <tr><td>Begründung:</td><td>{{ project.ag_points_justification }}</td></tr>
+        </table>
+    </turbo-frame>
 {% endblock %}
