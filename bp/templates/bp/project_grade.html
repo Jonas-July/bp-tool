@@ -1,0 +1,30 @@
+{% extends "bp/base.html" %}
+
+{% load bootstrap4 %}
+{% load fontawesome_5 %}
+
+{% block navbar_breadcrumbs %}
+{% endblock %}
+
+
+{% block content %}
+    <h1 class="mb-5">BP: Bewerten</h1>
+
+    {% if form.subject.errors %}
+        <ol>
+        {% for error in form.subject.errors %}
+            <li><strong>{{ error|escape }}</strong></li>
+        {% endfor %}
+        </ol>
+    {% endif %}
+
+    <form method="POST" class="post-form">{% csrf_token %}
+        {% bootstrap_form form %}
+        {% buttons %}
+            <button type="submit" class="save btn btn-primary float-right">
+                {% fa5_icon "check" 'fas' %} Speichern
+            </button>
+        {% endbuttons %}
+    </form>
+
+{% endblock %}

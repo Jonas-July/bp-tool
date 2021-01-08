@@ -11,6 +11,9 @@ class BP(models.Model):
     moodle_course_id = models.PositiveSmallIntegerField(verbose_name="Moodlekurs-ID", help_text="ID des zugehörigen Moodlekurses")
     active = models.BooleanField(verbose_name="Aktiv", help_text="Ist diese Iteration aktuell atkiv?", blank=True)
 
+    pretix_event_ag = models.CharField(max_length=50, verbose_name="Pretix Event Slug (AG)", blank=True)
+    pretix_event_tl = models.CharField(max_length=50, verbose_name="Pretix Event Slug (TL)", blank=True)
+
     @staticmethod
     def get_active():
         return BP.objects.get(active=True)
@@ -37,6 +40,9 @@ class Project(models.Model):
 
     bp = models.ForeignKey(BP, verbose_name="Zugehöriges BP", on_delete=models.CASCADE)
     tl = models.ForeignKey("TL", verbose_name="Zugehörige TL", on_delete=models.SET_NULL, blank=True, null=True)
+
+    ag_points = models.SmallIntegerField(verbose_name="Punkte für den Implementierungsteil", help_text="0-100", default=-1)
+    ag_points_justification = models.TextField(verbose_name="Begründung", blank=True)
 
     @staticmethod
     def get_active():
