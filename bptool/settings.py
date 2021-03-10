@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     'bootstrap4',
     'fontawesome_5',
     'debug_toolbar',
-    'formtools',
     'bp',
 ]
 
