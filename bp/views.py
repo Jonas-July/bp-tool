@@ -84,9 +84,7 @@ class AGGradeView(ProjectByOrderIDMixin, UpdateView):
         return reverse("bp:ag_grade_success", kwargs={"order_id": self.object.order_id})
 
     def _get_secret_from_url(self):
-        # Get secret from Pretix Order URL of form
-        # https://<pretix-host>/<organizer>/<event>/order/<order_id>/<secret>/open/<hash>/
-        return self.request.GET["login"].split("/")[-4]
+        return self.kwargs.get("secret", "")
 
     def get(self, request, *args, **kwargs):
         # Redirect if secret is invalid

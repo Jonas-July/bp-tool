@@ -7,6 +7,12 @@
 
 
 {% block content %}
+    <div class="float-right mb-4">
+        {% if user.is_staff %}
+            <a class="btn btn-danger" href="{% url "bp:project_import" %}">Projekte importieren</a>
+        {% endif %}
+    </div>
+
     <h1>Projekte</h1>
 
     <table class="table table-striped">
