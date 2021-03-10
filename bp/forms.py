@@ -32,3 +32,10 @@ class AGGradeForm(forms.ModelForm):
             raise ValidationError("Authentifizierung fehlgeschlagen. Ihre Eingabe wurde nicht gespeichert.")
 
         return cleaned_data
+
+
+class ProjectImportForm(forms.Form):
+    csvfile = forms.FileField(label="Projektliste (CSV)",
+                      help_text="CSV-Datei Semikolon-Separiert. Muss die Spalten xyz enthalten")
+
+

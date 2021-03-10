@@ -1,0 +1,40 @@
+{% extends "bp/base.html" %}
+
+{% load bootstrap4 %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item"><a href="{% url "bp:index" %}">Übersicht</a></li>
+    <li class="breadcrumb-item"><a href="{% url "bp:project_list" %}">Projekte</a></li>
+    <li class="breadcrumb-item active">Import</li>
+{% endblock %}
+
+{% block content3 %}
+<p>Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</p>
+<form action="" method="post" enctype='multipart/form-data'>{% csrf_token %}
+    {% bootstrap_form form %}
+    <input type="submit" value="Submit"/>
+</form>
+{% endblock %}
+
+
+{% block content %}
+    <h1>Import: Projekte</h1>
+
+    <form method="POST" class="post-form" enctype='multipart/form-data'>{% csrf_token %}
+        {% bootstrap_form form %}
+        {% buttons %}
+            <button type="submit" class="save btn btn-primary float-right">
+                Importieren
+            </button>
+            <button type="reset" class="btn btn-danger">
+                Zurücksetzen
+            </button>
+
+            <a href="{% url 'bp:project_list' %}" class="btn btn-secondary">
+                Abbrechen
+            </a>
+        {% endbuttons %}
+    </form>
+
+{% endblock %}
+

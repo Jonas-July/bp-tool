@@ -1,8 +1,13 @@
-from django.shortcuts import redirect
-from django.urls import reverse
-from django.views.generic import TemplateView, ListView, DetailView, UpdateView
+import csv
+import io
 
-from bp.forms import AGGradeForm
+from django.contrib import messages
+from django.db import IntegrityError
+from django.shortcuts import redirect
+from django.urls import reverse, reverse_lazy
+from django.views.generic import TemplateView, ListView, DetailView, UpdateView, FormView
+
+from bp.forms import AGGradeForm, ProjectImportForm
 from bp.models import BP, Project, Student, TL
 from bp.pretix import get_order_secret
 
@@ -111,3 +116,29 @@ class AGGradeSuccessView(ProjectByOrderIDMixin, DetailView):
     model = Project
     context_object_name = "project"
     template_name = "bp/project_grade_success.html"
+
+
+class ProjectImportView(FormView):
+    template_name = "bp/projects_import.html"
+    form_class = ProjectImportForm
+    success_url = reverse_lazy("bp:project_list")
+
+    def form_valid(self, form):
+        import_count = 0
+        reader = csv.DictReader(io.TextIOWrapper(form.cleaned_data.get("csvfile").file), delimiter=";")
+        for row in reader:
+            try:
+                Project.objects.create(**{
+                    "nr": row["nr"],
+                    "ag": row["ag"],
+                    "ag_mail": row["ag_mail"],
+                    "title": row["title"],
+                    "order_id": row["order_id"],
+                    "bp": BP.get_active(),
+                })
+                print(f"Projekt {row['title']} importiert")
+                import_count += 1
+            except IntegrityError:
+                print(f"Projekt {row['title']} existiert bereits")
+        messages.add_message(self.request, messages.SUCCESS, f"{import_count} Projekt(e) erfolgreich importiert")
+        return super().form_valid(form)
