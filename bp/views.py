@@ -2,6 +2,7 @@ import csv
 import io
 
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.db import IntegrityError
 from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
@@ -33,7 +34,7 @@ class FilterByActiveBPMixin:
         return super().get_queryset().filter(bp=self.active_bp)
 
 
-class IndexView(ActiveBPMixin, TemplateView):
+class IndexView(LoginRequiredMixin, ActiveBPMixin, TemplateView):
     template_name = "bp/index.html"
 
     def get_context_data(self, **kwargs):
@@ -45,28 +46,32 @@ class IndexView(ActiveBPMixin, TemplateView):
         return context
 
 
-class ProjectListView(FilterByActiveBPMixin, ListView):
+class ProjectListView(PermissionRequiredMixin, FilterByActiveBPMixin, ListView):
     model = Project
     template_name = "bp/project_overview.html"
     context_object_name = "projects"
+    permission_required = 'bp.view_project'
 
 
-class ProjectView(DetailView):
+class ProjectView(PermissionRequiredMixin, DetailView):
     model = Project
     template_name = "bp/project.html"
     context_object_name = "project"
+    permission_required = 'bp.view_project'
 
 
-class TLListView(FilterByActiveBPMixin, ListView):
+class TLListView(PermissionRequiredMixin, FilterByActiveBPMixin, ListView):
     model = TL
     template_name = "bp/tl_overview.html"
     context_object_name = "tls"
+    permission_required = 'bp.view_tl'
 
 
-class TLView(DetailView):
+class TLView(PermissionRequiredMixin, DetailView):
     model = TL
     template_name = "bp/tl.html"
     context_object_name = "tl"
+    permission_required = 'bp.view_tl'
 
 
 class ProjectByOrderIDMixin:
@@ -116,10 +121,11 @@ class AGGradeSuccessView(ProjectByOrderIDMixin, DetailView):
     template_name = "bp/project_grade_success.html"
 
 
-class ProjectImportView(FormView):
+class ProjectImportView(PermissionRequiredMixin, FormView):
     template_name = "bp/projects_import.html"
     form_class = ProjectImportForm
     success_url = reverse_lazy("bp:project_list")
+    permission_required = "bp.add_project"
 
     def form_valid(self, form):
         import_count = 0
