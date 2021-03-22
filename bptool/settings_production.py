@@ -26,11 +26,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'HOST': getattr(secrets, "DB_HOST", "localhost"),
+        'PORT': getattr(secrets, "DB_PORT", "5432"),
         'NAME': secrets.DB_NAME,
         'USER': secrets.DB_USER,
         'PASSWORD': secrets.DB_PASSWORD,
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
-        }
     }
 }
