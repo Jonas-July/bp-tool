@@ -1,0 +1,16 @@
+{% extends "bp/base.html" %}
+
+{% load bootstrap4 %}
+{% load fontawesome_5 %}
+
+{% block navbar_breadcrumbs %}
+{% endblock %}
+
+
+{% block content %}
+    <h1>BP: Bewerten</h1>
+
+    {% bootstrap_alert "404 - Not found" "danger" False %}
+
+    <p>Die gewünschte Seite kann nicht gefunden werden. Bitte kontaktieren Sie das Organisationsteam, wenn Sie das für einen Fehler halten.</p>
+{% endblock %}

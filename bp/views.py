@@ -4,13 +4,27 @@ import io
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.db import IntegrityError
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
+from django.views.defaults import bad_request, permission_denied, server_error, page_not_found
 from django.views.generic import TemplateView, ListView, DetailView, UpdateView, FormView
 
 from bp.forms import AGGradeForm, ProjectImportForm
 from bp.models import BP, Project, Student, TL
 from bp.pretix import get_order_secret
+
+
+def error_400(request, exception):
+    return bad_request(request, exception, template_name="bp/400.html")
+
+def error_403(request, exception):
+    return permission_denied(request, exception, template_name="bp/403.html")
+
+def error_404(request, exception):
+    return page_not_found(request, exception, template_name="bp/404.html")
+
+def error_500(request,):
+    return server_error(request, template_name="bp/500.html")
 
 
 class ActiveBPMixin:
