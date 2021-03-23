@@ -23,6 +23,9 @@
             <th>TL</th>
             <td>AG</td>
             <td>Studierende</td>
+            {% if user.is_staff %}
+                <td>Bewertung</td>
+            {% endif %}
         </tr>
         </thead>
         <tbody>
@@ -30,9 +33,12 @@
             <tr>
                 <td><a href="{% url 'bp:project_detail' project.pk %}">{{ project.nr }}</a></td>
                 <td><a href="{% url 'bp:project_detail' project.pk %}">{{ project.title }}</a></td>
-                <td>{{ project.tl }}</td>
+                <td>{% if project.tl %}{{ project.tl }}{% else %}-{% endif %}</td>
                 <td><a href="mailto:{{ project.ag_mail }}">{{ project.ag }}</a></td>
                 <td>{{ project.student_list }}</td>
+                {% if user.is_staff %}
+                    <td>{% if project.ag_points > -1 %}{{ project.ag_points }}{% else %}-{% endif %}</td>
+                {% endif %}
             </tr>
         {% endfor %}
         </tbody>

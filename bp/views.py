@@ -54,6 +54,7 @@ class IndexView(LoginRequiredMixin, ActiveBPMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['projects'] = Project.get_active()
+        context['projects_graded_count'] = context['projects'].filter(ag_points__gt=-1).count()
         context['tls'] = TL.get_active()
         context['students'] = Student.get_active()
         context['students_without_project'] = Student.get_active().filter(project=None)

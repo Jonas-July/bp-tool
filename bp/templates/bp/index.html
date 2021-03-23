@@ -10,7 +10,10 @@
             <div class="card-header">Projekte</div>
             <div class="card-body">
                 <h4 class="card-title">{{ projects.count}} Projekte</h4>
-                <p class="card-text"><a href="{% url "bp:project_list" %}" class="btn btn-secondary">Zur Liste</a></p>
+                <p class="card-text">
+                    Bewertet: {{ projects_graded_count }}<br><br>
+                    <a href="{% url "bp:project_list" %}" class="btn btn-secondary">Zur Liste</a>
+                </p>
             </div>
         </div>
 
