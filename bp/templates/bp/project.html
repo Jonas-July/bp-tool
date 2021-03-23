@@ -22,7 +22,7 @@
         </tr>
         {% if user.is_staff and project.ag_points >= 0 %}
             <tr>
-                <td>Bewertung:</td><td><b>{{ project.ag_points }} Punkte</b><br><br>{{ project.ag_points_justification }}</td>
+                <td>Bewertung:</td><td><b>{{ project.ag_points }} Punkte</b><br><br>{{ project.ag_points_justification|linebreaks }}</td>
             </tr>
         {% endif %}
     </table>
