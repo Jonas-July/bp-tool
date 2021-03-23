@@ -1,0 +1,16 @@
+{% extends "bp/base.html" %}
+
+{% load bootstrap4 %}
+{% load fontawesome_5 %}
+
+{% block navbar_breadcrumbs %}
+{% endblock %}
+
+
+{% block content %}
+    <h1>BP: Bewerten</h1>
+
+    {% bootstrap_alert "403 - Forbidden" "danger" False %}
+
+    <p>Zugriff verweigert. Bitte kontaktieren Sie das Organisationsteam, wenn Sie das für einen Fehler halten.</p>
+{% endblock %}

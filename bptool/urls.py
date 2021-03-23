@@ -18,6 +18,12 @@ from django.urls import path, include
 import debug_toolbar
 
 
+handler404 = 'bp.views.error_404'
+handler500 = 'bp.views.error_500'
+handler403 = 'bp.views.error_403'
+handler400 = 'bp.views.error_400'
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('bp.urls', namespace='bp')),
