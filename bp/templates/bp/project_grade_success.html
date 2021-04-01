@@ -21,7 +21,7 @@
         <table class="mt-4 table table-striped">
             <tr><td>Projekt:</td><td>{{ project.title }}</td></tr>
             <tr><td>Punkte:</td><td>{{ project.ag_points }}</td></tr>
-            <tr><td>Begründung:</td><td>{{ project.ag_points_justification }}</td></tr>
+            <tr><td>Begründung:</td><td>{{ project.ag_points_justification|linebreaks }}</td></tr>
         </table>
     </turbo-frame>
 {% endblock %}
