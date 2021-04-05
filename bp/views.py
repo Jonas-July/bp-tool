@@ -9,7 +9,7 @@ from django.urls import reverse, reverse_lazy
 from django.views.defaults import bad_request, permission_denied, server_error, page_not_found
 from django.views.generic import TemplateView, ListView, DetailView, UpdateView, FormView
 
-from bp.forms import AGGradeForm, ProjectImportForm
+from bp.forms import AGGradeForm, ProjectImportForm, StudentImportForm
 from bp.models import BP, Project, Student, TL
 from bp.pretix import get_order_secret
 
@@ -145,6 +145,7 @@ class ProjectImportView(PermissionRequiredMixin, FormView):
     def form_valid(self, form):
         import_count = 0
         reader = csv.DictReader(io.TextIOWrapper(form.cleaned_data.get("csvfile").file), delimiter=";")
+        active_bp = BP.get_active()
         for row in reader:
             try:
                 Project.objects.create(**{
@@ -153,11 +154,47 @@ class ProjectImportView(PermissionRequiredMixin, FormView):
                     "ag_mail": row["ag_mail"],
                     "title": row["title"],
                     "order_id": row["order_id"],
-                    "bp": BP.get_active(),
+                    "bp": active_bp,
                 })
                 print(f"Projekt {row['title']} importiert")
                 import_count += 1
             except IntegrityError:
                 print(f"Projekt {row['title']} existiert bereits")
         messages.add_message(self.request, messages.SUCCESS, f"{import_count} Projekt(e) erfolgreich importiert")
+        return super().form_valid(form)
+
+
+class StudentListView(PermissionRequiredMixin, FilterByActiveBPMixin, ListView):
+    model = Student
+    template_name = "bp/student_overview.html"
+    context_object_name = "students"
+    permission_required = 'bp.view_student'
+
+
+class StudentImportView(PermissionRequiredMixin, FormView):
+    template_name = "bp/students_import.html"
+    form_class = StudentImportForm
+    success_url = reverse_lazy("bp:student_list")
+    permission_required = "bp.add_student"
+
+    def form_valid(self, form):
+        import_count = 0
+        reader = csv.DictReader(io.TextIOWrapper(form.cleaned_data.get("csvfile").file), delimiter=",")
+        active_bp = BP.get_active()
+        for row in reader:
+            try:
+                if not row["Gruppe"].startswith("Nicht Mitglied einer Gruppe"):
+                    project = Project.objects.get(nr=row["Gruppe"].split("_")[0])
+                    Student.objects.create(**{
+                        "name": row["Vollständiger Name"],
+                        "moodle_id": row["ID"],
+                        "mail": row["E-Mail-Adresse"],
+                        "project": project,
+                        "bp": active_bp,
+                    })
+                    print(f"Teilnehmer*in {row['Vollständiger Name']} importiert")
+                    import_count += 1
+            except IntegrityError:
+                print(f"Teilnehmer*in {row['Vollständiger Name']} existiert bereits")
+        messages.add_message(self.request, messages.SUCCESS, f"{import_count} Teilnehmende erfolgreich importiert")
         return super().form_valid(form)

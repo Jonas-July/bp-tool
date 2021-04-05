@@ -31,6 +31,7 @@
                 <div class="card-body">
                     <h4 class="card-title">{{ students.count}} Teilnehmende</h4>
                     <p class="card-text">Alle Studierenden sind Teil von Projektgruppen.</p>
+                    <a href="{% url "bp:student_list" %}" class="btn btn-secondary">Zur Liste</a>
                 </div>
             </div>
         {% else %}
@@ -39,6 +40,7 @@
             <div class="card-body">
                 <h4 class="card-title">{{ students.count}} Teilnehmende</h4>
                 <p class="card-text">{{ students_without_project.count}} Studierende sind nicht Teil einer Projektgruppe.</p>
+                <a href="{% url "bp:student_list" %}" class="btn btn-secondary">Zur Liste</a>
             </div>
         </div>
         {% endif %}
