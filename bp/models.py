@@ -55,6 +55,10 @@ class Project(models.Model):
     def __str__(self):
         return f"{self.nr}: {self.title}"
 
+    @property
+    def moodle_name(self):
+        return f"{self.nr:02d}_{self.title}"
+
 
 class TL(models.Model):
     class Meta:

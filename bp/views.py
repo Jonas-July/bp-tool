@@ -2,8 +2,10 @@ import csv
 import io
 
 from django.contrib import messages
+from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.db import IntegrityError
+from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.defaults import bad_request, permission_denied, server_error, page_not_found
@@ -135,6 +137,20 @@ class AGGradeSuccessView(ProjectByOrderIDMixin, DetailView):
     context_object_name = "project"
     template_name = "bp/project_grade_success.html"
 
+
+@permission_required("bp.view_student")
+def grade_export_view(request):
+    # Create the HttpResponse object with the appropriate CSV header.
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="Bewertung-AG.csv"'
+
+    writer = csv.writer(response, delimiter=",")
+    writer.writerow(['ID', 'Vollständiger Name', 'E-Mail-Adresse', 'Status', 'Gruppe', 'Bewertung', 'Bestwertung', 'Bewertung kann geändert werden', 'Zuletzt geändert (Bewertung)', 'Feedback als Kommentar'])
+
+    for student in Student.get_active().filter(project__isnull=False):
+        writer.writerow([student.moodle_id, student.name, student.mail, "", student.project.moodle_name, student.project.ag_points, 100, "Ja", "-", student.project.ag_points_justification])
+
+    return response
 
 class ProjectImportView(PermissionRequiredMixin, FormView):
     template_name = "bp/projects_import.html"
