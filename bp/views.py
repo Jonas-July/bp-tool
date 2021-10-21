@@ -152,6 +152,7 @@ def grade_export_view(request):
 
     return response
 
+
 class ProjectImportView(PermissionRequiredMixin, FormView):
     template_name = "bp/projects_import.html"
     form_class = ProjectImportForm
@@ -214,3 +215,7 @@ class StudentImportView(PermissionRequiredMixin, FormView):
                 print(f"Teilnehmer*in {row['Vollständiger Name']} existiert bereits")
         messages.add_message(self.request, messages.SUCCESS, f"{import_count} Teilnehmende erfolgreich importiert")
         return super().form_valid(form)
+
+
+class LogTLOverview(TemplateView):
+    template_name = "bp/log_tl_overview.html"
