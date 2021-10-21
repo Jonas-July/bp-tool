@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 
 
@@ -68,6 +69,7 @@ class TL(models.Model):
 
     name = models.CharField(verbose_name="Name", max_length=100)
     bp = models.ForeignKey(BP, verbose_name="Zugehöriges BP", on_delete=models.CASCADE)
+    user = models.OneToOneField(verbose_name="Account", to=User, on_delete=models.DO_NOTHING, blank=True, null=True)
 
     @staticmethod
     def get_active():

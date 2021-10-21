@@ -1,0 +1,30 @@
+{% extends "bp/base.html" %}
+
+{% block navbar_breadcrumbs %}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <a class="navbar-brand" href="#">BP Tool</a>
+      {{request.user.first_name}} {{request.user.last_name}} ({{request.user.username}})
+    </nav>
+    <ol class="breadcrumb">
+        {% block breadcrumbs %}
+            <li class="breadcrumb-item active">TL Log</li>
+        {% endblock %}
+    </ol>
+{% endblock %}
+
+{% block content %}
+    <div class="text-center well">
+        {% if request.user.is_anonymous %}
+            <h3>Log in via your LMS</h3>
+        {% else %}
+            {% if request.user.tl %}
+                <h2 class="mb-4">Hallo {{ request.user.tl.name }}</h2>
+
+                {% block tl_content %}{% endblock %}
+            {% else %}
+                <h2>Eine Bestätigung des Zugangs als TL durch das Orgateam steht noch aus.</h2>
+            {% endif %}
+        {% endif %}
+    </div>
+{% endblock %}
+ 

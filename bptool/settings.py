@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'bootstrap4',
     'fontawesome_5',
     'debug_toolbar',
+    'lti_provider',
     'bp',
 ]
 
@@ -83,6 +84,11 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+AUTHENTICATION_BACKENDS = [
+  'django.contrib.auth.backends.ModelBackend',
+  'lti_provider.auth.LTIBackend',
+]
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -145,5 +151,30 @@ FONTAWESOME_5_PREFIX = "fa"
 INTERNAL_IPS = [
     '127.0.0.1',
 ]
+
+LTI_TOOL_CONFIGURATION = {
+    'title': 'BP Tool',
+    'description': 'BP Organization Support Tool',
+    'launch_url': 'lti/',
+    # 'embed_url': '<the view endpoint for an embed tool>' or '',
+    # 'embed_icon_url': '<the icon url to use for an embed tool>' or '',
+    # 'embed_tool_id': '<the embed tool id>' or '',
+    'landing_url': '/log/',
+    # 'course_aware': True,
+    # 'course_navigation': True,
+    # 'new_tab': <True or False>,
+    # 'frame_width': <width in pixels>,
+    # 'frame_height': <height in pixels>,
+    # 'custom_fields': <dictionary>,
+    # 'allow_ta_access': <True or False>,
+    'course_aware': False,
+    'assignments': {
+        'log': 'log/',
+    },
+}
+
+SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
+SESSION_COOKIE_SAMESITE = None
+SESSION_COOKIE_SECURE = True
 
 include(optional("settings/*.py"))
