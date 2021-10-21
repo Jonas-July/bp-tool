@@ -2,7 +2,7 @@
     {% for tllog in logs %}
         <tr {% if tllog.requires_attention %} class="table-warning" {% endif %}>
             <td>{{ tllog.simple_timestamp }}</td>
-            <td>Sample text goes here...</td>
+            <td>{{ tllog.text | linebreaksbr | truncatewords:50 }}</td>
         </tr>
     {% endfor %}
 </table>
