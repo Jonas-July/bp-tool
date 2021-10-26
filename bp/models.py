@@ -109,6 +109,7 @@ class TLLog(models.Model):
     group = models.ForeignKey(Project, on_delete=models.CASCADE)
     tl = models.ForeignKey(TL, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True, blank=True)
+    text = models.TextField()
     requires_attention = models.BooleanField(verbose_name="Besondere Aufmerksamkeit", blank=True, default=False,
                     help_text="Benötigt diese Gruppe aktuell besondere Aufmerksamkeit durch das Organisationsteam?")
 

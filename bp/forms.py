@@ -1,7 +1,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
 
-from bp.models import Project
+from bp.models import Project, TLLog, BP, TL
 from bp.pretix import get_order_secret
 
 
@@ -42,3 +42,31 @@ class ProjectImportForm(forms.Form):
 class StudentImportForm(forms.Form):
     csvfile = forms.FileField(label="Teilnehmendenliste (CSV)",
                       help_text="CSV-Datei Komma-Separiert. Muss die Spalten ID, Vollständiger Name, E-Mail-Adresse, Gruppe enthalten")
+
+
+class TLLogForm(forms.ModelForm):
+    class Meta:
+        model = TLLog
+        fields = ['text', 'requires_attention', 'group', 'bp', 'tl']
+
+        widgets = {
+            'bp': forms.HiddenInput,
+            'tl': forms.HiddenInput,
+        }
+
+    def __init__(self, *args, **kwargs):
+        """ Grants access to the request object so that only projects of the current user
+        are given as options"""
+
+        self.request = kwargs.pop('request')
+        super(TLLogForm, self).__init__(*args, **kwargs)
+        self.fields['group'].queryset = Project.objects.filter(
+            tl=self.request.user.tl)
+        self.fields['bp'].queryset = BP.objects.filter(active=True)
+        self.fields['tl'].queryset = TL.objects.filter(pk=self.request.user.tl.pk)
+
+
+class TLLogUpdateForm(forms.ModelForm):
+    class Meta:
+        model = TLLog
+        fields = ['text', 'requires_attention']

@@ -2,7 +2,8 @@ from django.urls import path
 from django.views.generic import TemplateView
 
 from bp.views import IndexView, ProjectListView, ProjectView, TLView, TLListView, AGGradeView, AGGradeSuccessView, \
-    ProjectImportView, StudentListView, StudentImportView, grade_export_view, LogTLOverview
+    ProjectImportView, StudentListView, StudentImportView, grade_export_view, LogTLOverview, LogTLCreateView, \
+    LogTLUpdateView, LogTLDeleteView
 
 app_name = "bp"
 
@@ -21,4 +22,7 @@ urlpatterns = [
     path('grade/<str:order_id>/success/', AGGradeSuccessView.as_view(), name="ag_grade_success"),
     path('grade/<str:order_id>/<str:secret>/', AGGradeView.as_view(), name="ag_grade"),
     path('log/', LogTLOverview.as_view(), name="log_tl_start"),
+    path('log/<int:group>/new/', LogTLCreateView.as_view(), name="log_tl_create"),
+    path('log/<int:group>/edit/<pk>/', LogTLUpdateView.as_view(), name="log_tl_update"),
+    path('log/<int:group>/delete/<pk>/', LogTLDeleteView.as_view(), name="log_tl_delete"),
 ]

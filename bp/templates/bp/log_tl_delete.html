@@ -1,0 +1,27 @@
+{% extends "bp/base_tl.html" %}
+
+{% load bootstrap4 %}
+{% load fontawesome_5 %}
+
+{% block tl_content %}
+    <p>Soll folgendes Log wirklich gelöscht werden?</p>
+
+    <table class="table">
+        <tr>
+            <td>Datum:</td><td>{{ tllog.simple_timestamp }}</td>
+        </tr>
+        <tr>
+            <td>Text:</td><td>{{ tllog.text | linebreaksbr | truncatewords:50 }}</td>
+        </tr>
+    </table>
+
+    <form method="POST" class="post-form">{% csrf_token %}
+        {% buttons %}
+            <button type="submit" class="save btn btn-danger float-right">
+                {% fa5_icon "trash" 'fas' %} Ja, Löschen!
+            </button>
+            <a href="{% url "bp:log_tl_start" %}" class="btn btn-secondary float-left">Abbrechen</a>
+        {% endbuttons %}
+    </form>
+{% endblock %}
+ 

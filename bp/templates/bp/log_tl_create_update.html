@@ -1,0 +1,19 @@
+{% extends "bp/base_tl.html" %}
+
+{% load bootstrap4 %}
+{% load fontawesome_5 %}
+
+{% block tl_content %}
+    <p>Logs anzeigen und eintragen:</p>
+
+    <form method="POST" class="post-form">{% csrf_token %}
+        {% bootstrap_form form %}
+        {% buttons %}
+            <button type="submit" class="save btn btn-primary float-right">
+                {% fa5_icon "check" 'fas' %} Speichern
+            </button>
+            <a href="{% url "bp:log_tl_start" %}" class="btn btn-warning float-left">Abbrechen</a>
+        {% endbuttons %}
+    </form>
+{% endblock %}
+ 
