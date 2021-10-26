@@ -9,9 +9,9 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views.defaults import bad_request, permission_denied, server_error, page_not_found
-from django.views.generic import TemplateView, ListView, DetailView, UpdateView, FormView, CreateView
+from django.views.generic import TemplateView, ListView, DetailView, UpdateView, FormView, CreateView, DeleteView
 
-from bp.forms import AGGradeForm, ProjectImportForm, StudentImportForm, TLLogForm
+from bp.forms import AGGradeForm, ProjectImportForm, StudentImportForm, TLLogForm, TLLogUpdateForm
 from bp.models import BP, Project, Student, TL, TLLog
 from bp.pretix import get_order_secret
 
@@ -259,3 +259,22 @@ class LogTLCreateView(LoginRequiredMixin, CreateView):
         initials["tl"] = self.request.user.tl
 
         return initials
+
+
+class LogTLUpdateView(LoginRequiredMixin, UpdateView):
+    model = TLLog
+    form_class = TLLogUpdateForm
+    template_name = "bp/log_tl_create_update.html"
+
+    def get_success_url(self):
+        messages.add_message(self.request, messages.SUCCESS, "Log aktualisiert")
+        return reverse_lazy('bp:log_tl_start')
+
+
+class LogTLDeleteView(LoginRequiredMixin, DeleteView):
+    model = TLLog
+    template_name = "bp/log_tl_delete.html"
+
+    def get_success_url(self):
+        messages.add_message(self.request, messages.SUCCESS, "Log gelöscht")
+        return reverse_lazy('bp:log_tl_start')

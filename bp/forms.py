@@ -64,3 +64,9 @@ class TLLogForm(forms.ModelForm):
             tl=self.request.user.tl)
         self.fields['bp'].queryset = BP.objects.filter(active=True)
         self.fields['tl'].queryset = TL.objects.filter(pk=self.request.user.tl.pk)
+
+
+class TLLogUpdateForm(forms.ModelForm):
+    class Meta:
+        model = TLLog
+        fields = ['text', 'requires_attention']
