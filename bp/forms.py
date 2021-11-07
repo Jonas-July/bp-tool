@@ -36,7 +36,7 @@ class AGGradeForm(forms.ModelForm):
 
 class ProjectImportForm(forms.Form):
     csvfile = forms.FileField(label="Projektliste (CSV)",
-                      help_text="CSV-Datei Semikolon-Separiert. Muss die Spalten xyz enthalten")
+                      help_text="CSV-Datei Semikolon-Separiert. Muss die Spalten nr, ag, ag_mail, title, order_id enthalten")
 
 
 class StudentImportForm(forms.Form):
