@@ -94,7 +94,7 @@ Remember to use a secret key that is not stored in any repository or similar, an
     </Directory>
 
     ProxyPassMatch ^/static/ !
-    ProxyPass / uwsgi://127.0.0.1:3035/
+    ProxyPass / uwsgi://127.0.0.1:3036/
     ```
 
 or create a new config (.conf) file (similar to ``apache-bp-tool.conf``) replacing $SUBDOMAIN with the subdomain the system should be available under, and $MAILADDRESS with the e-mail address of your administrator and $PATHTO with the appropriate paths. Copy or symlink it to ``/etc/apache2/sites-available``. Then activate it with ``a2ensite bp-tool``.

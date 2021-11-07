@@ -25,6 +25,5 @@ pip install --upgrade -r requirements.txt
 
 ./manage.py migrate
 ./manage.py collectstatic --noinput
-./manage.py compilemessages -l de_DE
 
 touch bptool/wsgi.py

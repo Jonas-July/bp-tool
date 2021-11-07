@@ -8,6 +8,11 @@ set -ex
 # remove old virtualenv
 rm -rf venv/
 
+# set environment variable when we want to update in production
+if [ "$1" = "--prod" ]; then
+    export DJANGO_SETTINGS_MODULE=bptool.settings_production
+fi
+
 # Setup Python Environment
 # Requires: Virtualenv, appropriate Python installation
 virtualenv venv -p python3
@@ -20,7 +25,6 @@ python manage.py migrate
 
 # Prepare static files and translations
 python manage.py collectstatic --noinput
-python manage.py compilemessages -l de_DE
 
 # Create superuser
 # Credentials are entered interactively on CLI
