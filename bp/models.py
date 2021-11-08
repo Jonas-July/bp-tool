@@ -1,5 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 class BP(models.Model):
@@ -70,6 +72,7 @@ class TL(models.Model):
     name = models.CharField(verbose_name="Name", max_length=100)
     bp = models.ForeignKey(BP, verbose_name="Zugehöriges BP", on_delete=models.CASCADE)
     user = models.OneToOneField(verbose_name="Account", to=User, on_delete=models.DO_NOTHING, blank=True, null=True)
+    confirmed = models.BooleanField(verbose_name="Bestätigt", default=False, blank=True)
 
     @staticmethod
     def get_active():
@@ -77,6 +80,12 @@ class TL(models.Model):
 
     def __str__(self):
         return self.name
+
+
+@receiver(post_save, sender=User)
+def update_profile_signal(sender, instance: User, created, **kwargs):
+    if created:
+        TL.objects.create(user=instance, name=f"{instance.first_name} {instance.last_name}", bp=BP.get_active(), confirmed=False)
 
 
 class Student(models.Model):

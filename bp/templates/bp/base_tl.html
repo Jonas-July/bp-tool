@@ -17,7 +17,7 @@
         {% if request.user.is_anonymous %}
             <h3>Log in via your LMS</h3>
         {% else %}
-            {% if request.user.tl %}
+            {% if request.user.tl and request.user.tl.confirmed %}
                 <h2 class="mb-4">Hallo {{ request.user.tl.name }}</h2>
 
                 {% block tl_content %}{% endblock %}

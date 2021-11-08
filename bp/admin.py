@@ -18,7 +18,7 @@ class ProjectAdmin(admin.ModelAdmin):
 @admin.register(TL)
 class TLAdmin(admin.ModelAdmin):
     list_filter = ['bp']
-    list_display = ['name', 'bp']
+    list_display = ['name', 'bp', 'confirmed']
 
 
 @admin.register(Student)
