@@ -1,0 +1,27 @@
+{% extends "bp/base.html" %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item"><a href="{% url "bp:index" %}">Übersicht</a></li>
+    <li class="breadcrumb-item"><a href="{% url "bp:log_list" %}">Logs</a></li>
+    <li class="breadcrumb-item active">{{ log }}</li>
+{% endblock %}
+
+
+{% block content %}
+    <h1>Log</h1>
+
+    <table class="table">
+        <tr>
+            <td>Timestamp:</td><td>{{ log.simple_timestamp }}</td>
+        </tr>
+        <tr>
+            <td>Projekt:</td><td>{{ log.group }}</td>
+        </tr>
+        <tr>
+            <td>Von:</td><td>{{ log.tl }}</td>
+        </tr>
+        <tr>
+            <td>Text:</td><td>{{ log.text | linebreaks }}</td>
+        </tr>
+    </table>
+{% endblock %}

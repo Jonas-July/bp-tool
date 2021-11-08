@@ -3,7 +3,7 @@ from django.views.generic import TemplateView
 
 from bp.views import IndexView, ProjectListView, ProjectView, TLView, TLListView, AGGradeView, AGGradeSuccessView, \
     ProjectImportView, StudentListView, StudentImportView, grade_export_view, LogTLOverview, LogTLCreateView, \
-    LogTLUpdateView, LogTLDeleteView
+    LogTLUpdateView, LogTLDeleteView, LogListView, LogView
 
 app_name = "bp"
 
@@ -15,6 +15,8 @@ urlpatterns = [
     path('project/<pk>/', ProjectView.as_view(), name="project_detail"),
     path('tl/', TLListView.as_view(), name="tl_list"),
     path('tl/<pk>/', TLView.as_view(), name="tl_detail"),
+    path('logs/', LogListView.as_view(), name='log_list'),
+    path('logs/<pk>/', LogView.as_view(), name='log_detail'),
     path('student/', StudentListView.as_view(), name="student_list"),
     path('student/import/', StudentImportView.as_view(), name="student_import"),
     path('grade/invalid/', TemplateView.as_view(template_name="bp/project_grade_invalid_secret.html"),

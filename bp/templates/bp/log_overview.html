@@ -1,0 +1,45 @@
+{% extends "bp/base.html" %}
+
+{% load fontawesome_5 %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item"><a href="{% url "bp:index" %}">Übersicht</a></li>
+    <li class="breadcrumb-item active">Logs</li>
+{% endblock %}
+
+
+{% block content %}
+    <h1>Logs</h1>
+
+    <table class="table">
+        {% for tllog in logs %}
+            <tr {% if tllog.requires_attention %} class="table-warning" {% endif %}>
+                <td>{{ tllog.simple_timestamp }}</td>
+                <td>{{ tllog.group }}</td>
+                <td>{{ tllog.tl }}</td>
+                <td>{{ tllog.text | linebreaksbr | truncatewords:50 }}</td>
+                <td><a href="{% url "bp:log_detail" pk=tllog.pk %}">{% fa5_icon "link" "fas" %}</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <div class="text-center">
+        <ul class="pagination pagination-lg">
+            {% if page_obj.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page=1">&laquo;</a></li>
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">&lt;</a></li>
+            {% else %}
+                <li class="page-item disabled"><a class="page-link" href="#">&laquo;</a></li>
+                <li class="page-item disabled"><a class="page-link" href="#">&lt;</a></li>
+            {% endif %}
+            <li class="page-item active"><a class="page-link" href="#">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</a></li>
+            {% if page_obj.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">&gt;</a></li>
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">&raquo;</a></li>
+            {% else %}
+                <li class="page-item disabled"><a class="page-link" href="#">&gt;</a></li>
+                <li class="page-item disabled"><a class="page-link" href="#">&raquo;</a></li>
+            {% endif %}
+        </ul>
+    </div>
+{% endblock %}

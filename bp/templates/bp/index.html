@@ -21,7 +21,9 @@
             <div class="card-header">Teamleitungen</div>
             <div class="card-body">
                 <h4 class="card-title">{{ tls.count}} Teamleitung{{ tls.count|pluralize:"en" }}</h4>
-                <p class="card-text"><a href="{% url "bp:tl_list" %}" class="btn btn-secondary">Zur Liste</a></p>
+                <p class="card-text">
+                    <a href="{% url "bp:tl_list" %}" class="btn btn-secondary">Zur Liste</a>
+                </p>
             </div>
         </div>
 

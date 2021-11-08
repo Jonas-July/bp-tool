@@ -94,6 +94,21 @@ class TLView(PermissionRequiredMixin, DetailView):
     permission_required = 'bp.view_tl'
 
 
+class LogListView(PermissionRequiredMixin, FilterByActiveBPMixin, ListView):
+    model = TLLog
+    template_name = "bp/log_overview.html"
+    context_object_name = "logs"
+    permission_required = "bp.view_tllog"
+    paginate_by = 20
+
+
+class LogView(PermissionRequiredMixin, FilterByActiveBPMixin, DetailView):
+    model = TLLog
+    template_name = "bp/log.html"
+    context_object_name = "log"
+    permission_required = "bp.view_tllog"
+
+
 class ProjectByOrderIDMixin:
     def get_object(self, queryset=None):
         return Project.objects.get(order_id=self.kwargs["order_id"])
