@@ -9,6 +9,8 @@ import bptool.settings_secrets as secrets
 # noinspection PyUnresolvedReferences
 from bptool.settings import *
 
+STATIC_ROOT = secrets.STATIC_ROOT
+
 ### SECURITY ###
 
 DEBUG = False
