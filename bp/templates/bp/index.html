@@ -9,7 +9,7 @@
         <div class="card text-white bg-primary mb-3 mx-2 col-md-3" style="padding:0;">
             <div class="card-header">Projekte</div>
             <div class="card-body">
-                <h4 class="card-title">{{ projects.count}} Projekte</h4>
+                <h4 class="card-title">{{ projects.count}} Projekt{{ projects.count|pluralize:"e" }}</h4>
                 <p class="card-text">
                     Bewertet: {{ projects_graded_count }}<br><br>
                     <a href="{% url "bp:project_list" %}" class="btn btn-secondary">Zur Liste</a>
@@ -20,7 +20,7 @@
         <div class="card bg-info text-white mb-3 mx-2 col-md-3" style="padding:0;">
             <div class="card-header">Teamleitungen</div>
             <div class="card-body">
-                <h4 class="card-title">{{ tls.count}} Teamleitungen</h4>
+                <h4 class="card-title">{{ tls.count}} Teamleitung{{ tls.count|pluralize:"en" }}</h4>
                 <p class="card-text"><a href="{% url "bp:tl_list" %}" class="btn btn-secondary">Zur Liste</a></p>
             </div>
         </div>
@@ -39,7 +39,7 @@
             <div class="card-header">Teilnehmende</div>
             <div class="card-body">
                 <h4 class="card-title">{{ students.count}} Teilnehmende</h4>
-                <p class="card-text">{{ students_without_project.count}} Studierende sind nicht Teil einer Projektgruppe.</p>
+                <p class="card-text">{{ students_without_project.count}} Studierende {{ students_without_project.count|pluralize:"ist,sind" }} nicht Teil einer Projektgruppe.</p>
                 <a href="{% url "bp:student_list" %}" class="btn btn-secondary">Zur Liste</a>
             </div>
         </div>

@@ -83,6 +83,9 @@ class TLListView(PermissionRequiredMixin, FilterByActiveBPMixin, ListView):
     context_object_name = "tls"
     permission_required = 'bp.view_tl'
 
+    def get_queryset(self):
+        return super().get_queryset().filter(confirmed=True)
+
 
 class TLView(PermissionRequiredMixin, DetailView):
     model = TL

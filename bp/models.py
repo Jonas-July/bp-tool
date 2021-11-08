@@ -76,7 +76,7 @@ class TL(models.Model):
 
     @staticmethod
     def get_active():
-        return TL.objects.filter(bp=BP.get_active())
+        return TL.objects.filter(bp=BP.get_active(), confirmed=True)
 
     def __str__(self):
         return self.name
