@@ -3,7 +3,7 @@ from django.views.generic import TemplateView
 
 from bp.views import IndexView, ProjectListView, ProjectView, TLView, TLListView, AGGradeView, AGGradeSuccessView, \
     ProjectImportView, StudentListView, StudentImportView, grade_export_view, LogTLOverview, LogTLCreateView, \
-    LogTLUpdateView, LogTLDeleteView, LogListView, LogView
+    LogTLUpdateView, LogTLDeleteView, LogListView, LogView, LogAttentionListView
 
 app_name = "bp"
 
@@ -16,6 +16,7 @@ urlpatterns = [
     path('tl/', TLListView.as_view(), name="tl_list"),
     path('tl/<pk>/', TLView.as_view(), name="tl_detail"),
     path('logs/', LogListView.as_view(), name='log_list'),
+    path('logs/attention/', LogAttentionListView.as_view(), name='log_list_attention'),
     path('logs/<pk>/', LogView.as_view(), name='log_detail'),
     path('student/', StudentListView.as_view(), name="student_list"),
     path('student/import/', StudentImportView.as_view(), name="student_import"),

@@ -101,6 +101,21 @@ class LogListView(PermissionRequiredMixin, FilterByActiveBPMixin, ListView):
     permission_required = "bp.view_tllog"
     paginate_by = 20
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["page_title"] = "Logs"
+        return context
+
+
+class LogAttentionListView(LogListView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["page_title"] = "Logs (Aufmerksamkeit nötig)"
+        return context
+
+    def get_queryset(self):
+        return super().get_queryset().filter(requires_attention=True)
+
 
 class LogView(PermissionRequiredMixin, FilterByActiveBPMixin, DetailView):
     model = TLLog
