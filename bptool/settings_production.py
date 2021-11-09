@@ -11,6 +11,9 @@ from bptool.settings import *
 
 STATIC_ROOT = secrets.STATIC_ROOT
 
+SEND_MAILS = True
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
 ### SECURITY ###
 
 DEBUG = False

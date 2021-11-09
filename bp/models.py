@@ -1,7 +1,10 @@
 from django.contrib.auth.models import User
+from django.core.mail import send_mail
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.conf import settings
+from django.urls import reverse_lazy
 
 
 class BP(models.Model):
@@ -155,6 +158,20 @@ class TLLog(models.Model):
         return f"{self.tl} für Gruppe {self.group.nr} am {self.simple_timestamp}"
 
 
+@receiver(post_save, sender=TLLog)
+def update_tllog_receiver(sender, instance: TLLog, created, **kwargs):
+    if created and settings.SEND_MAILS and instance.requires_attention:
+        # Send an email for new important logs
+        url = f"{settings.ALLOWED_HOSTS[0] if len(settings.ALLOWED_HOSTS) > 0 else 'http://localhost'}{reverse_lazy('bp:log_detail', kwargs={'pk': instance.pk})}"
+        send_mail(
+            f"[BP TL Logs] {instance.group} ({instance.simple_timestamp})",
+            f"Achtung, folgendes Log erfordert besondere Aufmerksamkeit\n\n{url}\n\nProbleme:{instance.problems}\n\n{instance.text}",
+            settings.SEND_MAILS_FROM,
+            [settings.SEND_MAILS_TO],
+            fail_silently=True
+        )
+
+
 class TLLogProblem(models.Model):
     class Meta:
         verbose_name = "TL-Log-Problem"
@@ -164,4 +181,3 @@ class TLLogProblem(models.Model):
 
     def __str__(self):
         return self.name
-

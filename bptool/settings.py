@@ -177,4 +177,7 @@ SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
 SESSION_COOKIE_SAMESITE = None
 SESSION_COOKIE_SECURE = True
 
+SEND_MAILS = True
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 include(optional("settings/*.py"))
