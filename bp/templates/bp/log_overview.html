@@ -26,7 +26,7 @@
         {% for tllog in logs %}
             <tr {% if tllog.requires_attention %} class="table-warning" {% endif %}>
                 <td>{{ tllog.simple_timestamp }}</td>
-                <td>{{ tllog.group }}</td>
+                <td><a href="{% url "bp:project_detail" pk=tllog.group.pk %}">{{ tllog.group }}</a></td>
                 <td>{{ tllog.tl }}</td>
                 <td>{{ tllog.get_status_display }}</td>
                 <td>{{ tllog.problems }}</td>

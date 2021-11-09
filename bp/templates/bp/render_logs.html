@@ -7,7 +7,13 @@
             <td>{{ tllog.get_status_display }}</td>
             <td>{{ tllog.problems }}</td>
             <td>{{ tllog.text | linebreaksbr | truncatewords:50 }}</td>
-            <td><a href="{% url "bp:log_tl_update" tllog.group.nr tllog.pk %}">{% fa5_icon "pen" 'fas' %}</a> <a href="{% url "bp:log_tl_delete" tllog.group.nr tllog.pk %}">{% fa5_icon "trash" 'fas' %}</a></td>
+            <td>
+                {% if user.is_staff %}
+                    <a href="{% url "bp:log_detail" pk=tllog.pk %}">{% fa5_icon "link" "fas" %}</a>
+                {% else %}
+                    <a href="{% url "bp:log_tl_update" tllog.group.nr tllog.pk %}">{% fa5_icon "pen" 'fas' %}</a> <a href="{% url "bp:log_tl_delete" tllog.group.nr tllog.pk %}">{% fa5_icon "trash" 'fas' %}</a>
+                {% endif %}
+            </td>
         </tr>
     {% endfor %}
 </table>
