@@ -253,6 +253,11 @@ class StudentImportView(PermissionRequiredMixin, FormView):
 class LogTLOverview(LoginRequiredMixin, TemplateView):
     template_name = "bp/log_tl_overview.html"
 
+    def get(self, request, *args, **kwargs):
+        if request.user.is_superuser:
+            return redirect("bp:index")
+        return super().get(request, *args, **kwargs)
+
 
 class LogTLCreateView(LoginRequiredMixin, CreateView):
     model = TLLog

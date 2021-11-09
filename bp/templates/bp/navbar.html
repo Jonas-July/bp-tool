@@ -18,6 +18,11 @@
       <li class="nav-item">
         <a href="{% url 'bp:log_list' %}" class="nav-link">Logs</a>
       </li>
+      {% if user.is_superuser %}
+        <li class="nav-item">
+          <a href="{% url 'admin:index' %}" class="nav-link">Admin-Menü</a>
+        </li>
+      {% endif %}
     </ul>
   </div>
 </nav>
