@@ -11,7 +11,8 @@ class BP(models.Model):
         ordering = ['-active']
 
     name = models.CharField(max_length=100, verbose_name="Name", help_text="Titel dieser Iteration")
-    moodle_course_id = models.PositiveSmallIntegerField(verbose_name="Moodlekurs-ID", help_text="ID des zugehörigen Moodlekurses")
+    moodle_course_id = models.PositiveSmallIntegerField(verbose_name="Moodlekurs-ID",
+                                                        help_text="ID des zugehörigen Moodlekurses")
     active = models.BooleanField(verbose_name="Aktiv", help_text="Ist diese Iteration aktuell atkiv?", blank=True)
 
     pretix_event_ag = models.CharField(max_length=50, verbose_name="Pretix Event Slug (AG)", blank=True)
@@ -44,7 +45,8 @@ class Project(models.Model):
     bp = models.ForeignKey(BP, verbose_name="Zugehöriges BP", on_delete=models.CASCADE)
     tl = models.ForeignKey("TL", verbose_name="Zugehörige TL", on_delete=models.SET_NULL, blank=True, null=True)
 
-    ag_points = models.SmallIntegerField(verbose_name="Punkte für den Implementierungsteil", help_text="0-100", default=-1)
+    ag_points = models.SmallIntegerField(verbose_name="Punkte für den Implementierungsteil", help_text="0-100",
+                                         default=-1)
     ag_points_justification = models.TextField(verbose_name="Begründung", blank=True)
 
     @staticmethod
@@ -85,7 +87,8 @@ class TL(models.Model):
 @receiver(post_save, sender=User)
 def update_profile_signal(sender, instance: User, created, **kwargs):
     if created:
-        TL.objects.create(user=instance, name=f"{instance.first_name} {instance.last_name}", bp=BP.get_active(), confirmed=False)
+        TL.objects.create(user=instance, name=f"{instance.first_name} {instance.last_name}", bp=BP.get_active(),
+                          confirmed=False)
 
 
 class Student(models.Model):
@@ -119,8 +122,9 @@ class TLLog(models.Model):
     tl = models.ForeignKey(TL, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True, blank=True)
     text = models.TextField()
-    requires_attention = models.BooleanField(verbose_name="Besondere Aufmerksamkeit", blank=True, default=False,
-                    help_text="Benötigt diese Gruppe aktuell besondere Aufmerksamkeit durch das Organisationsteam?")
+    requires_attention = models.BooleanField(verbose_name="Besondere Aufmerksamkeit", blank=True, default=False, help_text="Benötigt diese Gruppe aktuell besondere Aufmerksamkeit durch das Organisationsteam?")
+    comment = models.TextField(blank=True, verbose_name="Kommentar", help_text="Interner Kommentar des Orga-Teams zu diesem Eintrag")
+    handled = models.BooleanField(blank=True, default=False, verbose_name="Erledigt", help_text="Das Log forderte eine Reaktion des Orga-Teams, die bereits durchgeführt wurde.")
 
     @property
     def simple_timestamp(self):

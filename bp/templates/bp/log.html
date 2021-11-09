@@ -1,5 +1,7 @@
 {% extends "bp/base.html" %}
 
+{% load fontawesome_5 %}
+
 {% block breadcrumbs %}
     <li class="breadcrumb-item"><a href="{% url "bp:index" %}">Übersicht</a></li>
     <li class="breadcrumb-item"><a href="{% url "bp:log_list" %}">Logs</a></li>
@@ -8,20 +10,48 @@
 
 
 {% block content %}
-    <h1>Log</h1>
+    <div class="float-right">
+        <a class="btn btn-primary" href="{% url "admin:bp_tllog_change" object_id=log.pk %}">Edit</a>
+    </div>
+
+    <h1>Log
+        {% if log.requires_attention %}
+            {% fa5_icon "exclamation-triangle" "fas" %}
+        {% endif %}
+        {% if log.handled %}
+            {% fa5_icon "check-square" "fas" %}
+        {% endif %}
+    </h1>
 
     <table class="table">
         <tr>
-            <td>Timestamp:</td><td>{{ log.simple_timestamp }}</td>
-        </tr>
-        <tr>
             <td>Projekt:</td><td>{{ log.group }}</td>
         </tr>
+        <tr>
+            <td>Timestamp:</td><td>{{ log.simple_timestamp }}</td>
+        </tr>
+        {% if log.requires_attention %}
+            <tr>
+                <td></td>
+                <td>Benötigt besondere Aufmerksamkeit {% fa5_icon "exclamation-triangle" "fas" %}</td>
+            </tr>
+        {% endif %}
+        {% if log.handled %}
+            <tr>
+                <td></td>
+                <td>Erledigt {% fa5_icon "check-square" "fas" %}</td>
+            </tr>
+        {% endif %}
         <tr>
             <td>Von:</td><td>{{ log.tl }}</td>
         </tr>
         <tr>
             <td>Text:</td><td>{{ log.text | linebreaks }}</td>
         </tr>
+        {% if log.comment %}
+            <tr>
+                <td>Kommentar:</td><td>{{ log.comment }}</td>
+            </tr>
+        {% endif %}
     </table>
 {% endblock %}
