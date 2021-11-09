@@ -148,7 +148,8 @@ class TLLog(models.Model):
 
     @property
     def problems(self):
-        return ", ".join(str(p) for p in self.current_problems.all())
+        problems_string = ", ".join(str(p) for p in self.current_problems.all())
+        return problems_string if problems_string != "" else "-"
 
     def __str__(self):
         return f"{self.tl} für Gruppe {self.group.nr} am {self.simple_timestamp}"
