@@ -4,6 +4,8 @@
     {% for tllog in logs %}
         <tr {% if tllog.requires_attention %} class="table-warning" {% endif %}>
             <td>{{ tllog.simple_timestamp }}</td>
+            <td>{{ tllog.get_status_display }}</td>
+            <td>{{ tllog.problems }}</td>
             <td>{{ tllog.text | linebreaksbr | truncatewords:50 }}</td>
             <td><a href="{% url "bp:log_tl_update" tllog.group.nr tllog.pk %}">{% fa5_icon "pen" 'fas' %}</a> <a href="{% url "bp:log_tl_delete" tllog.group.nr tllog.pk %}">{% fa5_icon "trash" 'fas' %}</a></td>
         </tr>

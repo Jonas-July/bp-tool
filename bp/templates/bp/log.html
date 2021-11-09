@@ -46,6 +46,14 @@
             <td>Von:</td><td>{{ log.tl }}</td>
         </tr>
         <tr>
+            <td>Status:</td>
+            <td>{{ log.get_status_display }}</td>
+        </tr>
+        <tr>
+            <td>Probleme:</td>
+            <td>{{ log.problems }}</td>
+        </tr>
+        <tr>
             <td>Text:</td><td>{{ log.text | linebreaks }}</td>
         </tr>
         {% if log.comment %}

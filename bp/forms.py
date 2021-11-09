@@ -47,11 +47,13 @@ class StudentImportForm(forms.Form):
 class TLLogForm(forms.ModelForm):
     class Meta:
         model = TLLog
-        fields = ['text', 'requires_attention', 'group', 'bp', 'tl']
+        fields = ['status', 'current_problems', 'text', 'requires_attention', 'group', 'bp', 'tl']
 
         widgets = {
             'bp': forms.HiddenInput,
             'tl': forms.HiddenInput,
+            'status': forms.RadioSelect,
+            'current_problems': forms.CheckboxSelectMultiple,
         }
 
     def __init__(self, *args, **kwargs):
@@ -69,4 +71,9 @@ class TLLogForm(forms.ModelForm):
 class TLLogUpdateForm(forms.ModelForm):
     class Meta:
         model = TLLog
-        fields = ['text', 'requires_attention']
+        fields = ['status', 'current_problems', 'text', 'requires_attention']
+
+        widgets = {
+            'status': forms.RadioSelect,
+            'current_problems': forms.CheckboxSelectMultiple,
+        }

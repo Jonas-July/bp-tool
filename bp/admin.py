@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from bp.models import BP, Project, TL, Student, TLLog
+from bp.models import BP, Project, TL, Student, TLLog, TLLogProblem
 
 
 @admin.register(BP)
@@ -31,3 +31,7 @@ class StudentAdmin(admin.ModelAdmin):
 class TLLogAdmin(admin.ModelAdmin):
     list_filter = ['bp']
     list_display = ['simple_timestamp', 'group', 'tl', 'requires_attention', 'bp']
+
+@admin.register(TLLogProblem)
+class TLLogProblemAdmin(admin.ModelAdmin):
+    pass

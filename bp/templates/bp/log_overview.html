@@ -12,11 +12,24 @@
     <h1>Logs</h1>
 
     <table class="table">
+        <thead>
+        <tr>
+            <th>Wann?</th>
+            <th>Gruppe</th>
+            <th>Von</th>
+            <th>Status</th>
+            <th>Probleme</th>
+            <th>Text</th>
+            <th></th>
+        </tr>
+        </thead>
         {% for tllog in logs %}
             <tr {% if tllog.requires_attention %} class="table-warning" {% endif %}>
                 <td>{{ tllog.simple_timestamp }}</td>
                 <td>{{ tllog.group }}</td>
                 <td>{{ tllog.tl }}</td>
+                <td>{{ tllog.get_status_display }}</td>
+                <td>{{ tllog.problems }}</td>
                 <td>{{ tllog.text | linebreaksbr | truncatewords:50 }}</td>
                 <td>
                     <a href="{% url "bp:log_detail" pk=tllog.pk %}">{% fa5_icon "link" "fas" %}</a>
