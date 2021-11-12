@@ -69,6 +69,9 @@ class ProjectListView(PermissionRequiredMixin, FilterByActiveBPMixin, ListView):
     context_object_name = "projects"
     permission_required = 'bp.view_project'
 
+    def get_queryset(self):
+        return super().get_queryset().select_related('tl')
+
 
 class ProjectView(PermissionRequiredMixin, DetailView):
     model = Project
@@ -100,6 +103,9 @@ class LogListView(PermissionRequiredMixin, FilterByActiveBPMixin, ListView):
     context_object_name = "logs"
     permission_required = "bp.view_tllog"
     paginate_by = 20
+
+    def get_queryset(self):
+        return super().get_queryset().select_related('group', 'tl')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -219,6 +225,9 @@ class StudentListView(PermissionRequiredMixin, FilterByActiveBPMixin, ListView):
     template_name = "bp/student_overview.html"
     context_object_name = "students"
     permission_required = 'bp.view_student'
+
+    def get_queryset(self):
+        return super().get_queryset().select_related('project')
 
 
 class StudentImportView(PermissionRequiredMixin, FormView):
