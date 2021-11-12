@@ -1,3 +1,5 @@
+import json
+
 from django.contrib.auth.models import User
 from django.core.mail import EmailMessage
 from django.db import models
@@ -59,6 +61,10 @@ class Project(models.Model):
     @property
     def student_list(self):
         return ", ".join(s.name for s in self.student_set.all())
+
+    @property
+    def status_json_string(self):
+        return json.dumps([{'x': log.simple_timestamp, 'y': log.status} for log in self.tllog_set.all().order_by('timestamp')])
 
     def __str__(self):
         return f"{self.nr}: {self.title}"

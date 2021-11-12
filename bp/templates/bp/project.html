@@ -29,6 +29,39 @@
 
     <h2>Logs ({{ project.tllog_set.count }})</h2>
 
-    {% include "bp/render_logs.html" with logs=project.tllog_set.all %}
+    {% if project.tllog_set.count > 0 %}
+        <canvas id="statusChart" width="100%" height="15vh" class="mb-5"></canvas>
+        <script>
+            const ctx = $('#statusChart');
+            const myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: 'status',
+                        data: {{project.status_json_string|safe}},
+                        backgroundColor: '#1F9BCF',
+                        borderColor: '#1F9BCF',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            suggestedMin: -2,
+                            suggestedMax: 2
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+            </script>
+        {% include "bp/render_logs.html" with logs=project.tllog_set.all %}
+    {% else %}
+
+    {% endif %}
 
 {% endblock %}
