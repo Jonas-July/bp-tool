@@ -29,7 +29,7 @@ class StudentAdmin(admin.ModelAdmin):
 
 @admin.register(TLLog)
 class TLLogAdmin(admin.ModelAdmin):
-    list_filter = ['bp']
+    list_filter = ['bp', 'read', 'requires_attention', 'good_log']
     list_display = ['simple_timestamp', 'group', 'tl', 'requires_attention', 'bp']
 
 @admin.register(TLLogProblem)

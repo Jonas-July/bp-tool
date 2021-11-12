@@ -143,7 +143,9 @@ class TLLog(models.Model):
     )
     requires_attention = models.BooleanField(verbose_name="Besondere Aufmerksamkeit", blank=True, default=False, help_text="Benötigt diese Gruppe aktuell besondere Aufmerksamkeit durch das Organisationsteam/sollten wir das Log besonders dringend lesen?")
     comment = models.TextField(blank=True, verbose_name="Kommentar", help_text="Interner Kommentar des Orga-Teams zu diesem Eintrag")
+    read = models.BooleanField(blank=True, default=False, verbose_name="Gelesen")
     handled = models.BooleanField(blank=True, default=False, verbose_name="Erledigt", help_text="Das Log forderte eine Reaktion des Orga-Teams, die bereits durchgeführt wurde.")
+    good_log = models.NullBooleanField(blank=True, default=None, verbose_name="Gutes Log?")
 
     @property
     def simple_timestamp(self):
