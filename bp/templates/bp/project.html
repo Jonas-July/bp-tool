@@ -12,7 +12,7 @@
 
     <table class="table">
         <tr>
-            <td>TL:</td><td>{{ project.tl }}</td>
+            <td>TL:</td><td><a href="mailto:{{ project.tl.user.email }}">{{ project.tl }}</a></td>
         </tr>
         <tr>
             <td>Mitglieder:</td><td>{{ project.student_list }}</td>
