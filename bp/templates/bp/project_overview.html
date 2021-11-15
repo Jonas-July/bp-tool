@@ -1,5 +1,7 @@
 {% extends "bp/base.html" %}
 
+{% load tags_bp %}
+
 {% block breadcrumbs %}
     <li class="breadcrumb-item"><a href="{% url "bp:index" %}">Übersicht</a></li>
     <li class="breadcrumb-item active">Projekte</li>
@@ -21,6 +23,7 @@
         <tr>
             <th>Nr</th>
             <th>Title</th>
+            <th>Status</th>
             <th>TL</th>
             <td>AG</td>
             <td>Studierende</td>
@@ -34,6 +37,7 @@
             <tr>
                 <td><a href="{% url 'bp:project_detail' project.pk %}">{{ project.nr }}</a></td>
                 <td><a href="{% url 'bp:project_detail' project.pk %}">{{ project.title }}</a></td>
+                <td>{{ project.tllog_set.first.status | log_status }}</td>
                 <td>{% if project.tl %}{{ project.tl }}{% else %}-{% endif %}</td>
                 <td><a href="mailto:{{ project.ag_mail }}">{{ project.ag }}</a></td>
                 <td>{{ project.student_list }}</td>

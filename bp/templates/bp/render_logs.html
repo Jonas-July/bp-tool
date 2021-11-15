@@ -1,10 +1,11 @@
 {% load fontawesome_5 %}
+{% load tags_bp %}
 
 <table class="table">
     {% for tllog in logs %}
         <tr {% if tllog.requires_attention %} class="table-warning" {% endif %}>
             <td>{{ tllog.simple_timestamp }}</td>
-            <td>{{ tllog.get_status_display }}</td>
+            <td>{{ tllog.status | log_status }}</td>
             <td>{{ tllog.problems }}</td>
             <td>{{ tllog.text | linebreaksbr | truncatewords:50 }}</td>
             <td>

@@ -1,6 +1,9 @@
 from django import template
 from django.apps import apps
 from django.conf import settings
+from django.utils.safestring import mark_safe
+
+from bp.models import TLLog
 
 register = template.Library()
 
@@ -28,14 +31,14 @@ def message_bootstrap_class(tag):
 
 
 @register.filter
-def wiki_owners_export(owners, event):
-    def to_link(owner):
-        if owner.link != '':
-            event_link_prefix, _ = event.base_url.rsplit("/", 1)
-            link_prefix, link_end = owner.link.rsplit("/", 1)
-            if event_link_prefix == link_prefix:
-                return f"[[{link_end}|{str(owner)}]]"
-            return f"[{owner.link} {str(owner)}]"
-        return str(owner)
-
-    return ", ".join(to_link(owner) for owner in owners.all())
+def log_status(status):
+    if status != "":
+        display = TLLog.STATUS_CHOICES[status+2][1]
+        print(display)
+        color = "#919aa1"
+        if status < 0:
+            color = "#d9534f"
+        elif status > 0:
+            color = "#1f9bcf"
+        return mark_safe(f'<span style="color:{color}">{display}</span>')
+    return ""
