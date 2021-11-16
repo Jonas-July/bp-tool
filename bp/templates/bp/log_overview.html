@@ -18,6 +18,7 @@
     <table class="table">
         <thead>
         <tr>
+            <th></th>
             <th>Wann?</th>
             <th>Gruppe</th>
             <th>Von</th>
@@ -29,6 +30,12 @@
         </thead>
         {% for tllog in logs %}
             <tr {% if tllog.requires_attention %} class="table-warning" {% endif %}>
+                <td>{% if not tllog.read %}
+                    <a href="{% url "bp:log_detail" pk=tllog.pk %}">
+                        {% fa5_icon "circle" "fas" %}
+                    </a>
+                    {% endif %}
+                </td>
                 <td><a href="{% url "bp:log_detail" pk=tllog.pk %}">{{ tllog.simple_timestamp }}</a></td>
                 <td><a href="{% url "bp:project_detail" pk=tllog.group.pk %}">{{ tllog.group }}</a></td>
                 <td><a href="{% url "bp:tl_detail" pk=tllog.tl.pk %}">{{ tllog.tl }}</a></td>

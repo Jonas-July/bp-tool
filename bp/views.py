@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.db import IntegrityError
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views.defaults import bad_request, permission_denied, server_error, page_not_found
@@ -325,3 +325,55 @@ class LogTLDeleteView(LoginRequiredMixin, DeleteView):
     def get_success_url(self):
         messages.add_message(self.request, messages.SUCCESS, "Log gelöscht")
         return reverse_lazy('bp:log_tl_start')
+
+
+class APILogMarkReadView(LoginRequiredMixin, DetailView):
+    http_method_names = ['post']
+    model = TLLog
+
+    def post(self, request, *args, **kwargs):
+        if request.user.is_superuser:
+            log = self.get_object()
+            log.read = True
+            log.save()
+            return HttpResponse("")
+        return HttpResponseForbidden("")
+
+
+class APILogMarkHandledView(LoginRequiredMixin, DetailView):
+    http_method_names = ['post']
+    model = TLLog
+
+    def post(self, request, *args, **kwargs):
+        if request.user.is_superuser:
+            log = self.get_object()
+            log.handled = True
+            log.save()
+            return HttpResponse("")
+        return HttpResponseForbidden("")
+
+
+class APILogMarkGoodView(LoginRequiredMixin, DetailView):
+    http_method_names = ['post']
+    model = TLLog
+
+    def post(self, request, *args, **kwargs):
+        if request.user.is_superuser:
+            log = self.get_object()
+            log.good_log = True
+            log.save()
+            return HttpResponse("")
+        return HttpResponseForbidden("")
+
+
+class APILogMarkBadView(LoginRequiredMixin, DetailView):
+    http_method_names = ['post']
+    model = TLLog
+
+    def post(self, request, *args, **kwargs):
+        if request.user.is_superuser:
+            log = self.get_object()
+            log.good_log = False
+            log.save()
+            return HttpResponse("")
+        return HttpResponseForbidden("")

@@ -8,6 +8,110 @@
     <li class="breadcrumb-item active">{{ log }}</li>
 {% endblock %}
 
+{% block imports %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // CSRF Protection/Authentication
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+
+            const csrftoken = getCookie('csrftoken');
+
+            function csrfSafeMethod(method) {
+                // these HTTP methods do not require CSRF protection
+                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+            }
+
+            $.ajaxSetup({
+                beforeSend: function (xhr, settings) {
+                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+
+            // Mark as read
+            $('#btnMarkRead').click(function () {
+                $.ajax({
+                   url: "{% url "bp:log_api_mark_read" pk=log.pk %}",
+                    type: 'POST',
+                    data: {
+                    },
+                    success: function (response) {
+                       $("#labelUnread").hide();
+                       $("#btnMarkRead").html('{% fa5_icon 'check' 'fas' %} Gelesen').off('click');
+                    },
+                    error: function (response) {
+                       alert("Fehler! Konnte nicht als gelesen markiert werden.");
+                    }
+               });
+            });
+
+            // Mark as handled
+            $('#btnMarkHandled').click(function () {
+                $.ajax({
+                   url: "{% url "bp:log_api_mark_handled" pk=log.pk %}",
+                    type: 'POST',
+                    data: {
+                    },
+                    success: function (response) {
+                       $("#btnMarkHandled").html('{% fa5_icon 'check' 'fas' %} Erledigt').off('click');
+                    },
+                    error: function (response) {
+                       alert("Fehler! Konnte nicht als erledigt markiert werden.");
+                    }
+               });
+            });
+
+            // Mark as good
+            $('#btnMarkGood').click(function () {
+                $.ajax({
+                   url: "{% url "bp:log_api_mark_good" pk=log.pk %}",
+                    type: 'POST',
+                    data: {
+                    },
+                    success: function (response) {
+                       $("#labelLogQuality").html('{% fa5_icon 'thumbs-up' 'fas' %} Gut');
+                       $("#btnMarkGood").html('{% fa5_icon 'check' 'fas' %} Gutes Log').off('click');
+                    },
+                    error: function (response) {
+                       alert("Fehler! Konnte nicht als gut markiert werden.");
+                    }
+               });
+            });
+
+            // Mark as handled
+            $('#btnMarkBad').click(function () {
+                $.ajax({
+                   url: "{% url "bp:log_api_mark_bad" pk=log.pk %}",
+                    type: 'POST',
+                    data: {
+                    },
+                    success: function (response) {
+                       $("#labelLogQuality").html('{% fa5_icon 'thumbs-down' 'fas' %} Schlecht');
+                       $("#btnMarkBad").html('{% fa5_icon 'check' 'fas' %} Schlechtes Log').off('click');
+                    },
+                    error: function (response) {
+                       alert("Fehler! Konnte nicht als schlecht markiert werden.");
+                    }
+               });
+            });
+        });
+    </script>
+{% endblock %}
 
 {% block content %}
     <div class="float-right">
@@ -15,6 +119,11 @@
     </div>
 
     <h1>Log
+        <span id="labelUnread">
+            {% if not log.read %}
+                {% fa5_icon "eye-slash" "fas" %}
+            {% endif %}
+        </span>
         {% if log.requires_attention %}
             {% fa5_icon "exclamation-triangle" "fas" %}
         {% endif %}
@@ -23,7 +132,7 @@
         {% endif %}
     </h1>
 
-    <table class="table">
+    <table class="table mt-3">
         <tr>
             <td>Projekt:</td><td><a href="{% url "bp:project_detail" pk=log.group.pk %}">{{ log.group }}</a></td>
         </tr>
@@ -42,6 +151,10 @@
                 <td>Erledigt {% fa5_icon "check-square" "fas" %}</td>
             </tr>
         {% endif %}
+        <tr>
+            <td>Logqualität:</td>
+            <td id="labelLogQuality">{% if log.good_log %}{% fa5_icon "thumbs-up" "fas" %} Gut{% elif log.good_log == False %}{% fa5_icon "thumbs-down" "fas" %} Schlecht{% else %}-{% endif %}</td>
+        </tr>
         <tr>
             <td>Von:</td><td>{{ log.tl }}</td>
         </tr>
@@ -62,4 +175,9 @@
             </tr>
         {% endif %}
     </table>
+
+    <a href="#" class="btn btn-primary" id="btnMarkRead">{% fa5_icon "eye" "fas" %} Als gelesen markieren</a>
+    <a href="#" class="btn btn-info" id="btnMarkHandled">{% fa5_icon "check-square" "fas" %} Als erledigt markieren</a>
+    <a href="#" class="btn btn-success" id="btnMarkGood">{% fa5_icon "thumbs-up" "fas" %} Als gut markieren</a>
+    <a href="#" class="btn btn-warning" id="btnMarkBad">{% fa5_icon "thumbs-down" "fas" %} Als schlecht markieren</a>
 {% endblock %}
