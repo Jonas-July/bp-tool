@@ -1,6 +1,7 @@
 {% extends "bp/base.html" %}
 
 {% load fontawesome_5 %}
+{% load tags_bp %}
 
 {% block breadcrumbs %}
     <li class="breadcrumb-item"><a href="{% url "bp:index" %}">Übersicht</a></li>
@@ -39,7 +40,7 @@
                 <td><a href="{% url "bp:log_detail" pk=tllog.pk %}">{{ tllog.simple_timestamp }}</a></td>
                 <td><a href="{% url "bp:project_detail" pk=tllog.group.pk %}">{{ tllog.group }}</a></td>
                 <td><a href="{% url "bp:tl_detail" pk=tllog.tl.pk %}">{{ tllog.tl }}</a></td>
-                <td>{{ tllog.get_status_display }}</td>
+                <td>{{ tllog.status | log_status }}</td>
                 <td>{{ tllog.problems }}</td>
                 <td>{{ tllog.text | linebreaksbr | truncatewords:50 }}</td>
                 <td>
