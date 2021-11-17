@@ -10,9 +10,28 @@
 {% block content %}
     <h1 class="mb-4">{{ tl.name }}</h1>
 
+    <table class="table table-responsive">
+        <tr>
+            <td>Letztes Log:</td>
+            <td>{{ logs.first.simple_timestamp }}</td>
+        </tr>
+        <tr>
+            <td># Logs:</td>
+            <td>{{ logs_count }}</td>
+        </tr>
+        <tr>
+            <td># Gute Logs:</td>
+            <td>{{ logs_count_good }}</td>
+        </tr>
+        <tr>
+            <td># Schlechte Logs:</td>
+            <td>{{ logs_count_bad }}</td>
+        </tr>
+    </table>
+
 
     <ul class="nav nav-tabs">
-        {% for project in tl.project_set.all %}
+        {% for project in projects %}
             <li class="nav-item">
                 <a class="nav-link {% if forloop.first %}active{% endif %}" data-toggle="tab"
                    href="#g_{{ project.nr }}">
@@ -24,7 +43,7 @@
 
     <div id="myTabContent" class="tab-content">
 
-        {% for project in tl.project_set.all %}
+        {% for project in projects %}
             <div class="tab-pane fade {% if forloop.first %}active show{% endif %}" id="g_{{ project.nr }}">
                 <h3 class="my-4">{{ project.nr }}: {{ project.title }}</h3>
 

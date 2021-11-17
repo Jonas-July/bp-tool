@@ -70,7 +70,7 @@ class ProjectListView(PermissionRequiredMixin, FilterByActiveBPMixin, ListView):
     permission_required = 'bp.view_project'
 
     def get_queryset(self):
-        return super().get_queryset().select_related('tl')
+        return super().get_queryset().select_related('tl').prefetch_related("student_set", "tllog_set")
 
 
 class ProjectView(PermissionRequiredMixin, DetailView):
@@ -78,6 +78,12 @@ class ProjectView(PermissionRequiredMixin, DetailView):
     template_name = "bp/project.html"
     context_object_name = "project"
     permission_required = 'bp.view_project'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["logs"] = context["project"].tllog_set.all().prefetch_related("current_problems")
+        context["log_count"] = context["logs"].count()
+        return context
 
 
 class TLListView(PermissionRequiredMixin, FilterByActiveBPMixin, ListView):
@@ -87,7 +93,7 @@ class TLListView(PermissionRequiredMixin, FilterByActiveBPMixin, ListView):
     permission_required = 'bp.view_tl'
 
     def get_queryset(self):
-        return super().get_queryset().filter(confirmed=True)
+        return super().get_queryset().filter(confirmed=True).prefetch_related("project_set", "tllog_set")
 
 
 class TLView(PermissionRequiredMixin, DetailView):
@@ -95,6 +101,15 @@ class TLView(PermissionRequiredMixin, DetailView):
     template_name = "bp/tl.html"
     context_object_name = "tl"
     permission_required = 'bp.view_tl'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["logs"] = context["tl"].tllog_set.all()
+        context["logs_count"] = context["logs"].count()
+        context["logs_count_good"] = context["tl"].tllog_set.filter(good_log=True).count()
+        context["logs_count_bad"] = context["tl"].tllog_set.filter(good_log=False).count()
+        context["projects"] = context["tl"].project_set.all()
+        return context
 
 
 class LogListView(PermissionRequiredMixin, FilterByActiveBPMixin, ListView):
@@ -105,7 +120,7 @@ class LogListView(PermissionRequiredMixin, FilterByActiveBPMixin, ListView):
     paginate_by = 20
 
     def get_queryset(self):
-        return super().get_queryset().select_related('group', 'tl')
+        return super().get_queryset().select_related('group', 'tl').prefetch_related("current_problems")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
