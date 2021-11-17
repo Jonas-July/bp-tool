@@ -1,5 +1,7 @@
 {% extends "bp/base.html" %}
 
+{% load fontawesome_5 %}
+
 {% block breadcrumbs %}
     <li class="breadcrumb-item"><a href="{% url "bp:index" %}">Übersicht</a></li>
     <li class="breadcrumb-item"><a href="{% url 'bp:tl_list' %}">TLs</a></li>
@@ -8,7 +10,7 @@
 
 
 {% block content %}
-    <h1 class="mb-4">{{ tl.name }}</h1>
+    <h1 class="mb-4">{{ tl.name }} <a href="mailto:{{ tl.user.email }}">{% fa5_icon "envelope" "far" %}</a></h1>
 
     <table class="table table-responsive">
         <tr>

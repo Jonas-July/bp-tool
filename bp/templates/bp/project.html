@@ -1,5 +1,7 @@
 {% extends "bp/base.html" %}
 
+{% load fontawesome_5 %}
+
 {% block breadcrumbs %}
     <li class="breadcrumb-item"><a href="{% url "bp:index" %}">Übersicht</a></li>
     <li class="breadcrumb-item"><a href="{% url "bp:project_list" %}">Projekte</a></li>
@@ -12,13 +14,13 @@
 
     <table class="table">
         <tr>
-            <td>TL:</td><td><a href="mailto:{{ project.tl.user.email }}">{{ project.tl }}</a></td>
+            <td>TL:</td><td>{% if project.tl %}<a href="{% url "bp:tl_detail" pk=project.tl.pk %}">{{ project.tl }}</a>{% else %}-{% endif %}</td>
         </tr>
         <tr>
             <td>Mitglieder:</td><td>{{ project.student_list }}</td>
         </tr>
         <tr>
-            <td>AG:</td><td><a href="mailto:{{ project.ag_mail }}">{{ project.ag }}</a></td>
+            <td>AG:</td><td><a href="mailto:{{ project.ag_mail }}">{{ project.ag }} {% fa5_icon "envelope" "far" %}</a></td>
         </tr>
         {% if user.is_staff and project.ag_points >= 0 %}
             <tr>

@@ -108,7 +108,7 @@ class TLView(PermissionRequiredMixin, DetailView):
         context["logs_count"] = context["logs"].count()
         context["logs_count_good"] = context["tl"].tllog_set.filter(good_log=True).count()
         context["logs_count_bad"] = context["tl"].tllog_set.filter(good_log=False).count()
-        context["projects"] = context["tl"].project_set.all()
+        context["projects"] = context["tl"].project_set.all().prefetch_related("tllog_set", "tllog_set__current_problems")
         return context
 
 
