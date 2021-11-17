@@ -180,4 +180,6 @@ SESSION_COOKIE_SECURE = True
 SEND_MAILS = True
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+LOG_REMIND_PERIOD_DAYS = 7
+
 include(optional("settings/*.py"))

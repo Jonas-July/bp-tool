@@ -1,4 +1,5 @@
 import json
+from datetime import timedelta
 
 from django.contrib.auth.models import User
 from django.core.mail import EmailMessage
@@ -7,6 +8,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.conf import settings
 from django.urls import reverse_lazy
+from django.utils.datetime_safe import datetime
 
 
 class BP(models.Model):
@@ -56,7 +58,7 @@ class Project(models.Model):
 
     @staticmethod
     def get_active():
-        return Project.objects.filter(bp=BP.get_active())
+        return Project.objects.filter(bp__active=True)
 
     @property
     def student_list(self):
@@ -65,6 +67,14 @@ class Project(models.Model):
     @property
     def status_json_string(self):
         return json.dumps([{'x': log.simple_timestamp, 'y': log.status} for log in self.tllog_set.all().order_by('timestamp')])
+
+    @staticmethod
+    def without_recent_logs():
+        x_days_ago = datetime.now() - timedelta(days=settings.LOG_REMIND_PERIOD_DAYS)
+        logs_last_x_days = TLLog.objects.filter(bp__active=True, timestamp__gte=x_days_ago).select_related('group')
+        projects = set(Project.get_active())
+        projects_not_coverd = projects.difference(l.group for l in logs_last_x_days)
+        return projects_not_coverd
 
     def __str__(self):
         return f"{self.nr}: {self.title}"
@@ -87,7 +97,7 @@ class TL(models.Model):
 
     @staticmethod
     def get_active():
-        return TL.objects.filter(bp=BP.get_active(), confirmed=True)
+        return TL.objects.filter(bp__active=True, confirmed=True)
 
     def __str__(self):
         return self.name
@@ -114,7 +124,7 @@ class Student(models.Model):
 
     @staticmethod
     def get_active():
-        return Student.objects.filter(bp=BP.get_active())
+        return Student.objects.filter(bp__active=True)
 
     def __str__(self):
         return self.name
@@ -161,6 +171,10 @@ class TLLog(models.Model):
     def problems(self):
         problems_string = ", ".join(str(p) for p in self.current_problems.all())
         return problems_string if problems_string != "" else "-"
+
+    @staticmethod
+    def get_active():
+        return TLLog.objects.filter(bp__active=True)
 
     def __str__(self):
         return f"{self.tl} für Gruppe {self.group.nr} am {self.simple_timestamp}"

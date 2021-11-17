@@ -6,10 +6,10 @@
     <h2 class="text-info mb-3">{{ bp.name }}</h2>
 
     <div class="row">
-        <div class="card text-white bg-primary mb-3 mx-2 col-md-3" style="padding:0;">
+        <div class="card text-white bg-primary mb-3 mx-2 col-md-5" style="padding:0;">
             <div class="card-header">Projekte</div>
             <div class="card-body">
-                <h4 class="card-title">{{ projects.count}} Projekt{{ projects.count|pluralize:"e" }}</h4>
+                <h4 class="card-title">{{ projects_count}} Projekt{{ projects_count|pluralize:"e" }}</h4>
                 <p class="card-text">
                     Bewertet: {{ projects_graded_count }}<br><br>
                     <a href="{% url "bp:project_list" %}" class="btn btn-secondary">Zur Liste</a>
@@ -17,18 +17,31 @@
             </div>
         </div>
 
-        <div class="card bg-info text-white mb-3 mx-2 col-md-3" style="padding:0;">
+        <div class="card bg-info text-white mb-3 mx-2 col-md-5" style="padding:0;">
             <div class="card-header">Teamleitungen</div>
             <div class="card-body">
-                <h4 class="card-title">{{ tls.count}} Teamleitung{{ tls.count|pluralize:"en" }}</h4>
+                <h4 class="card-title">{{ tls_count}} Teamleitung{{ tls_count|pluralize:"en" }}</h4>
                 <p class="card-text">
-                    <a href="{% url "bp:tl_list" %}" class="btn btn-secondary">Zur Liste</a>
+                    {{ tls_unconfirmed_count }} TL{{ tls_unconfirmed_count|pluralize:"s" }} noch nicht bestätigt.
                 </p>
+                <a href="{% url "bp:tl_list" %}" class="btn btn-secondary">Zur Liste</a>
             </div>
         </div>
 
-        {% if students_without_project == 0 %}
-            <div class="card text-white bg-success mb-3 mx-2 col-md-3" style="padding:0;">
+        <div class="card bg-info text-white mb-3 mx-2 col-md-5" style="padding:0;">
+            <div class="card-header">Logs</div>
+            <div class="card-body">
+                <h4 class="card-title">{{ logs_count}} Log{{ tls_count|pluralize }}</h4>
+                <p class="card-text">
+                    {{ projects_without_recent_logs_count }} Projekt{{ projects_without_recent_logs_count|pluralize:"e" }} haben keine Logs aus den letzten {{ log_period }} Tagen
+                </p>
+                <a href="{% url "bp:log_list" %}" class="btn btn-secondary">Alle Logs <span class="badge rounded-pill bg-info text-white font-weight-bold">{{ logs_unread_count }}</span></a>
+                <a href="{% url "bp:log_list_attention" %}" class="btn btn-secondary">Besondere Aufmerksamkeit <span class="badge rounded-pill bg-info text-white font-weight-bold">{{ logs_attention_count }}</span></a>
+            </div>
+        </div>
+
+        {% if students_without_project.count == 0 %}
+            <div class="card text-white bg-success mb-3 mx-2 col-md-5" style="padding:0;">
                 <div class="card-header">Teilnehmende</div>
                 <div class="card-body">
                     <h4 class="card-title">{{ students.count}} Teilnehmende</h4>
@@ -37,7 +50,7 @@
                 </div>
             </div>
         {% else %}
-        <div class="card text-white bg-danger mb-3 mx-2 col-md-3" style="padding:0;">
+        <div class="card text-white bg-danger mb-3 mx-2 col-md-5" style="padding:0;">
             <div class="card-header">Teilnehmende</div>
             <div class="card-body">
                 <h4 class="card-title">{{ students.count}} Teilnehmende</h4>
