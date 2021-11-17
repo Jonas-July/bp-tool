@@ -1,5 +1,7 @@
 {% extends "bp/base.html" %}
 
+{% load fontawesome_5 %}
+
 {% block breadcrumbs %}
     <li class="breadcrumb-item"><a href="{% url "bp:index" %}">Übersicht</a></li>
     <li class="breadcrumb-item active">Teilnehmende</li>
@@ -25,7 +27,7 @@
         <tbody>
         {% for student in students %}
             <tr>
-                <td><a href="mailto:{{ student.mail }}">{{ student }}</a></td>
+                <td><a href="mailto:{{ student.mail }}">{{ student }} {% fa5_icon "envelope" "far" %}</a></td>
                 <td>{% if student.project %}{{ student.project }}{% else %}-{% endif %}</td>
             </tr>
         {% endfor %}
