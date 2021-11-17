@@ -12,7 +12,7 @@ from django.urls import reverse, reverse_lazy
 from django.views.defaults import bad_request, permission_denied, server_error, page_not_found
 from django.views.generic import TemplateView, ListView, DetailView, UpdateView, FormView, CreateView, DeleteView
 
-from bp.forms import AGGradeForm, ProjectImportForm, StudentImportForm, TLLogForm, TLLogUpdateForm
+from bp.forms import AGGradeForm, ProjectImportForm, StudentImportForm, TLLogForm, TLLogUpdateForm, LogReminderForm
 from bp.models import BP, Project, Student, TL, TLLog
 from bp.pretix import get_order_secret
 
@@ -148,11 +148,33 @@ class LogAttentionListView(LogListView):
         return super().get_queryset().filter(requires_attention=True)
 
 
-class LogView(PermissionRequiredMixin, FilterByActiveBPMixin, DetailView):
+class LogView(PermissionRequiredMixin, DetailView):
     model = TLLog
     template_name = "bp/log.html"
     context_object_name = "log"
     permission_required = "bp.view_tllog"
+
+
+class LogReminderView(PermissionRequiredMixin, FormView):
+    template_name = "bp/log_reminder.html"
+    form_class = LogReminderForm
+    permission_required = "bp.view_tllog"
+    success_url = reverse_lazy("bp:log_list")
+
+    def get_initial(self):
+        initial = super().get_initial()
+        initial['project_choices'] = [(p.pk, f"{p} ({p.tl})") for p in Project.without_recent_logs()]
+        return initial
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['log_period'] = settings.LOG_REMIND_PERIOD_DAYS
+        return context
+
+    def form_valid(self, form):
+        message = form.send_reminders()
+        messages.add_message(self.request, messages.SUCCESS, message)
+        return super().form_valid(form)
 
 
 class ProjectByOrderIDMixin:

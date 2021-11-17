@@ -1,0 +1,26 @@
+{% extends "bp/base.html" %}
+
+{% load bootstrap4 %}
+{% load fontawesome_5 %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item"><a href="{% url "bp:index" %}">Übersicht</a></li>
+    <li class="breadcrumb-item"><a href="{% url "bp:log_list" %}">Logs</a></li>
+    <li class="breadcrumb-item active">Fehlende Logs</li>
+{% endblock %}
+
+{% block content %}
+    <h1>Logs</h1>
+
+    Für folgende Projekte gab es seit mindestens {{ log_period }} Tagen keine neuen Logs mehr:
+
+    <form method="POST" class="post-form">{% csrf_token %}
+        {% bootstrap_form form %}
+        {% buttons %}
+            <button type="submit" class="save btn btn-primary float-right">
+                {% fa5_icon "bell" 'fas' %} Erinnerung schicken
+            </button>
+            <a href="{% url "bp:log_list" %}" class="btn btn-warning float-left">Zurück zur Übersicht</a>
+        {% endbuttons %}
+    </form>
+{% endblock %}

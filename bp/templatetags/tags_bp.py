@@ -34,7 +34,6 @@ def message_bootstrap_class(tag):
 def log_status(status):
     if status != "":
         display = TLLog.STATUS_CHOICES[status+2][1]
-        print(display)
         color = "#919aa1"
         if status < 0:
             color = "#d9534f"
