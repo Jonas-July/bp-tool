@@ -39,7 +39,7 @@
                 <td><a href="{% url 'bp:project_detail' project.pk %}">{{ project.nr }}</a></td>
                 <td><a href="{% url 'bp:project_detail' project.pk %}">{{ project.title }}</a></td>
                 <td>{{ project.tllog_set.first.status | log_status }}</td>
-                <td>{% if project.tl %}{{ project.tl }}{% else %}-{% endif %}</td>
+                <td>{% if project.tl %}<a href="{% url "bp:tl_detail" pk=project.tl.pk %}">{{ project.tl }}</a>{% else %}-{% endif %}</td>
                 <td><a href="mailto:{{ project.ag_mail }}">{{ project.ag }}&nbsp;{% fa5_icon "envelope" "far" %}</a></td>
                 <td>{{ project.student_list }}</td>
                 {% if user.is_staff %}
