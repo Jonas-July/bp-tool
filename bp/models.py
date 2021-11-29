@@ -187,8 +187,8 @@ def update_tllog_receiver(sender, instance: TLLog, created, **kwargs):
         url = f"{'https://' + settings.ALLOWED_HOSTS[0] if len(settings.ALLOWED_HOSTS) > 0 else 'http://localhost'}{reverse_lazy('bp:log_detail', kwargs={'pk': instance.pk})}"
         mail = EmailMessage(
             f"[BP TL Logs] {instance.group} ({instance.simple_timestamp})",
-            f"Achtung, folgendes Log erfordert besondere Aufmerksamkeit\n\n{url}\n\n{instance.text}",
-            settings.SEND_MAILS_FROM,
+            f"Achtung, folgendes Log von {instance.tl} erfordert besondere Aufmerksamkeit:\n\n{url}\n\n{instance.text}",
+            f"{instance.tl} via BP-Tool <{settings.SEND_MAILS_FROM}",
             [settings.SEND_MAILS_TO],
             reply_to=[instance.tl.user.email]
         )
