@@ -204,3 +204,21 @@ class TLLogProblem(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class TLLogReminder(models.Model):
+    class Meta:
+        verbose_name = "TL-Log-Erinnerung"
+        verbose_name_plural = "TL-Log-Erinnerungen"
+
+    bp = models.ForeignKey(BP, on_delete=models.CASCADE)
+    group = models.ForeignKey(Project, on_delete=models.CASCADE)
+    tl = models.ForeignKey(TL, on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(auto_now_add=True, blank=True)
+
+    @property
+    def simple_timestamp(self):
+        return self.timestamp.strftime('%d.%m.%y %H:%M')
+
+    def __str__(self):
+        return f"{self.simple_timestamp}: {self.group.nr} - {self.tl}"

@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.core.mail import EmailMessage
 from django.forms.utils import ErrorList
 
-from bp.models import Project, TLLog, BP, TL
+from bp.models import Project, TLLog, BP, TL, TLLogReminder
 from bp.pretix import get_order_secret
 
 
@@ -97,7 +97,12 @@ class LogReminderForm(forms.Form):
                     [project.tl.user.email],
                     reply_to=[settings.SEND_MAILS_TO]
                 )
-                mail.send(fail_silently=True)
+                mail.send(fail_silently=False)
+                TLLogReminder.objects.create(
+                    bp=project.bp,
+                    group=project,
+                    tl=project.tl
+                )
                 mail_counter += 1
         return f"{str(mail_counter)} Erinnerungsmails verschickt"
 
