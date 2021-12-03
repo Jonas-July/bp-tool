@@ -1,5 +1,7 @@
 {% extends "bp/base.html" %}
 
+{% load fontawesome_5 %}
+
 {% block navbar_breadcrumbs %}
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
       <a class="navbar-brand" href="#">BP Tool</a>
@@ -13,12 +15,14 @@
 {% endblock %}
 
 {% block content %}
-    <div class="text-center well">
+    <div>
         {% if request.user.is_anonymous %}
-            <h3>Log in via your LMS</h3>
+            <div class="text-center well well-lg">
+                <h3 >Log in via your LMS</h3>
+            </div>
         {% else %}
             {% if request.user.tl and request.user.tl.confirmed %}
-                <h2 class="mb-4">Hallo {{ request.user.tl.name }}</h2>
+                <h3 class="mb-4">Hallo {{ request.user.tl.name }} <a class="btn btn-info" href="{% url "bp:log_tl_start" %}">{% fa5_icon "level-up-alt" "fas" %}</a></h3>
 
                 {% block tl_content %}{% endblock %}
             {% else %}

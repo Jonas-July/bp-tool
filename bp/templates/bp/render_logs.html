@@ -12,7 +12,9 @@
                 {% if user.is_staff %}
                     <a href="{% url "bp:log_detail" pk=tllog.pk %}">{% fa5_icon "link" "fas" %}</a>
                 {% else %}
-                    <a href="{% url "bp:log_tl_update" tllog.group.nr tllog.pk %}">{% fa5_icon "pen" 'fas' %}</a> <a href="{% url "bp:log_tl_delete" tllog.group.nr tllog.pk %}">{% fa5_icon "trash" 'fas' %}</a>
+                    <a href="{% url "bp:log_tl_detail" tllog.group.nr tllog.pk %}">{% fa5_icon "link" 'fas' %}</a>
+                    <a href="{% url "bp:log_tl_update" tllog.group.nr tllog.pk %}">{% fa5_icon "pen" 'fas' %}</a>
+                    <a href="{% url "bp:log_tl_delete" tllog.group.nr tllog.pk %}">{% fa5_icon "trash" 'fas' %}</a>
                 {% endif %}
             </td>
         </tr>

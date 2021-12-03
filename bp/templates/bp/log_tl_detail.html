@@ -1,0 +1,41 @@
+{% extends "bp/base_tl.html" %}
+
+{% load fontawesome_5 %}
+
+{% block tl_content %}
+    <h1>Log
+        {% if log.requires_attention %}
+            {% fa5_icon "exclamation-triangle" "fas" %}
+        {% endif %}
+    </h1>
+
+    <table class="table mt-3">
+        <tr>
+            <td>Gruppe:</td><td>{{ log.group }}</td>
+        </tr>
+        <tr>
+            <td>Timestamp:</td><td>{{ log.simple_timestamp }}</td>
+        </tr>
+        {% if log.requires_attention %}
+            <tr>
+                <td></td>
+                <td>Benötigt besondere Aufmerksamkeit {% fa5_icon "exclamation-triangle" "fas" %}</td>
+            </tr>
+        {% endif %}
+        <tr>
+            <td>Status:</td>
+            <td>{{ log.get_status_display }}</td>
+        </tr>
+        <tr>
+            <td>Probleme:</td>
+            <td>{{ log.problems }}</td>
+        </tr>
+        <tr>
+            <td>Text:</td><td>{{ log.text | linebreaks }}</td>
+        </tr>
+    </table>
+
+    <a class="btn btn-primary" href="{% url "bp:log_tl_update" log.group.nr log.pk %}">{% fa5_icon "pen" "fas" %} Bearbeiten</a>
+    <a class="btn btn-warning" href="{% url "bp:log_tl_delete" log.group.nr log.pk %}">{% fa5_icon "trash" "fas" %} Löschen</a>
+
+{% endblock %}

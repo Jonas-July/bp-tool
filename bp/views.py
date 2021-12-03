@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseForbidden, Http404
 from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views.defaults import bad_request, permission_denied, server_error, page_not_found
@@ -354,8 +354,15 @@ class LogTLCreateView(LoginRequiredMixin, CreateView):
 
         return initials
 
+class OnlyOwnLogsMixin:
+    def get_object(self, queryset=None):
+        log = super().get_object(queryset)
+        if log.tl != self.request.user.tl:
+            raise Http404("Zugriff verweigert")
+        return log
 
-class LogTLUpdateView(LoginRequiredMixin, UpdateView):
+
+class LogTLUpdateView(LoginRequiredMixin, OnlyOwnLogsMixin, UpdateView):
     model = TLLog
     form_class = TLLogUpdateForm
     template_name = "bp/log_tl_create_update.html"
@@ -363,6 +370,12 @@ class LogTLUpdateView(LoginRequiredMixin, UpdateView):
     def get_success_url(self):
         messages.add_message(self.request, messages.SUCCESS, "Log aktualisiert")
         return reverse_lazy('bp:log_tl_start')
+
+
+class LogTLDetailView(LoginRequiredMixin, OnlyOwnLogsMixin, DetailView):
+    model = TLLog
+    template_name = "bp/log_tl_detail.html"
+    context_object_name = "log"
 
 
 class LogTLDeleteView(LoginRequiredMixin, DeleteView):
