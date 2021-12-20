@@ -188,7 +188,7 @@ def update_tllog_receiver(sender, instance: TLLog, created, **kwargs):
         mail = EmailMessage(
             f"[BP TL Logs] {instance.group} ({instance.simple_timestamp})",
             f"Achtung, folgendes Log von {instance.tl} erfordert besondere Aufmerksamkeit:\n\n{url}\n\n{instance.text}",
-            f"{instance.tl} via BP-Tool <{settings.SEND_MAILS_FROM}",
+            f"{instance.tl} via BP-Tool <{settings.SEND_MAILS_FROM}>",
             [settings.SEND_MAILS_TO],
             reply_to=[instance.tl.user.email]
         )
