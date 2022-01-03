@@ -438,3 +438,15 @@ class APILogMarkBadView(LoginRequiredMixin, DetailView):
             log.save()
             return HttpResponse("")
         return HttpResponseForbidden("")
+
+class LoginView(TemplateView):
+    template_name = "bp/login.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        if hasattr(settings, "MOODLE_LOGIN_URL"):
+            context["login_button_show"] = True
+            context["login_button_url"] = settings.MOODLE_LOGIN_URL
+
+        return context

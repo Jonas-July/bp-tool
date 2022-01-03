@@ -182,4 +182,6 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 LOG_REMIND_PERIOD_DAYS = 7
 
+LOGIN_URL = '/login/'
+
 include(optional("settings/*.py"))

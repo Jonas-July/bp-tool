@@ -1,0 +1,20 @@
+{% extends "bp/base.html" %}
+
+{% load bootstrap4 %}
+{% load fontawesome_5 %}
+
+{% block navbar_breadcrumbs %}
+{% endblock %}
+
+
+{% block content %}
+    <h1>BP</h1>
+
+    {% bootstrap_alert "Nicht eingeloggt" "danger" False %}
+
+    {% if login_button_show %}
+        <a href="{{ login_button_url }}" class="btn btn-primary">Login (via Moodle)</a>
+    {% else %}
+        <p>Bitte über Moodle einloggen.</p>
+    {% endif %}
+{% endblock %}
