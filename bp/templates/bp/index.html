@@ -13,6 +13,7 @@
                 <p class="card-text">
                     Bewertet: {{ projects_graded_count }}<br><br>
                     <a href="{% url "bp:project_list" %}" class="btn btn-secondary">Zur Liste</a>
+                    <a href="{% url "bp:project_list_ungraded" %}" class="btn btn-secondary">Unbewertet</a>
                 </p>
             </div>
         </div>
