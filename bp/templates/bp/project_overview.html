@@ -41,7 +41,7 @@
                 <td>{{ project.tllog_set.first.status | log_status }}</td>
                 <td>{% if project.tl %}<a href="{% url "bp:tl_detail" pk=project.tl.pk %}">{{ project.tl }}</a>{% else %}-{% endif %}</td>
                 <td><a href="mailto:{{ project.ag_mail }}">{{ project.ag }}&nbsp;{% fa5_icon "envelope" "far" %}</a></td>
-                <td><a href="mailto:{{ project.student_mail }}">{{ project.student_list }}{% fa5_icon "envelope" "far" %}</a></td>
+                <td><a href="mailto:{{ project.student_mail }}">{{ project.student_list }}&nbsp;{% fa5_icon "envelope" "far" %}</a></td>
                 {% if user.is_staff %}
                     <td>{% if project.ag_points > -1 %}{{ project.ag_points }}{% else %}-{% endif %}</td>
                 {% endif %}
