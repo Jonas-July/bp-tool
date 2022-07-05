@@ -12,8 +12,8 @@
                 <h4 class="card-title">{{ projects_count}} Projekt{{ projects_count|pluralize:"e" }}</h4>
                 <p class="card-text">
                     Bewertet: {{ projects_graded_count }}<br><br>
-                    <a href="{% url "bp:project_list" %}" class="btn btn-secondary">Zur Liste</a>
-                    <a href="{% url "bp:project_list_ungraded" %}" class="btn btn-secondary">Unbewertet</a>
+                    <a href="{% url "bp:project_list" %}" class="btn btn-secondary mb-1">Zur Liste</a>
+                    <a href="{% url "bp:project_list_ungraded" %}" class="btn btn-secondary mb-1">Unbewertet</a>
                 </p>
             </div>
         </div>
