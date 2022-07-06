@@ -17,7 +17,8 @@
             <td>TL:</td><td>{% if project.tl %}<a href="{% url "bp:tl_detail" pk=project.tl.pk %}">{{ project.tl }}</a>{% else %}-{% endif %}</td>
         </tr>
         <tr>
-            <td>Mitglieder:</td><td><a href="mailto:{{ project.student_mail }}">{{ project.student_list }}&nbsp;{% fa5_icon "envelope" "far" %}</a></td>
+            <td>Mitglieder:</td><td><a href="mailto:{{ project.student_mail }}">{{ project.student_list }}&nbsp;{% fa5_icon "envelope" "far" %}</a><br>
+                                    {{ project.student_mail }}</td>
         </tr>
         <tr>
             <td>AG:</td><td><a href="mailto:{{ project.ag_mail }}">{{ project.ag }}&nbsp;{% fa5_icon "envelope" "far" %}</a></td>
