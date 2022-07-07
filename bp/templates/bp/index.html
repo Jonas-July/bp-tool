@@ -32,9 +32,9 @@
         <div class="card bg-info text-white mb-3 mx-2 col-md-5" style="padding:0;">
             <div class="card-header">Logs</div>
             <div class="card-body">
-                <h4 class="card-title">{{ logs_count}} Log{{ tls_count|pluralize }}</h4>
+                <h4 class="card-title">{{ logs_count}} Log{{ logs_count|pluralize:"s" }}</h4>
                 <p class="card-text">
-                    {{ projects_without_recent_logs_count }} Projekt{{ projects_without_recent_logs_count|pluralize:"e" }} haben keine Logs aus den letzten {{ log_period }} Tagen
+                    {{ projects_without_recent_logs_count }} Projekt{{ projects_without_recent_logs_count|pluralize:"e" }} {{ projects_without_recent_logs_count|pluralize:"hat,haben" }} keine Logs aus den letzten {{ log_period }} Tagen
                 </p>
                 <a href="{% url "bp:log_list" %}" class="btn btn-secondary mb-1">Alle Logs</a>
                 <a href="{% url "bp:log_list_unread" %}" class="btn btn-secondary mb-1">Ungelesen <span class="badge rounded-pill bg-info text-white font-weight-bold">{{ logs_unread_count }}</span></a>
