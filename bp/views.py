@@ -148,6 +148,15 @@ class LogAttentionListView(LogListView):
     def get_queryset(self):
         return super().get_queryset().filter(requires_attention=True)
 
+class LogUnreadListView(LogListView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["page_title"] = "Logs (Ungelesen)"
+        return context
+
+    def get_queryset(self):
+        return super().get_queryset().filter(read=False)
+
 
 class LogView(PermissionRequiredMixin, DetailView):
     model = TLLog

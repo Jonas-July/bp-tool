@@ -12,6 +12,7 @@
 {% block content %}
     <div class="float-right">
         <a class="btn btn-primary" href="{% url "bp:log_list" %}">Alle</a>
+        <a class="btn btn-warning" href="{% url "bp:log_list_unread" %}">{% fa5_icon "filter" "fas" %} Ungelesen</a>
         <a class="btn btn-warning" href="{% url "bp:log_list_attention" %}">{% fa5_icon "filter" "fas" %} Aufmerksamkeit nötig</a>
         <a class="btn btn-info" href="{% url "bp:log_remind" %}">{% fa5_icon "clock" "fas" %} Fehlende Logs</a>
     </div>

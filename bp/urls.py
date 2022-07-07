@@ -3,7 +3,7 @@ from django.views.generic import TemplateView
 
 from bp.views import IndexView, ProjectListView, ProjectView, TLView, TLListView, AGGradeView, AGGradeSuccessView, \
     ProjectImportView, StudentListView, StudentImportView, grade_export_view, LogTLOverview, LogTLCreateView, \
-    LogTLUpdateView, LogTLDeleteView, LogListView, LogView, LogAttentionListView, APILogMarkReadView, \
+    LogTLUpdateView, LogTLDeleteView, LogListView, LogView, LogAttentionListView, LogUnreadListView, APILogMarkReadView, \
     APILogMarkHandledView, APILogMarkGoodView, APILogMarkBadView, LogReminderView, LogTLDetailView, LoginView
 
 app_name = "bp"
@@ -18,6 +18,7 @@ urlpatterns = [
     path('tl/<pk>/', TLView.as_view(), name="tl_detail"),
     path('logs/', LogListView.as_view(), name='log_list'),
     path('logs/attention/', LogAttentionListView.as_view(), name='log_list_attention'),
+    path('logs/unread/', LogUnreadListView.as_view(), name='log_list_unread'),
     path('logs/remind/', LogReminderView.as_view(), name='log_remind'),
     path('logs/<pk>/', LogView.as_view(), name='log_detail'),
     path('logs/<pk>/read/', APILogMarkReadView.as_view(), name='log_api_mark_read'),

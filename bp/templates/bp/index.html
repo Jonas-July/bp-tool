@@ -35,8 +35,9 @@
                 <p class="card-text">
                     {{ projects_without_recent_logs_count }} Projekt{{ projects_without_recent_logs_count|pluralize:"e" }} haben keine Logs aus den letzten {{ log_period }} Tagen
                 </p>
-                <a href="{% url "bp:log_list" %}" class="btn btn-secondary">Alle Logs <span class="badge rounded-pill bg-info text-white font-weight-bold">{{ logs_unread_count }}</span></a>
-                <a href="{% url "bp:log_list_attention" %}" class="btn btn-secondary">Besondere Aufmerksamkeit <span class="badge rounded-pill bg-info text-white font-weight-bold">{{ logs_attention_count }}</span></a>
+                <a href="{% url "bp:log_list" %}" class="btn btn-secondary mb-1">Alle Logs</a>
+                <a href="{% url "bp:log_list_unread" %}" class="btn btn-secondary mb-1">Ungelesen <span class="badge rounded-pill bg-info text-white font-weight-bold">{{ logs_unread_count }}</span></a>
+                <a href="{% url "bp:log_list_attention" %}" class="btn btn-secondary mb-1">Besondere Aufmerksamkeit <span class="badge rounded-pill bg-info text-white font-weight-bold">{{ logs_attention_count }}</span></a>
             </div>
         </div>
 
