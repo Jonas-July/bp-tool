@@ -13,11 +13,12 @@
     <div class="float-right mb-4">
         {% if user.is_staff %}
             <a class="btn btn-danger" href="{% url "bp:project_import" %}">Projekte importieren</a>
+            <a class="btn btn-warning" href="{% url "bp:project_list_ungraded" %}">{% fa5_icon "filter" "fas" %} Unbewertet</a>
             <a class="btn btn-info" href="{% url "bp:project_export_grades" %}">Punkte für Moodle exportieren</a>
         {% endif %}
     </div>
 
-    <h1>Projekte</h1>
+    <h1>{{ page_title }}</h1>
 
     <table class="table table-striped">
         <thead>
