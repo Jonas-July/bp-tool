@@ -155,8 +155,8 @@ class OrgaLog(models.Model):
     text = models.TextField(
         help_text="Notizen zur Gruppe"
     )
-    requires_attention = models.BooleanField(verbose_name="Besondere Aufmerksamkeit", blank=True, default=False, help_text="Benötigt diese Gruppe aktuell besondere Aufmerksamkeit durch das Organisationsteam/sollten wir das Log besonders dringend lesen?")
-    handled = models.BooleanField(blank=True, default=False, verbose_name="Erledigt", help_text="Das Log forderte eine Reaktion des Orga-Teams, die bereits durchgeführt wurde.")
+    requires_attention = models.BooleanField(verbose_name="Besondere Aufmerksamkeit", blank=True, default=False, help_text="Benötigt diese Gruppe aktuell besondere Aufmerksamkeit durch das Organisationsteam?")
+    handled = models.BooleanField(blank=True, default=False, verbose_name="Erledigt", help_text="Das Log forderte eine Aktion des Orga-Teams, die bereits durchgeführt wurde.")
 
     @property
     def tl(self):
