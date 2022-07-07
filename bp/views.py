@@ -79,8 +79,22 @@ class ProjectListView(PermissionRequiredMixin, FilterByActiveBPMixin, ListView):
     context_object_name = "projects"
     permission_required = 'bp.view_project'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["page_title"] = "Projekte"
+        return context
+
     def get_queryset(self):
         return super().get_queryset().select_related('tl').prefetch_related("student_set", "tllog_set")
+
+class ProjectUngradedListView(ProjectListView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["page_title"] = "Projekte (Unbewertet)"
+        return context
+
+    def get_queryset(self):
+        return super().get_queryset().filter(ag_points__lt=0)
 
 
 class ProjectView(PermissionRequiredMixin, DetailView):
@@ -149,6 +163,15 @@ class LogAttentionListView(LogListView):
 
     def get_queryset(self):
         return super().get_queryset().filter(requires_attention=True)
+
+class LogUnreadListView(LogListView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["page_title"] = "Logs (Ungelesen)"
+        return context
+
+    def get_queryset(self):
+        return super().get_queryset().filter(read=False)
 
 class OrgaLogView(PermissionRequiredMixin, DetailView):
     model = OrgaLog
