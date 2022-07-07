@@ -3,8 +3,8 @@ from django.views.generic import TemplateView
 
 from bp.views import IndexView, ProjectListView, ProjectView, TLView, TLListView, AGGradeView, AGGradeSuccessView, \
     ProjectImportView, StudentListView, StudentImportView, grade_export_view, LogTLOverview, LogTLCreateView, \
-    LogTLUpdateView, LogTLDeleteView, LogListView, LogView, LogAttentionListView, APILogMarkReadView, \
-    APILogMarkHandledView, APILogMarkGoodView, APILogMarkBadView, LogReminderView, LogTLDetailView, LoginView
+    LogTLUpdateView, LogTLDeleteView, LogListView, LogView, OrgaLogView, LogAttentionListView, APILogMarkReadView, \
+    APILogMarkHandledView, APIOrgaLogMarkHandledView, APILogMarkGoodView, APILogMarkBadView, LogReminderView, LogTLDetailView, LoginView
 
 app_name = "bp"
 
@@ -24,6 +24,8 @@ urlpatterns = [
     path('logs/<pk>/handled/', APILogMarkHandledView.as_view(), name='log_api_mark_handled'),
     path('logs/<pk>/good/', APILogMarkGoodView.as_view(), name='log_api_mark_good'),
     path('logs/<pk>/bad/', APILogMarkBadView.as_view(), name='log_api_mark_bad'),
+    path('orgalogs/<pk>/', OrgaLogView.as_view(), name='orga_log_detail'),
+    path('orgalogs/<pk>/handled/', APIOrgaLogMarkHandledView.as_view(), name='orgalog_api_mark_handled'),
     path('student/', StudentListView.as_view(), name="student_list"),
     path('student/import/', StudentImportView.as_view(), name="student_import"),
     path('grade/invalid/', TemplateView.as_view(template_name="bp/project_grade_invalid_secret.html"),

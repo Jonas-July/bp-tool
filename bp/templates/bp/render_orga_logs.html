@@ -1,0 +1,18 @@
+{% load fontawesome_5 %}
+{% load tags_bp %}
+
+<table class="table">
+    {% for orgalog in logs %}
+        <tr {% if orgalog.requires_attention %} class="table-warning" {% endif %}>
+            <td>{{ orgalog.simple_timestamp }}</td>
+            <td>{{ orgalog.status | log_status }}</td>
+            <td>{{ orgalog.problems }}</td>
+            <td>{{ orgalog.text | linebreaksbr | truncatewords:50 }}</td>
+            <td>
+                {% if user.is_staff %}
+                    <a href="{% url "bp:orga_log_detail" pk=orgalog.pk %}">{% fa5_icon "link" "fas" %}</a>
+                {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+</table>

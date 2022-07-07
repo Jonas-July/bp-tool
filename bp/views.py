@@ -13,7 +13,7 @@ from django.views.defaults import bad_request, permission_denied, server_error, 
 from django.views.generic import TemplateView, ListView, DetailView, UpdateView, FormView, CreateView, DeleteView
 
 from bp.forms import AGGradeForm, ProjectImportForm, StudentImportForm, TLLogForm, TLLogUpdateForm, LogReminderForm
-from bp.models import BP, Project, Student, TL, TLLog
+from bp.models import BP, Project, Student, TL, TLLog, OrgaLog
 from bp.pretix import get_order_secret
 
 
@@ -93,6 +93,8 @@ class ProjectView(PermissionRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context["logs"] = context["project"].tllog_set.all().prefetch_related("current_problems")
         context["log_count"] = context["logs"].count()
+        context["orga_logs"] = context["project"].orgalog_set.all().prefetch_related("current_problems")
+        context["orga_log_count"] = context["orga_logs"].count()
         return context
 
 
@@ -148,6 +150,11 @@ class LogAttentionListView(LogListView):
     def get_queryset(self):
         return super().get_queryset().filter(requires_attention=True)
 
+class OrgaLogView(PermissionRequiredMixin, DetailView):
+    model = OrgaLog
+    template_name = "bp/orgalog.html"
+    context_object_name = "log"
+    permission_required = "bp.view_tllog"
 
 class LogView(PermissionRequiredMixin, DetailView):
     model = TLLog
@@ -404,6 +411,18 @@ class APILogMarkReadView(LoginRequiredMixin, DetailView):
 class APILogMarkHandledView(LoginRequiredMixin, DetailView):
     http_method_names = ['post']
     model = TLLog
+
+    def post(self, request, *args, **kwargs):
+        if request.user.is_superuser:
+            log = self.get_object()
+            log.handled = True
+            log.save()
+            return HttpResponse("")
+        return HttpResponseForbidden("")
+
+class APIOrgaLogMarkHandledView(LoginRequiredMixin, DetailView):
+    http_method_names = ['post']
+    model = OrgaLog
 
     def post(self, request, *args, **kwargs):
         if request.user.is_superuser:

@@ -29,6 +29,15 @@
         {% endif %}
     </table>
 
+    <h2>Orga-Logs ({{ orga_log_count }})</h2>
+
+    {% if orga_log_count > 0 %}
+        {% include "bp/render_orga_logs.html" with logs=orga_logs %}
+    {% else %}
+
+    {% endif %}
+
+
     <h2>Logs ({{ log_count }})</h2>
 
     {% if log_count > 0 %}
