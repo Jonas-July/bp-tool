@@ -25,6 +25,9 @@ class BP(models.Model):
     pretix_event_ag = models.CharField(max_length=50, verbose_name="Pretix Event Slug (AG)", blank=True)
     pretix_event_tl = models.CharField(max_length=50, verbose_name="Pretix Event Slug (TL)", blank=True)
 
+    ag_grading_start = models.DateField(verbose_name="Beginn der Notenabgabe durch die AGs")
+    ag_grading_end = models.DateField(verbose_name="Ende der Notenabgabe durch die AGs")
+
     @staticmethod
     def get_active():
         return BP.objects.get(active=True)
