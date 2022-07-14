@@ -1,5 +1,6 @@
 import csv
 import io
+import datetime
 
 from django.conf import settings
 from django.contrib import messages
@@ -224,6 +225,9 @@ class AGGradeView(ProjectByOrderIDMixin, UpdateView):
         if self._get_secret_from_url() != get_order_secret(object.order_id):
             return redirect("bp:ag_grade_invalid")
 
+        if datetime.date.today() < object.bp.ag_grading_start:
+            return redirect("bp:ag_grade_too_early", order_id=object.order_id)
+
         return super().get(request, *args, **kwargs)
 
     def get_initial(self):
@@ -247,6 +251,10 @@ class AGGradeSuccessView(ProjectByOrderIDMixin, DetailView):
     context_object_name = "project"
     template_name = "bp/project_grade_success.html"
 
+class AGGradeEarlyView(ProjectByOrderIDMixin, DetailView):
+    model = Project
+    context_object_name = "project"
+    template_name = "bp/project_grade_early.html"
 
 @permission_required("bp.view_student")
 def grade_export_view(request):
