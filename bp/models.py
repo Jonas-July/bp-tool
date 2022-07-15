@@ -1,5 +1,5 @@
 import json
-from datetime import timedelta
+from datetime import timedelta, datetime as dt
 
 from django.contrib.auth.models import User
 from django.core.mail import EmailMessage
@@ -55,10 +55,6 @@ class Project(models.Model):
     bp = models.ForeignKey(BP, verbose_name="Zugehöriges BP", on_delete=models.CASCADE)
     tl = models.ForeignKey("TL", verbose_name="Zugehörige TL", on_delete=models.SET_NULL, blank=True, null=True)
 
-    ag_points = models.SmallIntegerField(verbose_name="Punkte für den Implementierungsteil", help_text="0-100",
-                                         default=-1)
-    ag_points_justification = models.TextField(verbose_name="Begründung", blank=True)
-
     @staticmethod
     def get_active():
         return Project.objects.filter(bp__active=True)
@@ -66,6 +62,18 @@ class Project(models.Model):
     @property
     def student_list(self):
         return ", ".join(s.name for s in self.student_set.all())
+
+    @property
+    def ag_points(self):
+        recent = self.aggrade_set.filter(timestamp__lte=dt.now()) \
+                         .order_by('-timestamp').values_list('ag_points', flat=True).first()
+        return recent or -1
+
+    @property
+    def ag_points_justification(self):
+        recent = self.aggrade_set.filter(timestamp__lte=dt.now()) \
+                         .order_by('-timestamp').values_list('ag_points_justification', flat=True).first()
+        return recent or ""
 
     @property
     def status_json_string(self):
@@ -112,6 +120,28 @@ def update_profile_signal(sender, instance: User, created, **kwargs):
         TL.objects.create(user=instance, name=f"{instance.first_name} {instance.last_name}", bp=BP.get_active(),
                           confirmed=False)
 
+
+class AGGrade(models.Model):
+    class Meta:
+        verbose_name = "Bewertung"
+        verbose_name_plural = "Bewertungen"
+        ordering = ['project', 'timestamp']
+
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    ag_points = models.SmallIntegerField(verbose_name="Punkte für den Implementierungsteil", help_text="0-100")
+    ag_points_justification = models.TextField(verbose_name="Begründung")
+    timestamp = models.DateTimeField(auto_now_add=True, blank=True)
+
+    @property
+    def simple_timestamp(self):
+        return self.timestamp.strftime('%d.%m.%y %H:%M')
+
+    @staticmethod
+    def get_active():
+        return TLLog.objects.filter(bp__active=True)
+
+    def __str__(self):
+        return f"Bewertung für Projekt {self.project.nr} am {self.simple_timestamp}"
 
 class Student(models.Model):
     class Meta:

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from bp.models import BP, Project, TL, Student, TLLog, TLLogProblem, TLLogReminder
+from bp.models import BP, Project, AGGrade, TL, Student, TLLog, TLLogProblem, TLLogReminder
 
 
 @admin.register(BP)
@@ -14,6 +14,10 @@ class ProjectAdmin(admin.ModelAdmin):
     list_display = ['nr', 'title', 'tl', 'student_list', 'bp']
     list_display_links = ['nr', 'title']
 
+@admin.register(AGGrade)
+class AGGradeAdmin(admin.ModelAdmin):
+    list_filter = ['project']
+    list_display = ['project', 'timestamp', 'ag_points']
 
 @admin.register(TL)
 class TLAdmin(admin.ModelAdmin):

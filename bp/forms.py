@@ -4,21 +4,24 @@ from django.core.exceptions import ValidationError
 from django.core.mail import EmailMessage
 from django.forms.utils import ErrorList
 
-from bp.models import Project, TLLog, BP, TL, TLLogReminder
+from bp.models import Project, AGGrade, TLLog, BP, TL, TLLogReminder
 from bp.pretix import get_order_secret
 
 
 class AGGradeForm(forms.ModelForm):
     class Meta:
-        model = Project
-        fields = ['ag_points', 'ag_points_justification']
+        model = AGGrade
+        fields = ['ag_points', 'ag_points_justification', 'project']
+        widgets = {
+            'project' : forms.HiddenInput()
+        }
 
     # Additional fields for information of AG (which project am I currently grading?) and authentication
-    project = forms.CharField(disabled=True, label="Ihr Project")
+    project_title = forms.CharField(disabled=True, label="Ihr Project")
     name = forms.CharField(disabled=True, label="Ihr Name")
     secret = forms.CharField(widget=forms.HiddenInput())
 
-    field_order = ['project', 'name', 'ag_points', 'ag_points_justification', 'secret']
+    field_order = ['project_title', 'name', 'ag_points', 'ag_points_justification', 'secret', 'project']
 
     def clean(self):
         cleaned_data = super().clean()
@@ -30,7 +33,10 @@ class AGGradeForm(forms.ModelForm):
             self.add_error('ag_points', "Die Punktzahl muss zwischen 0 und 100 liegen")
 
         # Check validity of secret using Pretix
-        secret = get_order_secret(self.instance.order_id)
+        try:
+            secret = get_order_secret(cleaned_data['project'].order_id)
+        except KeyError:
+            raise ValidationError("Das Projekt ist unbekannt. Ihre Eingabe wurde nicht gespeichert.")
         if cleaned_data['secret'] != secret:
             raise ValidationError("Authentifizierung fehlgeschlagen. Ihre Eingabe wurde nicht gespeichert.")
 

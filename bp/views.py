@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.db import IntegrityError
+from django.db.models import Count
 from django.http import HttpResponse, HttpResponseForbidden, Http404
 from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse, reverse_lazy
@@ -14,7 +15,7 @@ from django.views.defaults import bad_request, permission_denied, server_error, 
 from django.views.generic import TemplateView, ListView, DetailView, UpdateView, FormView, CreateView, DeleteView
 
 from bp.forms import AGGradeForm, ProjectImportForm, StudentImportForm, TLLogForm, TLLogUpdateForm, LogReminderForm
-from bp.models import BP, Project, Student, TL, TLLog
+from bp.models import BP, Project, AGGrade, Student, TL, TLLog
 from bp.pretix import get_order_secret
 
 
@@ -59,7 +60,7 @@ class IndexView(LoginRequiredMixin, ActiveBPMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         context['projects'] = Project.get_active()
         context['projects_count'] = context['projects'].count()
-        context['projects_graded_count'] = context['projects'].filter(ag_points__gt=-1).count()
+        context['projects_graded_count'] = context['projects'].annotate(Count('aggrade')).filter(aggrade__count__gt=0).count()
         context['tls'] = TL.get_active()
         context['tls_count'] = context['tls'].count()
         context['tls_unconfirmed_count'] = TL.objects.filter(bp__active=True, confirmed=False).count()
@@ -95,7 +96,7 @@ class ProjectUngradedListView(ProjectListView):
         return context
 
     def get_queryset(self):
-        return super().get_queryset().filter(ag_points__lt=0)
+        return super().get_queryset().annotate(Count('aggrade')).filter(aggrade__count=0)
 
 
 class ProjectView(PermissionRequiredMixin, DetailView):
@@ -207,14 +208,14 @@ class ProjectByOrderIDMixin:
         return Project.objects.get(order_id=self.kwargs["order_id"])
 
 
-class AGGradeView(ProjectByOrderIDMixin, UpdateView):
+class AGGradeView(ProjectByOrderIDMixin, CreateView):
     model = Project
     form_class = AGGradeForm
     template_name = "bp/project_grade.html"
     context_object_name = "project"
 
     def get_success_url(self):
-        return reverse("bp:ag_grade_success", kwargs={"order_id": self.object.order_id})
+        return reverse("bp:ag_grade_success", kwargs={"order_id": self.get_object().order_id})
 
     def _get_secret_from_url(self):
         return self.kwargs.get("secret", "")
@@ -232,17 +233,19 @@ class AGGradeView(ProjectByOrderIDMixin, UpdateView):
 
     def get_initial(self):
         initials = super().get_initial()
+        object = self.get_object()
 
         # Show empty field instead of default value of -1 as this might confuse the AGs
-        if self.object.ag_points == -1:
+        if object.ag_points == -1:
             initials["ag_points"] = ""
 
         # Populate information fields for AG (will not be used for updating)
-        initials["project"] = self.object.title
-        initials["name"] = self.object.ag
+        initials["project_title"] = object.title
+        initials["name"] = object.ag
 
         # Populate hidden secret field
         initials["secret"] = self._get_secret_from_url()
+        initials["project"] = object
         return initials
 
 
