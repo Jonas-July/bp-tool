@@ -42,6 +42,21 @@ class AGGradeForm(forms.ModelForm):
 
         return cleaned_data
 
+    def send_email(self):
+        if settings.SEND_MAILS:
+            project = self.cleaned_data['project']
+            mail = EmailMessage(
+                f"[BP-TOOL] Neue Bewertung für Gruppe {project.nr} von {project.ag}",
+                f"""Es wurde eine neue Bewertung für Gruppe {project.nr} eingetragen. Sie erhalten diese E-Mail, da die Deadline zur Bewertung überschritten wurde.
+
+Die Bewertung wurde eingetragen. Falls das Ihr Wunsch ist, müssen Sie nichts weiter tun.
+Falls Sie einen Fehler vermuten, wenden Sie sich bitte an das Orgateam.""",
+                f"Sent via BP-Tool <{settings.SEND_MAILS_FROM}>",
+                [project.ag_mail, settings.SEND_MAILS_TO],
+                reply_to=[project.ag_mail]
+            )
+            mail.send(fail_silently=False)
+
 
 class ProjectImportForm(forms.Form):
     csvfile = forms.FileField(label="Projektliste (CSV)",

@@ -6,6 +6,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.core.mail import EmailMessage
 from django.db import IntegrityError
 from django.db.models import Count
 from django.http import HttpResponse, HttpResponseForbidden, Http404
@@ -213,6 +214,11 @@ class AGGradeView(ProjectByOrderIDMixin, CreateView):
     form_class = AGGradeForm
     template_name = "bp/project_grade.html"
     context_object_name = "project"
+
+    def form_valid(self, form):
+        if self.get_object().bp.ag_grading_end < datetime.date.today():
+            form.send_email()
+        return super().form_valid(form)
 
     def get_success_url(self):
         return reverse("bp:ag_grade_success", kwargs={"order_id": self.get_object().order_id})
