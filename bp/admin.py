@@ -14,6 +14,15 @@ class ProjectAdmin(admin.ModelAdmin):
     list_display = ['nr', 'title', 'tl', 'student_list', 'bp']
     list_display_links = ['nr', 'title']
 
+    def change_view(self, request, object_id, **kwargs):
+        self.pk = object_id
+        return self.changeform_view(request, object_id, **kwargs)
+
+    def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
+         if db_field.name == "ag_grade":
+                 kwargs["queryset"] = db_field.related_model.objects.filter(project=self.pk)
+         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
 @admin.register(AGGrade)
 class AGGradeAdmin(admin.ModelAdmin):
     list_filter = ['project']
