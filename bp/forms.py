@@ -3,6 +3,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.mail import EmailMessage
 from django.forms.utils import ErrorList
+from django.urls import reverse_lazy
 
 from bp.models import Project, AGGrade, TLLog, BP, TL, TLLogReminder
 from bp.pretix import get_order_secret
@@ -45,17 +46,30 @@ class AGGradeForm(forms.ModelForm):
     def send_email(self):
         if settings.SEND_MAILS:
             project = self.cleaned_data['project']
-            mail = EmailMessage(
-                f"[BP-TOOL] Neue Bewertung für Gruppe {project.nr} von {project.ag}",
+            # E-Mail for AGs
+            ag_mail = EmailMessage(
+                f"[BP-Tool] Neue Bewertung für '{project}' [{self.instance.simple_timestamp}]",
                 f"""Es wurde eine neue Bewertung für Gruppe {project.nr} eingetragen. Sie erhalten diese E-Mail, da die Deadline zur Bewertung überschritten wurde.
 
-Die Bewertung wurde eingetragen. Falls das Ihr Wunsch ist, müssen Sie nichts weiter tun.
-Falls Sie einen Fehler vermuten, wenden Sie sich bitte an das Orgateam.""",
+Die Bewertung wurde gespeichert, ist aber nicht gültig. Änderungen können nur in Absprache mit den Veranstaltern vorgenommen werden.
+Falls Sie einen Fehler vermuten, wenden Sie sich bitte ebenfalls an die Veranstalter.""",
                 f"Sent via BP-Tool <{settings.SEND_MAILS_FROM}>",
-                [project.ag_mail, settings.SEND_MAILS_TO],
+                [project.ag_mail]
+            )
+            ag_mail.send(fail_silently=False)
+
+            # E-Mail for Orga team
+            url = f"{'https://' + settings.ALLOWED_HOSTS[0] if len(settings.ALLOWED_HOSTS) > 0 else 'http://localhost'}/admin/bp/aggrade/"#{reverse_lazy('bp:grade_detail', kwargs={'pk': instance.pk})}"
+            orga_mail = EmailMessage(
+                f"[BP AG Bewertung] {project} [{self.instance.simple_timestamp}]",
+                f"Es wurde eine neue Bewertung für Gruppe {project.nr} eingetragen:\n\n {url}",
+                f"{self.instance.project.ag} via BP-Tool <{settings.SEND_MAILS_FROM}>",
+                [settings.SEND_MAILS_TO],
                 reply_to=[project.ag_mail]
             )
-            mail.send(fail_silently=False)
+            orga_mail.send(fail_silently=False)
+            print(ag_mail.message())
+            print(orga_mail.message())
 
 
 class ProjectImportForm(forms.Form):

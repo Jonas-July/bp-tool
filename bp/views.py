@@ -219,9 +219,10 @@ class AGGradeView(ProjectByOrderIDMixin, CreateView):
         return self.get_object().bp.ag_grading_end < datetime.date.today()
 
     def form_valid(self, form):
+        redirect = super().form_valid(form)
         if self.deadline_passed():
             form.send_email()
-        return super().form_valid(form)
+        return redirect
 
     def get_success_url(self):
         return reverse("bp:ag_grade_success", kwargs={"order_id": self.get_object().order_id})
