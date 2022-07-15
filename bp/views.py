@@ -215,8 +215,11 @@ class AGGradeView(ProjectByOrderIDMixin, CreateView):
     template_name = "bp/project_grade.html"
     context_object_name = "project"
 
+    def deadline_passed(self):
+        return self.get_object().bp.ag_grading_end < datetime.date.today()
+
     def form_valid(self, form):
-        if self.get_object().bp.ag_grading_end < datetime.date.today():
+        if self.deadline_passed():
             form.send_email()
         return super().form_valid(form)
 
@@ -259,6 +262,14 @@ class AGGradeSuccessView(ProjectByOrderIDMixin, DetailView):
     model = Project
     context_object_name = "project"
     template_name = "bp/project_grade_success.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        deadline = self.get_object().bp.ag_grading_end
+        context["after_deadline"] = deadline < datetime.date.today()
+        context["deadline"] = deadline
+        return context
+
 
 class AGGradeEarlyView(ProjectByOrderIDMixin, DetailView):
     model = Project
