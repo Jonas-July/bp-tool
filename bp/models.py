@@ -55,6 +55,8 @@ class Project(models.Model):
     bp = models.ForeignKey(BP, verbose_name="Zugehöriges BP", on_delete=models.CASCADE)
     tl = models.ForeignKey("TL", verbose_name="Zugehörige TL", on_delete=models.SET_NULL, blank=True, null=True)
 
+    ag_grade = models.ForeignKey("AGGrade", related_name="valid_grade", verbose_name="Derzeit gültige Bewertung", on_delete=models.SET_NULL, blank=True, null=True)
+
     @staticmethod
     def get_active():
         return Project.objects.filter(bp__active=True)
@@ -65,12 +67,28 @@ class Project(models.Model):
 
     @property
     def ag_points(self):
-        recent = self.aggrade_set.filter(timestamp__lte=dt.now()) \
+        if self.ag_grade:
+            return self.ag_grade.ag_points
+        recent = self.aggrade_set.filter(timestamp__lte=self.bp.ag_grading_end) \
                          .order_by('-timestamp').values_list('ag_points', flat=True).first()
         return recent or -1
 
     @property
     def ag_points_justification(self):
+        if self.ag_grade:
+            return self.ag_grade.ag_points_justification
+        recent = self.aggrade_set.filter(timestamp__lte=self.bp.ag_grading_end) \
+                         .order_by('-timestamp').values_list('ag_points_justification', flat=True).first()
+        return recent or ""
+
+    @property
+    def most_recent_ag_points(self):
+        recent = self.aggrade_set.filter(timestamp__lte=dt.now()) \
+                         .order_by('-timestamp').values_list('ag_points', flat=True).first()
+        return recent or -1
+
+    @property
+    def most_recent_ag_points_justification(self):
         recent = self.aggrade_set.filter(timestamp__lte=dt.now()) \
                          .order_by('-timestamp').values_list('ag_points_justification', flat=True).first()
         return recent or ""

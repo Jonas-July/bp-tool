@@ -68,9 +68,6 @@ Falls Sie einen Fehler vermuten, wenden Sie sich bitte ebenfalls an die Veransta
                 reply_to=[project.ag_mail]
             )
             orga_mail.send(fail_silently=False)
-            print(ag_mail.message())
-            print(orga_mail.message())
-
 
 class ProjectImportForm(forms.Form):
     csvfile = forms.FileField(label="Projektliste (CSV)",
