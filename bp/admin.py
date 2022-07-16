@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from bp.models import BP, Project, AGGrade, TL, Student, TLLog, TLLogProblem, TLLogReminder
+from bp.models import BP, Project, AGGradeBeforeDeadline, AGGradeAfterDeadline, TL, Student, TLLog, TLLogProblem, TLLogReminder
 
 
 @admin.register(BP)
@@ -20,11 +20,16 @@ class ProjectAdmin(admin.ModelAdmin):
 
     def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
          if db_field.name == "ag_grade":
-                 kwargs["queryset"] = db_field.related_model.objects.filter(project=self.pk)
+                 kwargs["queryset"] = db_field.related_model.objects.filter(project=self.pk).order_by("-timestamp")
          return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-@admin.register(AGGrade)
-class AGGradeAdmin(admin.ModelAdmin):
+@admin.register(AGGradeBeforeDeadline)
+class AGGradeBeforeDeadlineAdmin(admin.ModelAdmin):
+    list_filter = ['project']
+    list_display = ['project', 'timestamp', 'ag_points']
+
+@admin.register(AGGradeAfterDeadline)
+class AGGradeAfterDeadlineAdmin(admin.ModelAdmin):
     list_filter = ['project']
     list_display = ['project', 'timestamp', 'ag_points']
 

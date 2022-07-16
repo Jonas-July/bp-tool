@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.mail import EmailMessage
 from django.db import IntegrityError
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.http import HttpResponse, HttpResponseForbidden, Http404
 from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse, reverse_lazy
@@ -61,7 +61,7 @@ class IndexView(LoginRequiredMixin, ActiveBPMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         context['projects'] = Project.get_active()
         context['projects_count'] = context['projects'].count()
-        context['projects_graded_count'] = context['projects'].annotate(Count('aggrade')).filter(aggrade__count__gt=0).count()
+        context['projects_graded_count'] = context['projects'].annotate(early_grades=Count('aggradebeforedeadline')).filter(Q(early_grades__gt=0) | Q(ag_grade__isnull=False)).count()
         context['tls'] = TL.get_active()
         context['tls_count'] = context['tls'].count()
         context['tls_unconfirmed_count'] = TL.objects.filter(bp__active=True, confirmed=False).count()
@@ -97,7 +97,7 @@ class ProjectUngradedListView(ProjectListView):
         return context
 
     def get_queryset(self):
-        return super().get_queryset().annotate(Count('aggrade')).filter(aggrade__count=0)
+        return super().get_queryset().annotate(early_grades=Count('aggradebeforedeadline')).filter(Q(early_grades=0) & Q(ag_grade__isnull=True))
 
 
 class ProjectView(PermissionRequiredMixin, DetailView):

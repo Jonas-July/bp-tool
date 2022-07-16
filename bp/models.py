@@ -1,5 +1,5 @@
 import json
-from datetime import timedelta, datetime as dt
+from datetime import timedelta
 
 from django.contrib.auth.models import User
 from django.core.mail import EmailMessage
@@ -55,7 +55,7 @@ class Project(models.Model):
     bp = models.ForeignKey(BP, verbose_name="Zugehöriges BP", on_delete=models.CASCADE)
     tl = models.ForeignKey("TL", verbose_name="Zugehörige TL", on_delete=models.SET_NULL, blank=True, null=True)
 
-    ag_grade = models.ForeignKey("AGGrade", related_name="valid_grade", verbose_name="Derzeit gültige Bewertung", on_delete=models.SET_NULL, blank=True, null=True)
+    ag_grade = models.ForeignKey("AGGradeAfterDeadline", related_name="valid_grade", verbose_name="Derzeit gültige Bewertung", on_delete=models.SET_NULL, blank=True, null=True)
 
     @staticmethod
     def get_active():
@@ -69,7 +69,7 @@ class Project(models.Model):
     def ag_points(self):
         if self.ag_grade:
             return self.ag_grade.ag_points
-        recent = self.aggrade_set.filter(timestamp__lte=self.bp.ag_grading_end) \
+        recent = self.aggradebeforedeadline_set \
                          .order_by('-timestamp').values_list('ag_points', flat=True).first()
         return recent or -1
 
@@ -77,21 +77,29 @@ class Project(models.Model):
     def ag_points_justification(self):
         if self.ag_grade:
             return self.ag_grade.ag_points_justification
-        recent = self.aggrade_set.filter(timestamp__lte=self.bp.ag_grading_end) \
+        recent = self.aggradebeforedeadline_set \
                          .order_by('-timestamp').values_list('ag_points_justification', flat=True).first()
         return recent or ""
 
     @property
     def most_recent_ag_points(self):
-        recent = self.aggrade_set.filter(timestamp__lte=dt.now()) \
+        after_deadline = self.aggradeafterdeadline_set \
                          .order_by('-timestamp').values_list('ag_points', flat=True).first()
-        return recent or -1
+
+        before_deadline = self.aggradebeforedeadline_set \
+                         .order_by('-timestamp').values_list('ag_points', flat=True).first()
+
+        return after_deadline or before_deadline or -1
 
     @property
     def most_recent_ag_points_justification(self):
-        recent = self.aggrade_set.filter(timestamp__lte=dt.now()) \
+        after_deadline = self.aggradeafterdeadline_set \
                          .order_by('-timestamp').values_list('ag_points_justification', flat=True).first()
-        return recent or ""
+
+        before_deadline = self.aggradebeforedeadline_set \
+                         .order_by('-timestamp').values_list('ag_points_justification', flat=True).first()
+
+        return after_deadline or before_deadline or ""
 
     @property
     def status_json_string(self):
@@ -141,10 +149,7 @@ def update_profile_signal(sender, instance: User, created, **kwargs):
 
 class AGGrade(models.Model):
     class Meta:
-        verbose_name = "Bewertung"
-        verbose_name_plural = "Bewertungen"
-        ordering = ['project', 'timestamp']
-
+        abstract = True
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     ag_points = models.SmallIntegerField(verbose_name="Punkte für den Implementierungsteil", help_text="0-100")
     ag_points_justification = models.TextField(verbose_name="Begründung")
@@ -158,8 +163,24 @@ class AGGrade(models.Model):
     def get_active():
         return TLLog.objects.filter(bp__active=True)
 
+class AGGradeBeforeDeadline(AGGrade):
+    class Meta:
+        verbose_name = "Bewertung"
+        verbose_name_plural = "Bewertungen"
+        ordering = ['project', 'timestamp']
+
     def __str__(self):
         return f"Bewertung für Projekt {self.project.nr} am {self.simple_timestamp}"
+
+class AGGradeAfterDeadline(AGGrade):
+    class Meta:
+        verbose_name = "Bewertung (verspätet)"
+        verbose_name_plural = "Bewertungen (verspätet)"
+        ordering = ['project', 'timestamp']
+
+    def __str__(self):
+        return f"Verspätete Bewertung für Projekt {self.project.nr} am {self.simple_timestamp}"
+
 
 class Student(models.Model):
     class Meta:

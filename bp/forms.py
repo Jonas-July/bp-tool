@@ -1,3 +1,5 @@
+from datetime import date
+
 from django import forms
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -5,13 +7,13 @@ from django.core.mail import EmailMessage
 from django.forms.utils import ErrorList
 from django.urls import reverse_lazy
 
-from bp.models import Project, AGGrade, TLLog, BP, TL, TLLogReminder
+from bp.models import Project, AGGradeBeforeDeadline, AGGradeAfterDeadline, TLLog, BP, TL, TLLogReminder
 from bp.pretix import get_order_secret
 
 
 class AGGradeForm(forms.ModelForm):
     class Meta:
-        model = AGGrade
+        model = AGGradeBeforeDeadline
         fields = ['ag_points', 'ag_points_justification', 'project']
         widgets = {
             'project' : forms.HiddenInput()
@@ -42,6 +44,17 @@ class AGGradeForm(forms.ModelForm):
             raise ValidationError("Authentifizierung fehlgeschlagen. Ihre Eingabe wurde nicht gespeichert.")
 
         return cleaned_data
+
+    def save(self):
+        if date.today() <= self.cleaned_data['project'].bp.ag_grading_end:
+            grade = AGGradeBeforeDeadline()
+        else:
+            grade = AGGradeAfterDeadline()
+        grade.project = self.cleaned_data['project']
+        grade.ag_points = self.cleaned_data['ag_points']
+        grade.ag_points_justification = self.cleaned_data['ag_points_justification']
+        grade.save()
+        self.instance = grade
 
     def send_email(self):
         if settings.SEND_MAILS:
