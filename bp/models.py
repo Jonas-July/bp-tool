@@ -65,6 +65,10 @@ class Project(models.Model):
         return ", ".join(s.name for s in self.student_set.all())
 
     @property
+    def student_mail(self):
+        return ", ".join(s.mail for s in self.student_set.all())
+
+    @property
     def status_json_string(self):
         return json.dumps([{'x': log.simple_timestamp, 'y': log.status} for log in self.tllog_set.all().order_by('timestamp')])
 
