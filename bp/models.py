@@ -66,6 +66,10 @@ class Project(models.Model):
         return ", ".join(s.name for s in self.student_set.all())
 
     @property
+    def student_mail(self):
+        return ", ".join(s.mail for s in self.student_set.all()
+    
+    @property
     def ag_points(self):
         if self.ag_grade:
             return self.ag_grade.ag_points
