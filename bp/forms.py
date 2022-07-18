@@ -64,8 +64,8 @@ class AGGradeForm(forms.ModelForm):
                 f"[BP-Tool] Neue Bewertung für '{project}' [{self.instance.simple_timestamp}]",
                 f"""Es wurde eine neue Bewertung für Gruppe {project.nr} eingetragen. Sie erhalten diese E-Mail, da die Deadline zur Bewertung überschritten wurde.
 
-Die Bewertung wurde gespeichert, ist aber nicht gültig. Änderungen können nur in Absprache mit den Veranstaltern vorgenommen werden.
-Falls Sie einen Fehler vermuten, wenden Sie sich bitte ebenfalls an die Veranstalter.""",
+Die neue Bewertung wurde gespeichert, die Änderungen können aber nur nach entsprechender Absprache mit den Veranstaltern berücksichtigt werden. 
+Falls noch nicht geschehen, nehmen Sie daher bitte Kontakt zum BP Orga Team (bp@cs.tu-darmstadt.de) auf.""",
                 f"Sent via BP-Tool <{settings.SEND_MAILS_FROM}>",
                 [project.ag_mail]
             )
