@@ -62,7 +62,7 @@ class AGGradeForm(forms.ModelForm):
             # E-Mail for AGs
             ag_mail = EmailMessage(
                 f"[BP-Tool] Neue Bewertung für '{project}' [{self.instance.simple_timestamp}]",
-                f"""Es wurde eine neue Bewertung für Gruppe {project.nr} eingetragen. Sie erhalten diese E-Mail, da die Deadline zur Bewertung überschritten wurde.
+                f"""Es wurde eine neue Bewertung für Ihre Gruppe '{project}' eingetragen. Sie erhalten diese E-Mail, da die Deadline zur Bewertung überschritten wurde.
 
 Die neue Bewertung wurde gespeichert, die Änderungen können aber nur nach entsprechender Absprache mit den Veranstaltern berücksichtigt werden. 
 Falls noch nicht geschehen, nehmen Sie daher bitte Kontakt zum BP Orga Team (bp@cs.tu-darmstadt.de) auf.""",
@@ -72,10 +72,10 @@ Falls noch nicht geschehen, nehmen Sie daher bitte Kontakt zum BP Orga Team (bp@
             ag_mail.send(fail_silently=False)
 
             # E-Mail for Orga team
-            url = f"{'https://' + settings.ALLOWED_HOSTS[0] if len(settings.ALLOWED_HOSTS) > 0 else 'http://localhost'}/admin/bp/aggrade/"#{reverse_lazy('bp:grade_detail', kwargs={'pk': instance.pk})}"
+            url = f"{'https://' + settings.ALLOWED_HOSTS[0] if len(settings.ALLOWED_HOSTS) > 0 else 'http://localhost'}{reverse_lazy('bp:project_detail', kwargs={'pk': project.pk})}"
             orga_mail = EmailMessage(
                 f"[BP AG Bewertung] {project} [{self.instance.simple_timestamp}]",
-                f"Es wurde eine neue Bewertung für Gruppe {project.nr} eingetragen:\n\n {url}",
+                f"Es wurde eine neue Bewertung für Gruppe {project.nr} ({project}) eingetragen:\n\n {url}",
                 f"{self.instance.project.ag} via BP-Tool <{settings.SEND_MAILS_FROM}>",
                 [settings.SEND_MAILS_TO],
                 reply_to=[project.ag_mail]
