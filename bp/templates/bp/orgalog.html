@@ -9,74 +9,12 @@
     <li class="breadcrumb-item active">{{ log }}</li>
 {% endblock %}
 
-{% block imports %}
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // CSRF Protection/Authentication
-            function getCookie(name) {
-                let cookieValue = null;
-                if (document.cookie && document.cookie !== '') {
-                    const cookies = document.cookie.split(';');
-                    for (let i = 0; i < cookies.length; i++) {
-                        const cookie = cookies[i].trim();
-                        // Does this cookie string begin with the name we want?
-                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                            break;
-                        }
-                    }
-                }
-                return cookieValue;
-            }
-
-            const csrftoken = getCookie('csrftoken');
-
-            function csrfSafeMethod(method) {
-                // these HTTP methods do not require CSRF protection
-                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-            }
-
-            $.ajaxSetup({
-                beforeSend: function (xhr, settings) {
-                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
-                    }
-                }
-            });
-
-            // Mark as handled
-            $('#btnMarkHandled').click(function () {
-                $.ajax({
-                   url: "{% url "bp:orgalog_api_mark_handled" pk=log.pk %}",
-                    type: 'POST',
-                    data: {
-                    },
-                    success: function (response) {
-                       $("#btnMarkHandled").html('{% fa5_icon 'check' 'fas' %} Erledigt').off('click');
-                    },
-                    error: function (response) {
-                       alert("Fehler! Konnte nicht als erledigt markiert werden.");
-                    }
-               });
-            });
-
-        });
-    </script>
-{% endblock %}
-
 {% block content %}
     <div class="float-right">
         <a class="btn btn-primary" href="{% url "admin:bp_orgalog_change" object_id=log.pk %}">Edit</a>
     </div>
 
-    <h1>Orga-Log
-        {% if log.requires_attention %}
-            {% fa5_icon "exclamation-triangle" "fas" %}
-        {% endif %}
-        {% if log.handled %}
-            {% fa5_icon "check-square" "fas" %}
-        {% endif %}
-    </h1>
+    <h1>Orga-Log</h1>
 
     <table class="table mt-3">
         <tr>
@@ -85,18 +23,6 @@
         <tr>
             <td>Timestamp:</td><td>{{ log.simple_timestamp }}</td>
         </tr>
-        {% if log.requires_attention %}
-            <tr>
-                <td></td>
-                <td>Benötigt besondere Aufmerksamkeit {% fa5_icon "exclamation-triangle" "fas" %}</td>
-            </tr>
-        {% endif %}
-        {% if log.handled %}
-            <tr>
-                <td></td>
-                <td>Erledigt {% fa5_icon "check-square" "fas" %}</td>
-            </tr>
-        {% endif %}
         <tr>
             <td>TL:</td><td>{{ log.group.tl }}</td>
         </tr>
@@ -111,14 +37,6 @@
         <tr>
             <td>Text:</td><td>{{ log.text | linebreaks }}</td>
         </tr>
-        {% if log.comment %}
-            <tr>
-                <td>Kommentar:</td><td>{{ log.comment }}</td>
-            </tr>
-        {% endif %}
     </table>
 
-    {% if not log.handled %}
-    <a href="#" class="btn btn-info" id="btnMarkHandled">{% fa5_icon "check-square" "fas" %} Als erledigt markieren</a>
-    {% endif %}
 {% endblock %}

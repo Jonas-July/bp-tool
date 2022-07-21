@@ -177,7 +177,7 @@ class OrgaLogView(PermissionRequiredMixin, DetailView):
     model = OrgaLog
     template_name = "bp/orgalog.html"
     context_object_name = "log"
-    permission_required = "bp.view_tllog"
+    permission_required = "bp.view_orgalog"
 
 class LogView(PermissionRequiredMixin, DetailView):
     model = TLLog

@@ -28,8 +28,8 @@ class StudentAdmin(admin.ModelAdmin):
 
 @admin.register(OrgaLog)
 class OrgaLogAdmin(admin.ModelAdmin):
-    list_filter = ['bp', 'requires_attention']
-    list_display = ['simple_timestamp', 'group', 'tl', 'requires_attention', 'bp']
+    list_filter = ['bp']
+    list_display = ['simple_timestamp', 'group', 'tl', 'bp']
 
 @admin.register(TLLog)
 class TLLogAdmin(admin.ModelAdmin):
