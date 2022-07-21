@@ -3,7 +3,7 @@
 
 <table class="table">
     {% for orgalog in logs %}
-        <tr {% if orgalog.requires_attention %} class="table-warning" {% endif %}>
+        <tr>
             <td>{{ orgalog.simple_timestamp }}</td>
             <td>{{ orgalog.status | log_status }}</td>
             <td>{{ orgalog.problems }}</td>
