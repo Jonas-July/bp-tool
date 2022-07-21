@@ -19,9 +19,13 @@ class ProjectAdmin(admin.ModelAdmin):
         return self.changeform_view(request, object_id, **kwargs)
 
     def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
-         if db_field.name == "ag_grade":
-                 kwargs["queryset"] = db_field.related_model.objects.filter(project=self.pk).order_by("-timestamp")
-         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+        try:
+            if db_field.name == "ag_grade":
+                kwargs["queryset"] = db_field.related_model.objects.filter(project=self.pk).order_by("-timestamp")
+        except AttributeError:
+            # No self.pk at project creation, but also no grades, so ignore
+            pass
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 @admin.register(AGGradeBeforeDeadline)
 class AGGradeBeforeDeadlineAdmin(admin.ModelAdmin):

@@ -29,4 +29,7 @@
             <tr><td>Begründung:</td><td>{{ project.most_recent_ag_points_justification|linebreaks }}</td></tr>
         </table>
     </turbo-frame>
+
+    {% include "bp/render_all_gradings.html" %}
+
 {% endblock %}
