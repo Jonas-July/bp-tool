@@ -492,18 +492,6 @@ class APILogMarkHandledView(LoginRequiredMixin, DetailView):
             return HttpResponse("")
         return HttpResponseForbidden("")
 
-class APIOrgaLogMarkHandledView(LoginRequiredMixin, DetailView):
-    http_method_names = ['post']
-    model = OrgaLog
-
-    def post(self, request, *args, **kwargs):
-        if request.user.is_superuser:
-            log = self.get_object()
-            log.handled = True
-            log.save()
-            return HttpResponse("")
-        return HttpResponseForbidden("")
-
 
 class APILogMarkGoodView(LoginRequiredMixin, DetailView):
     http_method_names = ['post']
