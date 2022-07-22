@@ -13,15 +13,23 @@
     <turbo-frame id="form">
         {% bootstrap_alert "Bewertung gespeichert!" "success" False %}
 
+        {% if not after_deadline %}
         <p class="mt-4">Vielen Dank für das Eintragen der Bewertung. Über den Link ist eine Anpassung von Punktzahl und Begründung
-            bis zur Deadline weiterhin möglich.</p>
+            bis zur Deadline am {{ deadline }} weiterhin möglich.</p>
+        {% else %}
+        <p class="mt-4">Vielen Dank für das Eintragen der Bewertung. Da die Deadline am {{ deadline }} abgelaufen ist, werden Sie und das Orga-Team per E-Mail hierüber benachrichtigt.
+        <br>Die Bewertung ist noch nicht gültig. Bitte wenden Sie sich hierfür an die Veranstalter. Über den Link ist eine Anpassung von Punktzahl und Begründung weiterhin möglich.</p>
+        {% endif %}
 
         <h5 class="mt-5">Wir haben folgende Bewertung gespeichert:</h5>
 
         <table class="mt-4 table table-striped">
             <tr><td>Projekt:</td><td>{{ project.title }}</td></tr>
-            <tr><td>Punkte:</td><td>{{ project.ag_points }}</td></tr>
-            <tr><td>Begründung:</td><td>{{ project.ag_points_justification|linebreaks }}</td></tr>
+            <tr><td>Punkte:</td><td>{{ project.most_recent_ag_points }}</td></tr>
+            <tr><td>Begründung:</td><td>{{ project.most_recent_ag_points_justification|linebreaks }}</td></tr>
         </table>
     </turbo-frame>
+
+    {% include "bp/render_all_gradings.html" %}
+
 {% endblock %}

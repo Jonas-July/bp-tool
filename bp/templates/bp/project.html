@@ -17,10 +17,11 @@
             <td>TL:</td><td>{% if project.tl %}<a href="{% url "bp:tl_detail" pk=project.tl.pk %}">{{ project.tl }}</a>{% else %}-{% endif %}</td>
         </tr>
         <tr>
-            <td>Mitglieder:</td><td>{{ project.student_list }}</td>
+            <td>Mitglieder:</td><td><a href="mailto:{{ project.student_mail }}">{{ project.student_list }}&nbsp;{% fa5_icon "envelope" "far" %}</a><br>
+                                    {{ project.student_mail }}</td>
         </tr>
         <tr>
-            <td>AG:</td><td><a href="mailto:{{ project.ag_mail }}">{{ project.ag }} {% fa5_icon "envelope" "far" %}</a></td>
+            <td>AG:</td><td><a href="mailto:{{ project.ag_mail }}">{{ project.ag }}&nbsp;{% fa5_icon "envelope" "far" %}</a></td>
         </tr>
         {% if user.is_staff and project.ag_points >= 0 %}
             <tr>
@@ -29,6 +30,8 @@
         {% endif %}
     </table>
 
+    {% include "bp/render_all_gradings.html" %}
+
     <h2>Orga-Logs ({{ orga_log_count }})</h2>
 
     {% if orga_log_count > 0 %}
@@ -36,7 +39,6 @@
     {% else %}
 
     {% endif %}
-
 
     <h2>Logs ({{ log_count }})</h2>
 

@@ -1,7 +1,6 @@
 from django.contrib import admin
 
-from bp.models import BP, Project, TL, Student, TLLog, TLLogProblem, TLLogReminder, OrgaLog
-
+from bp.models import BP, Project, AGGradeBeforeDeadline, AGGradeAfterDeadline, TL, Student, TLLog, TLLogProblem, TLLogReminder, OrgaLog
 
 @admin.register(BP)
 class BPAdmin(admin.ModelAdmin):
@@ -14,6 +13,28 @@ class ProjectAdmin(admin.ModelAdmin):
     list_display = ['nr', 'title', 'tl', 'student_list', 'bp']
     list_display_links = ['nr', 'title']
 
+    def change_view(self, request, object_id, **kwargs):
+        self.pk = object_id
+        return self.changeform_view(request, object_id, **kwargs)
+
+    def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
+        try:
+            if db_field.name == "ag_grade":
+                kwargs["queryset"] = db_field.related_model.objects.filter(project=self.pk).order_by("-timestamp")
+        except AttributeError:
+            # No self.pk at project creation, but also no grades, so ignore
+            pass
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+@admin.register(AGGradeBeforeDeadline)
+class AGGradeBeforeDeadlineAdmin(admin.ModelAdmin):
+    list_filter = ['project']
+    list_display = ['project', 'timestamp', 'ag_points']
+
+@admin.register(AGGradeAfterDeadline)
+class AGGradeAfterDeadlineAdmin(admin.ModelAdmin):
+    list_filter = ['project']
+    list_display = ['project', 'timestamp', 'ag_points']
 
 @admin.register(TL)
 class TLAdmin(admin.ModelAdmin):

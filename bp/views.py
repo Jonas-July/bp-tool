@@ -1,11 +1,14 @@
 import csv
 import io
+import datetime
 
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.core.mail import EmailMessage
 from django.db import IntegrityError
+from django.db.models import Count, Q
 from django.http import HttpResponse, HttpResponseForbidden, Http404
 from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse, reverse_lazy
@@ -58,7 +61,7 @@ class IndexView(LoginRequiredMixin, ActiveBPMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         context['projects'] = Project.get_active()
         context['projects_count'] = context['projects'].count()
-        context['projects_graded_count'] = context['projects'].filter(ag_points__gt=-1).count()
+        context['projects_graded_count'] = context['projects'].annotate(early_grades=Count('aggradebeforedeadline')).filter(Q(early_grades__gt=0) | Q(ag_grade__isnull=False)).count()
         context['tls'] = TL.get_active()
         context['tls_count'] = context['tls'].count()
         context['tls_unconfirmed_count'] = TL.objects.filter(bp__active=True, confirmed=False).count()
@@ -94,10 +97,22 @@ class ProjectUngradedListView(ProjectListView):
         return context
 
     def get_queryset(self):
-        return super().get_queryset().filter(ag_points__lt=0)
+        return super().get_queryset().annotate(early_grades=Count('aggradebeforedeadline')).filter(Q(early_grades=0) & Q(ag_grade__isnull=True))
 
+class ProjectGradesMixin:
+    def get_grading_context_data(self, context, project):
+        beforedeadline = project.aggradebeforedeadline_set.all().order_by("-timestamp")
+        afterdeadline = project.aggradeafterdeadline_set.all().order_by("-timestamp")
+        context["gradings_before"] = beforedeadline
+        context["gradings_after"] = afterdeadline
+        context["gradings_before_count"] = context["gradings_before"].count()
+        context["gradings_after_count"] = context["gradings_after"].count()
+        context["gradings_count"] = context["gradings_before_count"] + context["gradings_after_count"]
+        context["valid_grade_after"] = (project.ag_grade and project.ag_grade.pk) or 0
+        context["valid_grade_before"] = context["valid_grade_after"] or (beforedeadline.first() and beforedeadline.first().pk)
+        return context
 
-class ProjectView(PermissionRequiredMixin, DetailView):
+class ProjectView(PermissionRequiredMixin, ProjectGradesMixin, DetailView):
     model = Project
     template_name = "bp/project.html"
     context_object_name = "project"
@@ -109,6 +124,7 @@ class ProjectView(PermissionRequiredMixin, DetailView):
         context["log_count"] = context["logs"].count()
         context["orga_logs"] = context["project"].orgalog_set.all().prefetch_related("current_problems")
         context["orga_log_count"] = context["orga_logs"].count()
+        context = self.get_grading_context_data(context, context["project"])
         return context
 
 
@@ -213,14 +229,23 @@ class ProjectByOrderIDMixin:
         return Project.objects.get(order_id=self.kwargs["order_id"])
 
 
-class AGGradeView(ProjectByOrderIDMixin, UpdateView):
+class AGGradeView(ProjectByOrderIDMixin, ProjectGradesMixin, CreateView):
     model = Project
     form_class = AGGradeForm
     template_name = "bp/project_grade.html"
     context_object_name = "project"
 
+    def deadline_passed(self):
+        return self.get_object().bp.ag_grading_end < datetime.date.today()
+
+    def form_valid(self, form):
+        redirect = super().form_valid(form)
+        if self.deadline_passed():
+            form.send_email()
+        return redirect
+
     def get_success_url(self):
-        return reverse("bp:ag_grade_success", kwargs={"order_id": self.object.order_id})
+        return reverse("bp:ag_grade_success", kwargs={"order_id": self.get_object().order_id})
 
     def _get_secret_from_url(self):
         return self.kwargs.get("secret", "")
@@ -231,29 +256,53 @@ class AGGradeView(ProjectByOrderIDMixin, UpdateView):
         if self._get_secret_from_url() != get_order_secret(object.order_id):
             return redirect("bp:ag_grade_invalid")
 
+        if datetime.date.today() < object.bp.ag_grading_start:
+            return redirect("bp:ag_grade_too_early", order_id=object.order_id)
+
         return super().get(request, *args, **kwargs)
 
     def get_initial(self):
         initials = super().get_initial()
+        object = self.get_object()
 
+        # Populate with previous grading
         # Show empty field instead of default value of -1 as this might confuse the AGs
-        if self.object.ag_points == -1:
-            initials["ag_points"] = ""
+        initials["ag_points"] = object.most_recent_ag_points if object.ag_points > -1 else ""
+        initials["ag_points_justification"] = object.most_recent_ag_points_justification
 
         # Populate information fields for AG (will not be used for updating)
-        initials["project"] = self.object.title
-        initials["name"] = self.object.ag
+        initials["project_title"] = object.title
+        initials["name"] = object.ag
 
         # Populate hidden secret field
         initials["secret"] = self._get_secret_from_url()
+        initials["project"] = object
         return initials
 
+    def get_context_data(self):
+        context = super().get_context_data()
+        context = self.get_grading_context_data(context, self.get_object())
+        return context
 
-class AGGradeSuccessView(ProjectByOrderIDMixin, DetailView):
+class AGGradeSuccessView(ProjectByOrderIDMixin, ProjectGradesMixin, DetailView):
     model = Project
     context_object_name = "project"
     template_name = "bp/project_grade_success.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        deadline = self.get_object().bp.ag_grading_end
+        context["after_deadline"] = deadline < datetime.date.today()
+        context["deadline"] = deadline
+
+        context = self.get_grading_context_data(context, self.get_object())
+        return context
+
+
+class AGGradeEarlyView(ProjectByOrderIDMixin, DetailView):
+    model = Project
+    context_object_name = "project"
+    template_name = "bp/project_grade_early.html"
 
 @permission_required("bp.view_student")
 def grade_export_view(request):

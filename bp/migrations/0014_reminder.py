@@ -21,7 +21,8 @@ class Migration(migrations.Migration):
                 ('tl', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='bp.tl')),
             ],
             options={
-                'verbose_name': 'TL-Log-Erinnerungen',
+                'verbose_name': 'TL-Log-Erinnerung',
+                'verbose_name_plural': 'TL-Log-Erinnerungen'
             },
         ),
     ]
