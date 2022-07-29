@@ -1,0 +1,19 @@
+{% load fontawesome_5 %}
+{% load tags_bp %}
+
+<table class="table">
+    <tr>
+        <td>Name</td>
+        <td>Beginn</td>
+        <td>Ende</td>
+    </tr>
+    {% for itv in intervals %}
+    <tr>
+        <td>{{itv.name}}</td>
+        <td>{{itv.start}}</td>
+        <td>{{itv.end}}</td>
+    </tr>
+    {% empty %}
+￼       Keine Intervalle angelegt
+￼   {% endfor %}
+</table>

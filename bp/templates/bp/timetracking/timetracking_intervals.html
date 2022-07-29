@@ -1,0 +1,15 @@
+{% extends "bp/base_tl.html" %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item"><a href="{% url "bp:index" %}">Übersicht</a></li>
+    <li class="breadcrumb-item"><a href="{% url "bp:timetracking_tl_start" %}">Zeiterfassung</a></li>
+    <li class="breadcrumb-item active">{{ project.nr }}: {{ project.title }}</li>
+{% endblock %}
+
+{% block tl_content %}
+    <div class="float-right mb-4">
+        <a class="btn btn-info" href="{% url "bp:timetracking_interval_create" group=group %}">Intervall anlegen</a>
+    </div>
+    <h3 class="my-4">{{ project.nr }}: {{ project.title }}</h3>
+    {% include "bp/render_timetracking_intervals.html" with intervals=intervals %}
+{% endblock %}

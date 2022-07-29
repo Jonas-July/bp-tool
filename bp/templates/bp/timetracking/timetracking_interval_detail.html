@@ -1,0 +1,20 @@
+{% extends "bp/base_tl.html" %}
+
+{% load bootstrap4 %}
+{% load fontawesome_5 %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item"><a href="{% url "bp:index" %}">Übersicht</a></li>
+    <li class="breadcrumb-item"><a href="{% url "bp:timetracking_tl_start" %}">Zeiterfassung</a></li>
+    <li class="breadcrumb-item">{{ group.nr }}: {{ group.title }}</li>
+    <li class="breadcrumb-item active">{{ timeinterval.name }}</li>
+{% endblock %}
+
+{% block student_content %}
+{% block tl_content %}
+    <h1>Zeiten für {{ timeinterval.name }}</h1>
+
+    {% include "bp/render_timetracking.html" with timetable=timetable %}
+
+{% endblock %}
+{% endblock %}

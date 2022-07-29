@@ -69,7 +69,16 @@ class Project(models.Model):
     @property
     def student_mail(self):
         return ", ".join(s.mail for s in self.student_set.all())
-    
+
+    @property
+    def total_hours(self):
+        total_hours = self.timeinterval_set.aggregate(total_hours=Coalesce(Sum('timetrackingentry__hours'), Decimal(0)))['total_hours']
+        return round(total_hours, 2)
+
+    @property
+    def get_past_and_current_intervals(self):
+        return self.timeinterval_set.order_by("-start").filter(start__lt=date.today()).all()
+
     @property
     def ag_points(self):
         if self.ag_grade:
