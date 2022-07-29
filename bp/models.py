@@ -10,6 +10,7 @@ from django.conf import settings
 from django.urls import reverse_lazy
 from django.utils.datetime_safe import datetime
 
+from bp.timetracking.models import *
 
 class BP(models.Model):
     class Meta:
