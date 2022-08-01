@@ -20,6 +20,10 @@ class ProjectByRequestMixin:
     def get_project_by_request(self, request):
         return get_object_or_404(Project, nr=self.kwargs.get("group", -1), bp=BP.get_active())
 
+class TimeIntervalByRequestMixin:
+    def get_interval_by_request(self, request):
+        return get_object_or_404(TimeInterval, pk=self.kwargs.get("pk", -1))
+
 class ProjectByGroupMixin(ProjectByRequestMixin):
     def get_object(self, queryset=None):
         return self.get_project_by_request(self.request)
@@ -176,4 +180,57 @@ class TimetrackingIntervalsDetailView(ProjectByRequestMixin, OnlyOwnTimeInterval
         context["is_student_editable"] = interval.is_editable_by_students()
 
         return context
+
+class TimetrackingEntryCreateView(ProjectByRequestMixin, TimeIntervalByRequestMixin, LoginRequiredMixin, CreateView):
+
+    def get_success_url(self):
+        messages.add_message(self.request, messages.SUCCESS, "Eintrag gespeichert")
+        return reverse_lazy('bp:timetracking_interval_detail',
+                            kwargs={'group' : self.get_project_by_request(self.request).nr,
+                                    'pk'    : self.get_interval_by_request(self.request).pk})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        group = self.get_project_by_request(self.request)
+        context["group"] = group
+        context["timeinterval"] = self.get_interval_by_request(self.request)
+        return context
+
+    def get_initial(self):
+        initials = super().get_initial()
+
+        # Populate hidden form fields
+        initials["interval"] = self.get_interval_by_request(self.request)
+
+        return initials
+
+class StudentTimetrackingEntryCorrectView(TimetrackingEntryCreateView, LoginRequiredMixin, CreateView):
+    model = TimeTrackingEntry
+    form_class = TimeIntervalEntryForm
+    template_name = "bp/timetracking/timetracking_entry_correct.html"
+
+    def get_form_kwargs(self):
+        """ Passes the request object to the form class.
+         This is necessary to only display projects that belong to a given user"""
+
+        kwargs = super().get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
+    def get(self, request, *args, **kwargs):
+        project = self.get_project_by_request(request)
+        interval = self.get_interval_by_request(request)
+        if not is_student(request.user):
+            messages.add_message(request, messages.WARNING, "Ungültige Aktion")
+            return redirect("bp:timetracking_tl_start")
+        if not is_student_of_group(project, request.user):
+            messages.add_message(request, messages.WARNING, "Ungültige Gruppe")
+            return redirect("bp:timetracking_tl_start")
+        if not interval in project.get_past_and_current_intervals:
+            messages.add_message(request, messages.WARNING, "Ungültiges Intervall")
+            return redirect("bp:timetracking_tl_start")
+        if not interval.is_editable_by_students():
+            messages.add_message(request, messages.WARNING, f"{interval.name} darf nicht mehr bearbeitet werden. Wende dich an die Orga für weitere Infos.")
+            return redirect("bp:timetracking_interval_detail", group=project.nr, pk=interval.pk)
+        return super().get(request, *args, **kwargs)
 

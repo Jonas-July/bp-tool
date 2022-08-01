@@ -1,0 +1,18 @@
+{% extends "bp/base_tl.html" %}
+
+{% load bootstrap4 %}
+{% load fontawesome_5 %}
+
+{% block student_content %}
+    <h3 class="my-4">{{ group.nr }}: {{ group.title }}</h3>
+    <turbo-frame id="form">
+        <form method="POST" class="post-form">{% csrf_token %}
+            {% bootstrap_form form %}
+            {% buttons %}
+                <button type="submit" class="save btn btn-primary float-right">
+                    {% fa5_icon "check" 'fas' %} Speichern
+                </button>
+            {% endbuttons %}
+        </form>
+    </turbo-frame>
+{% endblock %}

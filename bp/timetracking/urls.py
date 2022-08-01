@@ -11,6 +11,7 @@ timetracking_intervals_patterns = [
 
 timetracking_interval_content_patterns = [
     path('intervals/<pk>/detail/', TimetrackingIntervalsDetailView.as_view(), name="timetracking_interval_detail"),
+    path('intervals/<pk>/edit/', StudentTimetrackingEntryCorrectView.as_view(), name="timetracking_interval_edit"),
 ]
 
 timetracking_patterns = [

@@ -5,7 +5,13 @@
     {% for itv in timetable %}
     <tr>
         {% for entry in itv %}
-            <td>{{entry}}</td>
+            <td>
+               {% if forloop.first and not forloop.parentloop.first %}
+                   {{entry.name}}
+               {% else %}
+                   {{entry}}
+               {% endif %}
+            </td>
         {% endfor %}
     </tr>
     {% endfor %}
