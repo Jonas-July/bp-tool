@@ -11,10 +11,21 @@
 {% endblock %}
 
 {% block student_content %}
-{% block tl_content %}
-    <h1>Zeiten für {{ timeinterval.name }}</h1>
+    <div class="float-right mb-4">
+        <a class="btn btn-info" href="{% url "bp:timetracking_interval_edit" group=group.nr pk=timeinterval.pk %}">Stunden korrigieren</a>
+    </div>
 
+    <h1>Zeiten für {{ timeinterval.name }}</h1>
+    <h5>{{ timeinterval.start }} - {{ timeinterval.end }}</h5>
+￼
     {% include "bp/render_timetracking.html" with timetable=timetable %}
 
 {% endblock %}
+
+{% block tl_content %}
+    <h1>Zeiten für {{ timeinterval.name }}</h1>
+￼    <h5>{{ timeinterval.start }} - {{ timeinterval.end }}</h5>
+￼
+￼    {% include "bp/render_timetracking.html" with timetable=timetable %}
+
 {% endblock %}

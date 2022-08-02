@@ -60,8 +60,8 @@ class TimeTable:
         self.create_entry = entry_function
 
     def get_table(self):
-        return [  ["",  *[col for col in self.columns]], # header
-                *([row, *[self.create_entry(col, row) for col in self.columns]] for row in self.rows)
+        return [  [(None, None, "" ), *[(None, None, col) for col in self.columns]], # header
+                *([(None, None, row), *[(col ,  row, self.create_entry(col, row)) for col in self.columns]] for row in self.rows)
                ]
 
 class TimetrackingOverview(LoginRequiredMixin, TemplateView):
@@ -234,3 +234,38 @@ class StudentTimetrackingEntryCorrectView(TimetrackingEntryCreateView, LoginRequ
             return redirect("bp:timetracking_interval_detail", group=project.nr, pk=interval.pk)
         return super().get(request, *args, **kwargs)
 
+class ApiTimetrackingEntryAddHours(ProjectByRequestMixin, TimeIntervalByRequestMixin, LoginRequiredMixin, TemplateView):
+    http_method_names = ['post']
+
+    def post(self, request, *args, **kwargs):
+        if not is_student(request.user):
+            return HttpResponseForbidden("")
+        project = self.get_project_by_request(request)
+        if not is_student_of_group(project, request.user):
+            return HttpResponseForbidden("")
+        timeinterval = self.get_interval_by_request(request)
+        if not timeinterval in project.get_past_and_current_intervals:
+            messages.add_message(request, messages.WARNING, f"Ungültiges Intervall")
+            return HttpResponseForbidden("")
+        if not timeinterval.is_editable_by_students():
+            messages.add_message(request, messages.WARNING, f"{timeinterval.name} darf nicht mehr bearbeitet werden. Wende dich an die Orga für weitere Infos.")
+            return HttpResponseForbidden("")
+        category_name, hours = request.POST['category'], request.POST['hours']
+        category = TimeSpentCategory.objects.filter(name=category_name).first()
+        if not category:
+            return HttpResponseForbidden("")
+        hours = Decimal(hours)
+        if hours < 0:
+            return HttpResponseForbidden("")
+
+        obj, created = TimeTrackingEntry.objects.get_or_create(student =self.request.user.student,
+                                                               interval=timeinterval,
+                                                               category=category,
+                                                               defaults={'hours' : 0})
+        try:
+            obj.hours += hours
+            obj.save()
+        except InvalidOperation:
+            return HttpResponseForbidden("")
+        obj.refresh_from_db()
+        return HttpResponse(formats.localize(obj.hours, use_l10n=True))

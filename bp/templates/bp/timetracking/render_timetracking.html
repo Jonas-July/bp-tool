@@ -1,15 +1,92 @@
 {% load fontawesome_5 %}
 {% load tags_bp %}
 
+{% block imports %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // CSRF Protection/Authentication
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+
+            const csrftoken = getCookie('csrftoken');
+
+            function csrfSafeMethod(method) {
+                // these HTTP methods do not require CSRF protection
+                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+            }
+
+            $.ajaxSetup({
+                beforeSend: function (xhr, settings) {
+                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+
+            // Add hours
+            add_hours = function (category, hours, url, text_field) {
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: {
+                        category : category,
+                        hours : hours
+                    },
+                    success: function (response) {
+                        text_field.firstChild.textContent = response;
+                    },
+                    error: function (response) {
+                       alert("Fehler! Stunden konnten nicht hinzugefügt werden: " + hours + ".");
+                    }
+               });
+            };
+            // check field for validity and add if valid
+            check_and_add_hours = function(category, input_field, url, text_field) {
+                if (input_field.checkValidity()) {
+                    add_hours(category, input_field.valueAsNumber, url, text_field);
+                } else {
+                    input_field.reportValidity();
+                }
+            };
+        });
+    </script>
+{% endblock %}
+
 <table class="table">
     {% for itv in timetable %}
     <tr>
-        {% for entry in itv %}
-            <td>
+        {% for student, category, entry in itv %}
+            <td id="{{ category }}-{{ student.pk }}-text">
                {% if forloop.first and not forloop.parentloop.first %}
                    {{entry.name}}
                {% else %}
                    {{entry}}
+                   {% if not forloop.parentloop.first and is_student_editable and student == editing_student %}
+		                <a class="btn btn-secondary" onclick='{document.getElementById("{{ category }}-{{ student.pk }}").hidden=false;
+		                                                       document.getElementById("{{ category }}-{{ student.pk }}-send").hidden=false;}'>
+		                    {% fa5_icon "plus" 'fas' %}
+		                </a>
+		                <input type="number" hidden id="{{category}}-{{ student.pk }}" min=0 max=999 step="0.25"></input>
+                        <a class="btn btn-primary btn-success" hidden id="{{ category }}-{{ student.pk }}-send"
+                           onclick='check_and_add_hours("{{ category }}",
+                                                        document.getElementById("{{ category }}-{{ student.pk }}"),
+                                                        "{% url "bp:timetracking_api_add_hours" group=group.nr pk=timeinterval.pk %}",
+                                                        document.getElementById("{{ category }}-{{ student.pk }}-text")
+                                                       )'>Hinzufügen</a>
+                   {% endif %}
                {% endif %}
             </td>
         {% endfor %}
