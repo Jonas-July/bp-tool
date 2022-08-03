@@ -12,7 +12,7 @@ from django.views.generic import TemplateView, DetailView, CreateView, FormView,
 
 from bp.models import BP, Project, Student
 
-from .forms import TimeIntervalForm
+from .forms import TimeIntervalForm, TimeIntervalEntryForm, TLTimeIntervalEntryCorrectionForm
 from .models import TimeInterval, TimeTrackingEntry, TimeSpentCategory
 
 
@@ -39,10 +39,13 @@ def is_tl_or_student(user):
 def is_tl_of_group(group, user):
     return user.tl == group.tl
 
+def is_student_of_group(group, user):
+    return user.student in group.student_set.all()
+
 def is_neither_tl_nor_student_of_group(group, user):
     if is_tl(user) and is_tl_of_group(group, user):
         return False
-    if is_student(user) and user.student in group.student_set.all():
+    if is_student(user) and is_student_of_group(group, user):
         return False
     return True
 

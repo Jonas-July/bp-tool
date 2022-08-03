@@ -25,9 +25,15 @@
 {% endblock %}
 
 {% block tl_content %}
-    <h1>Zeiten für {{ timeinterval.name }}</h1>
-￼    <h5>{{ timeinterval.start }} - {{ timeinterval.end }}</h5>
-￼
-￼    {% include "bp/render_timetracking.html" with timetable=timetable %}
+    {% if not is_student_editable %}
+	    <div class="float-right mb-4">
+	        <a class="btn btn-info" href="{% url "bp:timetracking_interval_tl_correct" group=group.nr pk=timeinterval.pk %}">Stunden korrigieren</a>
+	    </div>
+    {% endif %}
+
+    <h1>Zeiten für {{ timeinterval.name }} {% if not is_student_editable %}(Archiviert){% endif %}</h1>
+￼   <h5>{{ timeinterval.start }} - {{ timeinterval.end }}</h5>
+
+    {% include "bp/render_timetracking.html" with timetable=timetable %}
 
 {% endblock %}
