@@ -11,5 +11,5 @@
         <a class="btn btn-info" href="{% url "bp:timetracking_interval_create" group=group %}">Intervall anlegen</a>
     </div>
     <h3 class="my-4">{{ project.nr }}: {{ project.title }}</h3>
-    {% include "bp/render_timetracking_intervals.html" with intervals=intervals %}
+    {% include "bp/timetracking/render_timetracking_intervals.html" with intervals=intervals %}
 {% endblock %}

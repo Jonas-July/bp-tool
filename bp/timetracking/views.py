@@ -1,7 +1,7 @@
 from decimal import Decimal, InvalidOperation
 
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Sum
 from django.db.models.functions import Coalesce
 from django.http import HttpResponse, HttpResponseForbidden, Http404
@@ -90,9 +90,8 @@ class TimetrackingOverview(LoginRequiredMixin, TemplateView):
              ) for project in context["projects"]]
         return context
 
-class TimetrackingIntervalsView(ProjectByGroupMixin, PermissionRequiredMixin, LoginRequiredMixin, TemplateView):
+class TimetrackingIntervalsView(ProjectByGroupMixin, LoginRequiredMixin, TemplateView):
     template_name = "bp/timetracking/timetracking_intervals.html"
-    permission_required = "bp.view_timeinterval"
 
     def get(self, request, *args, **kwargs):
         if not is_tl(request.user):
@@ -108,10 +107,10 @@ class TimetrackingIntervalsView(ProjectByGroupMixin, PermissionRequiredMixin, Lo
         context["intervals"] = context["project"].timeinterval_set.all().order_by("-start")
         return context
 
-class TimetrackingIntervalsCreateView(ProjectByGroupMixin, PermissionRequiredMixin, LoginRequiredMixin, CreateView):
+class TimetrackingIntervalsCreateView(ProjectByGroupMixin, LoginRequiredMixin, CreateView):
     model = TimeInterval
     form_class = TimeIntervalForm
-    template_name = "bp/timetracking_interval_create.html"
+    template_name = "bp/timetracking/timetracking_interval_create.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -234,6 +233,36 @@ class StudentTimetrackingEntryCorrectView(TimetrackingEntryCreateView, LoginRequ
             return redirect("bp:timetracking_tl_start")
         if not interval.is_editable_by_students():
             messages.add_message(request, messages.WARNING, f"{interval.name} darf nicht mehr bearbeitet werden. Wende dich an die Orga für weitere Infos.")
+            return redirect("bp:timetracking_interval_detail", group=project.nr, pk=interval.pk)
+        return super().get(request, *args, **kwargs)
+
+class TLTimetrackingEntryCorrectView(TimetrackingEntryCreateView, LoginRequiredMixin, CreateView):
+    model = TimeTrackingEntry
+    form_class = TLTimeIntervalEntryCorrectionForm
+    template_name = "bp/timetracking/timetracking_entry_correct.html"
+
+    def get_form_kwargs(self):
+        """ Passes the interval object to the form class.
+         This is necessary to only display students that belong to the group"""
+
+        kwargs = super().get_form_kwargs()
+        kwargs['interval'] = self.get_interval_by_request(self.request)
+        return kwargs
+
+    def get(self, request, *args, **kwargs):
+        project = self.get_project_by_request(request)
+        interval = self.get_interval_by_request(request)
+        if not is_tl(request.user):
+            messages.add_message(request, messages.WARNING, "Ungültige Aktion")
+            return redirect("bp:timetracking_tl_start")
+        if not is_tl_of_group(project, request.user):
+            messages.add_message(request, messages.WARNING, "Ungültige Gruppe")
+            return redirect("bp:timetracking_tl_start")
+        if not interval in project.timeinterval_set.all():
+            messages.add_message(request, messages.WARNING, "Ungültiges Intervall")
+            return redirect("bp:timetracking_tl_start")
+        if interval.is_editable_by_students():
+            messages.add_message(request, messages.WARNING, f"{interval.name} darf von den Teammitgliedern bearbeitet werden. Intervall ist nicht archiviert.")
             return redirect("bp:timetracking_interval_detail", group=project.nr, pk=interval.pk)
         return super().get(request, *args, **kwargs)
 

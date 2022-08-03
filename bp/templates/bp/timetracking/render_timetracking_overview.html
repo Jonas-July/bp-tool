@@ -6,7 +6,7 @@
     <tr>
         {% for student, interval, entry in itv %}
             <td>
-               {% elif forloop.first and not forloop.parentloop.first %}
+               {% if forloop.first and not forloop.parentloop.first %}
                    {{entry.name}}
                {% else %}
                    {{entry}}
