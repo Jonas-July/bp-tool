@@ -20,6 +20,9 @@
                 <button type="submit" class="save btn btn-primary float-right">
                     {% fa5_icon "check" 'fas' %} Speichern
                 </button>
+                <a href="{% url 'bp:timetracking_intervals' group=project.nr %}" class="btn btn-secondary">
+                    Abbrechen
+                </a>
             {% endbuttons %}
         </form>
     </turbo-frame>

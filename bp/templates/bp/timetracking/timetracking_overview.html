@@ -5,8 +5,8 @@
     <li class="breadcrumb-item active">Zeiterfassung</li>
 {% endblock %}
 
-{% block student_content %}
 {% block tl_content %}
+{% block student_content %}
     <p>Zeiterfassung anzeigen:</p>
 
     <ul class="nav nav-tabs">
@@ -28,6 +28,11 @@
 
                 <h4 class="mt-3">Überblick ({{ total_hours }}h)</h4>
                 {% include "bp/timetracking/render_timetracking_overview.html" with project=project timetable=timetable %}
+                {% if request.user.tl %}
+				    <div class="float-left mb-4">
+				        <a class="btn btn-info" href="{% url "bp:timetracking_intervals" group=project.nr %}">Intervalle erstellen</a>
+				    </div>
+				{% endif %}
             </div>
         {% endfor %}
     </div>
