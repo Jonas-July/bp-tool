@@ -124,6 +124,7 @@ class ProjectView(PermissionRequiredMixin, ProjectGradesMixin, DetailView):
         context["log_count"] = context["logs"].count()
         context["orga_logs"] = context["project"].orgalog_set.all().prefetch_related("current_problems")
         context["orga_log_count"] = context["orga_logs"].count()
+        context["total_hours_spent"] = self.get_object().total_hours
         context = self.get_grading_context_data(context, context["project"])
         return context
 
