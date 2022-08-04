@@ -6,7 +6,9 @@
     <tr>
         {% for student, interval, entry in itv %}
             <td>
-               {% if forloop.first and not forloop.parentloop.first %}
+               {% if not forloop.first and forloop.parentloop.first %}
+                   <a href="{% url "bp:timetracking_members_detail" group=project.nr pk=entry.pk %}">{{entry.name}}</a>
+               {% elif forloop.first and not forloop.parentloop.first %}
                    {{entry.name}}
                {% else %}
                    {{entry}}

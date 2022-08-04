@@ -301,3 +301,38 @@ class ApiTimetrackingEntryAddHours(ProjectByRequestMixin, TimeIntervalByRequestM
             return HttpResponseForbidden("")
         obj.refresh_from_db()
         return HttpResponse(formats.localize(obj.hours, use_l10n=True))
+
+class TimetrackingMembersDetailView(ProjectByRequestMixin, LoginRequiredMixin, DetailView):
+    model = Student
+    template_name = "bp/timetracking/timetracking_member_detail.html"
+    context_object_name = "member"
+
+    def get(self, request, *args, **kwargs):
+        project = self.get_project_by_request(request)
+        if is_neither_tl_nor_student_of_group(project, self.request.user):
+            messages.add_message(request, messages.WARNING, "Du darfst nur die Zeiten deiner eigenen Gruppe(n) sehen")
+            return redirect("bp:timetracking_tl_start")
+        if not self.get_object() in project.student_set.all():
+            messages.add_message(request, messages.WARNING, "Ungültiges Teammitglied")
+            return redirect("bp:timetracking_tl_start")
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        project = self.get_project_by_request(self.request)
+        member = self.get_object()
+        categories = TimeSpentCategory.objects.all()
+        def hours_spent_in_category_per_interval(cat, itv):
+            hours_cat = Coalesce(Sum('hours'), Decimal(0))
+            hours = member.timetrackingentry_set.filter(category=cat, interval=itv).aggregate(hours=hours_cat)['hours']
+            return round(hours, 2)
+
+        context["group"] = project
+        all_intervals = list(project.get_past_and_current_intervals)
+        context["timetable"] = TimeTable(all_intervals, categories, hours_spent_in_category_per_interval).get_table()
+        context["categories"] = categories
+        context["intervals"] = all_intervals
+        context["can_edit_entries"] = is_student(self.request.user) and self.request.user.student == member
+
+        return context
