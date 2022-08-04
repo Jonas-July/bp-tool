@@ -90,6 +90,31 @@ class TimetrackingOverview(LoginRequiredMixin, TemplateView):
              ) for project in context["projects"]]
         return context
 
+class TimetrackingProjectOverview(ProjectByGroupMixin, LoginRequiredMixin, TemplateView):
+    template_name = "bp/timetracking/timetracking_project_overview.html"
+
+    def get(self, request, *args, **kwargs):
+        if request.user.is_superuser:
+            return super().get(request, *args, **kwargs)
+        if not is_tl_or_student(request.user):
+            return redirect("bp:index")
+        if is_neither_tl_nor_student_of_group(self.get_object(), request.user):
+            messages.add_message(request, messages.WARNING, "Du darfst nur die Zeiten deiner eigenen Gruppe(n) sehen")
+            return redirect("bp:timetracking_tl_start")
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        def hours_of_student_in_interval(student, interval):
+            hours = interval.timetrackingentry_set.filter(student=student).aggregate(hours=Coalesce(Sum('hours'), Decimal(0)))['hours']
+            return round(hours, 2)
+        context = super().get_context_data(**kwargs)
+        project = self.get_object()
+        context["project"] = project
+        context["total_hours"] = project.total_hours
+        context["timetable"] = TimeTable(project.get_past_and_current_intervals, project.student_set.all(), hours_of_student_in_interval).get_table()
+
+        return context
+
 class TimetrackingIntervalsView(ProjectByGroupMixin, LoginRequiredMixin, TemplateView):
     template_name = "bp/timetracking/timetracking_intervals.html"
 

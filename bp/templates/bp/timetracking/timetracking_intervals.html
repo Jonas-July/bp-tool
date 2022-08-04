@@ -3,7 +3,8 @@
 {% block breadcrumbs %}
     <li class="breadcrumb-item"><a href="{% url "bp:index" %}">Übersicht</a></li>
     <li class="breadcrumb-item"><a href="{% url "bp:timetracking_tl_start" %}">Zeiterfassung</a></li>
-    <li class="breadcrumb-item active">{{ project.nr }}: {{ project.title }}</li>
+    <li class="breadcrumb-item"><a href="{% url "bp:timetracking_project_overview" group=project.nr %}">{{ project.nr }}: {{ project.title }}</a></li>
+    <li class="breadcrumb-item active">Intervallverwaltung</li>
 {% endblock %}
 
 {% block tl_content %}

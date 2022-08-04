@@ -7,9 +7,22 @@
         {% for student, interval, entry in itv %}
             <td>
                {% if not forloop.first and forloop.parentloop.first %}
-                   <a href="{% url "bp:timetracking_members_detail" group=project.nr pk=entry.pk %}">{{entry.name}}</a>
-               {% elif forloop.first and not forloop.parentloop.first %}
+                   {% if not user.is_superuser %}
+                       <a href="{% url "bp:timetracking_members_detail" group=project.nr pk=entry.pk %}">
+                   {% endif %}
                    {{entry.name}}
+                   {% if not user.is_superuser %}
+                       </a>
+                   {% endif %}
+
+               {% elif forloop.first and not forloop.parentloop.first %}
+                   {% if not user.is_superuser %}
+                       <a href="{% url "bp:timetracking_interval_detail" group=project.nr pk=entry.pk %}">
+                   {% endif %}
+                   {{entry.name}}
+                   {% if not user.is_superuser %}
+                       </a>
+                   {% endif %}
                {% else %}
                    {{entry}}
                {% endif %}
