@@ -80,7 +80,7 @@ class Project(models.Model):
 
     @property
     def get_past_and_current_intervals(self):
-        return self.timeinterval_set.order_by("-start").filter(start__lt=date.today()).all()
+        return self.timeinterval_set.order_by("-start").filter(start__lte=date.today()).all()
 
     @property
     def ag_points(self):
