@@ -11,14 +11,14 @@ timetracking_intervals_patterns = [
     path('', TimetrackingIntervalsView.as_view(), name="timetracking_intervals"),
     path('new/', TimetrackingIntervalsCreateView.as_view(), name="timetracking_interval_create"),
     path('generate/', TimetrackingIntervalsGenerationView.as_view(), name="timetracking_interval_generate"),
-    path('<pk>/edit', TimetrackingIntervalUpdateView.as_view(), name="timetracking_interval_update"),
+    path('<pk>/edit/', TimetrackingIntervalUpdateView.as_view(), name="timetracking_interval_update"),
     path('<pk>/delete', TimetrackingIntervalDeleteView.as_view(), name="timetracking_interval_delete"),
 ]
 
 timetracking_interval_content_patterns = [
-    path('overview', TimetrackingProjectOverview.as_view(), name="timetracking_project_overview"),
+    path('overview/', TimetrackingProjectOverview.as_view(), name="timetracking_project_overview"),
     path('intervals/<pk>/detail/', TimetrackingIntervalsDetailView.as_view(), name="timetracking_interval_detail"),
-    path('intervals/<pk>/correct', TLTimetrackingEntryCorrectView.as_view(), name="timetracking_interval_tl_correct"),
+    path('intervals/<pk>/correct/', TLTimetrackingEntryCorrectView.as_view(), name="timetracking_interval_tl_correct"),
     path('intervals/<pk>/edit/', StudentTimetrackingEntryCorrectView.as_view(), name="timetracking_interval_edit"),
     path('intervals/<pk>/add_hours/', ApiTimetrackingEntryAddHours.as_view(), name="timetracking_api_add_hours"),
     path('members/<pk>/detail/', TimetrackingMembersDetailView.as_view(), name="timetracking_members_detail"),

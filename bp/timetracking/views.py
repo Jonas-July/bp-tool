@@ -355,7 +355,7 @@ class TLTimetrackingEntryCorrectView(TimetrackingEntryCreateView, LoginRequiredM
         if not is_tl_of_group(project, request.user):
             messages.add_message(request, messages.WARNING, "Ungültige Gruppe")
             return redirect("bp:timetracking_tl_start")
-        if not interval in project.timeinterval_set.all():
+        if not interval in project.get_past_and_current_intervals:
             messages.add_message(request, messages.WARNING, "Ungültiges Intervall")
             return redirect("bp:timetracking_tl_start")
         if interval.is_editable_by_students():
