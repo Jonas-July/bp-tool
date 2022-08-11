@@ -16,6 +16,7 @@
             <td>{{itv.end}}</td>
             <td>
                 <a href="{% url "bp:timetracking_interval_update" itv.group.nr itv.pk %}">{% fa5_icon "pen" 'fas' %}</a>
+                <a href="{% url "bp:timetracking_interval_delete" itv.group.nr itv.pk %}">{% fa5_icon "trash" 'fas' %}</a>
             </td>
         </tr>
     {% empty %}

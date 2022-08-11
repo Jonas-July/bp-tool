@@ -8,7 +8,7 @@ from django.http import HttpResponse, HttpResponseForbidden, Http404
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.utils import formats
-from django.views.generic import TemplateView, DetailView, CreateView, FormView, UpdateView
+from django.views.generic import TemplateView, DetailView, CreateView, FormView, UpdateView, DeleteView
 
 from bp.models import BP, Project, Student
 
@@ -55,6 +55,13 @@ class OnlyOwnTimeIntervalsMixin:
         timeinterval = super().get_object(queryset)
         if is_neither_tl_nor_student_of_group(timeinterval.group, self.request.user):
             raise Http404("Zugriff verweigert")
+        return timeinterval
+
+class OnlyOwnEmptyTimeIntervalsMixin(OnlyOwnTimeIntervalsMixin):
+    def get_object(self, queryset=None):
+        timeinterval = super().get_object(queryset)
+        if timeinterval.timetrackingentry_set.all():
+            raise Http404("Intervall mit Einträgen kann nicht gelöscht werden")
         return timeinterval
 
 class TimeTable:
@@ -228,6 +235,14 @@ class TimetrackingIntervalUpdateView(ProjectByRequestMixin, LoginRequiredMixin, 
 
     def get_success_url(self):
         messages.add_message(self.request, messages.SUCCESS, "Intervall aktualisiert")
+        return reverse_lazy('bp:timetracking_intervals', kwargs={'group' : self.get_project_by_request(self.request).nr})
+
+class TimetrackingIntervalDeleteView(ProjectByRequestMixin, OnlyOwnEmptyTimeIntervalsMixin, LoginRequiredMixin, DeleteView):
+    model = TimeInterval
+    template_name = "bp/timetracking/timetracking_interval_delete.html"
+
+    def get_success_url(self):
+        messages.add_message(self.request, messages.SUCCESS, "Intervall gelöscht")
         return reverse_lazy('bp:timetracking_intervals', kwargs={'group' : self.get_project_by_request(self.request).nr})
 
 class TimetrackingIntervalsDetailView(ProjectByRequestMixin, OnlyOwnTimeIntervalsMixin, LoginRequiredMixin, DetailView):
