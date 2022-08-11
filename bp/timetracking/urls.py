@@ -1,14 +1,15 @@
 from django.urls import path, include
 
 from .views import \
-     TimetrackingOverview, TimetrackingProjectOverview, TimetrackingIntervalsDetailView, \
-     TimetrackingIntervalsView, TimetrackingIntervalsCreateView, \
-     TLTimetrackingEntryCorrectView, StudentTimetrackingEntryCorrectView, ApiTimetrackingEntryAddHours, \
-     TimetrackingMembersDetailView
+    TimetrackingOverview, TimetrackingProjectOverview, TimetrackingIntervalsDetailView, \
+    TimetrackingIntervalsView, TimetrackingIntervalsCreateView, TimetrackingIntervalsGenerationView, \
+    TLTimetrackingEntryCorrectView, StudentTimetrackingEntryCorrectView, ApiTimetrackingEntryAddHours, \
+    TimetrackingMembersDetailView
 
 timetracking_intervals_patterns = [
     path('', TimetrackingIntervalsView.as_view(), name="timetracking_intervals"),
     path('new/', TimetrackingIntervalsCreateView.as_view(), name="timetracking_interval_create"),
+    path('generate/', TimetrackingIntervalsGenerationView.as_view(), name="timetracking_interval_generate"),
 ]
 
 timetracking_interval_content_patterns = [

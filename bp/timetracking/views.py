@@ -12,7 +12,7 @@ from django.views.generic import TemplateView, DetailView, CreateView, FormView,
 
 from bp.models import BP, Project, Student
 
-from .forms import TimeIntervalForm, TimeIntervalEntryForm, TLTimeIntervalEntryCorrectionForm
+from .forms import TimeIntervalForm, TimeIntervalGenerationForm, TimeIntervalEntryForm, TLTimeIntervalEntryCorrectionForm
 from .models import TimeInterval, TimeTrackingEntry, TimeSpentCategory
 
 
@@ -170,6 +170,52 @@ class TimetrackingIntervalsCreateView(ProjectByGroupMixin, LoginRequiredMixin, C
 
         # Populate hidden form fields
         initials["group"] = project
+
+        return initials
+
+class TimetrackingIntervalsGenerationView(ProjectByRequestMixin, LoginRequiredMixin, FormView):
+    form_class = TimeIntervalGenerationForm
+    template_name = "bp/timetracking/timetracking_interval_generate.html"
+    permission_required = "bp.add_timeinterval"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["project"] = self.get_project_by_request(self.request)
+        return context
+
+    def get_form_kwargs(self):
+        """ Passes the request object to the form class.
+         This is necessary to only display projects that belong to a given user"""
+
+        kwargs = super().get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
+    def form_valid(self, form):
+        redirect = super().form_valid(form)
+        form.save()
+        return redirect
+
+    def get_success_url(self):
+        return reverse_lazy('bp:timetracking_intervals', kwargs={'group' : self.get_project_by_request(self.request).nr})
+
+    def get(self, request, *args, **kwargs):
+        project = self.get_project_by_request(request)
+        if not is_tl(request.user):
+            return redirect("bp:index")
+        if not is_tl_of_group(project, request.user):
+            messages.add_message(request, messages.WARNING, "Du darfst für diese Gruppe keine Intervalle anlegen")
+            return redirect("bp:timetracking_tl_start")
+        return super().get(request, *args, **kwargs)
+
+    def get_initial(self):
+        initials = super().get_initial()
+
+        project = self.get_project_by_request(self.request)
+
+        # Populate hidden form fields
+        initials["group"] = project
+        initials["interval_length"] = 7
 
         return initials
 
