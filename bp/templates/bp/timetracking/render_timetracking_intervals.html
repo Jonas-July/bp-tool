@@ -14,6 +14,9 @@
             <td>{{itv.name}}</td>
             <td>{{itv.start}}</td>
             <td>{{itv.end}}</td>
+            <td>
+                <a href="{% url "bp:timetracking_interval_update" itv.group.nr itv.pk %}">{% fa5_icon "pen" 'fas' %}</a>
+            </td>
         </tr>
     {% empty %}
 ￼       Keine Intervalle angelegt

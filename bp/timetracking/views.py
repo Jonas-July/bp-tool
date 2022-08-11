@@ -8,11 +8,12 @@ from django.http import HttpResponse, HttpResponseForbidden, Http404
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.utils import formats
-from django.views.generic import TemplateView, DetailView, CreateView, FormView, UpdateView, DeleteView
+from django.views.generic import TemplateView, DetailView, CreateView, FormView, UpdateView
 
 from bp.models import BP, Project, Student
 
-from .forms import TimeIntervalForm, TimeIntervalGenerationForm, TimeIntervalEntryForm, TLTimeIntervalEntryCorrectionForm
+from .forms import TimeIntervalForm, TimeIntervalGenerationForm, TimeIntervalUpdateForm, \
+    TimeIntervalEntryForm, TLTimeIntervalEntryCorrectionForm
 from .models import TimeInterval, TimeTrackingEntry, TimeSpentCategory
 
 
@@ -218,6 +219,16 @@ class TimetrackingIntervalsGenerationView(ProjectByRequestMixin, LoginRequiredMi
         initials["interval_length"] = 7
 
         return initials
+
+class TimetrackingIntervalUpdateView(ProjectByRequestMixin, LoginRequiredMixin, OnlyOwnTimeIntervalsMixin, UpdateView):
+    model = TimeInterval
+    form_class = TimeIntervalUpdateForm
+    template_name = "bp/timetracking/timetracking_interval_create_update.html"
+    context_object_name = "timeinterval"
+
+    def get_success_url(self):
+        messages.add_message(self.request, messages.SUCCESS, "Intervall aktualisiert")
+        return reverse_lazy('bp:timetracking_intervals', kwargs={'group' : self.get_project_by_request(self.request).nr})
 
 class TimetrackingIntervalsDetailView(ProjectByRequestMixin, OnlyOwnTimeIntervalsMixin, LoginRequiredMixin, DetailView):
     model = TimeInterval

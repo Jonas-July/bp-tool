@@ -3,6 +3,7 @@ from django.urls import path, include
 from .views import \
     TimetrackingOverview, TimetrackingProjectOverview, TimetrackingIntervalsDetailView, \
     TimetrackingIntervalsView, TimetrackingIntervalsCreateView, TimetrackingIntervalsGenerationView, \
+    TimetrackingIntervalUpdateView, \
     TLTimetrackingEntryCorrectView, StudentTimetrackingEntryCorrectView, ApiTimetrackingEntryAddHours, \
     TimetrackingMembersDetailView
 
@@ -10,6 +11,7 @@ timetracking_intervals_patterns = [
     path('', TimetrackingIntervalsView.as_view(), name="timetracking_intervals"),
     path('new/', TimetrackingIntervalsCreateView.as_view(), name="timetracking_interval_create"),
     path('generate/', TimetrackingIntervalsGenerationView.as_view(), name="timetracking_interval_generate"),
+    path('<pk>/edit', TimetrackingIntervalUpdateView.as_view(), name="timetracking_interval_update"),
 ]
 
 timetracking_interval_content_patterns = [

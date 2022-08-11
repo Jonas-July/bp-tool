@@ -120,6 +120,11 @@ class TimeIntervalGenerationForm(forms.Form):
                                      f"Intervall von {start} bis {end} mit Namen '{generate_name(start, end)}' konnte nicht erstellt werden")
         messages.add_message(self.request, messages.SUCCESS, f"{created_intervals} Intervalle gespeichert!")
 
+class TimeIntervalUpdateForm(forms.ModelForm):
+    class Meta:
+        model = TimeInterval
+        fields = ['name', 'start', 'end']
+
 class TimeIntervalEntryForm(forms.ModelForm):
     class Meta:
         model = TimeTrackingEntry
