@@ -144,13 +144,6 @@ class TL(models.Model):
         return self.name
 
 
-@receiver(post_save, sender=User)
-def update_profile_signal(sender, instance: User, created, **kwargs):
-    if created:
-        TL.objects.create(user=instance, name=f"{instance.first_name} {instance.last_name}", bp=BP.get_active(),
-                          confirmed=False)
-
-
 class AGGrade(models.Model):
     class Meta:
         abstract = True
