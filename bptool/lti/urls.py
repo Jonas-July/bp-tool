@@ -1,4 +1,4 @@
-"""bptool URL Configuration
+"""lti URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/3.1/topics/http/urls/
@@ -13,22 +13,8 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
 from django.urls import path, re_path, include
-import debug_toolbar
 
-from .lti.urls import lti_patterns
-
-
-handler404 = 'bp.views.error_404'
-handler500 = 'bp.views.error_500'
-handler403 = 'bp.views.error_403'
-handler400 = 'bp.views.error_400'
-
-
-urlpatterns = [
-    path('admin/', admin.site.urls),
-    re_path(r'^lti/', include(lti_patterns)),
-    path('', include('bp.urls', namespace='bp')),
-    path('__debug__/', include(debug_toolbar.urls)),
+lti_patterns = [
+    re_path(r'', include('lti_provider.urls')),
 ]
