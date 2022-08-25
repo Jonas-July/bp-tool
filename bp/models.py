@@ -195,6 +195,7 @@ class Student(models.Model):
     name = models.CharField(verbose_name="Name", max_length=100)
     moodle_id = models.CharField(verbose_name="Moodle ID", max_length=50, blank=True)
     mail = models.EmailField(verbose_name="E-Mail", blank=True)
+    user = models.OneToOneField(verbose_name="Account", to=User, on_delete=models.DO_NOTHING, blank=True, null=True)
     bp = models.ForeignKey(BP, verbose_name="Zugehöriges BP", on_delete=models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.SET_NULL, blank=True, null=True, verbose_name="Projekt")
 
