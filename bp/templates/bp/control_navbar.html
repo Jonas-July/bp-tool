@@ -1,0 +1,30 @@
+{% extends "bp/base_control.html" %}
+
+{% load fontawesome_5 %}
+
+{% block shown_block_to_anonymous_user %}
+{% block shown_block_to_unconfirmed_tl %}
+{% block shown_block_if_error %}
+{% endblock %}
+{% endblock %}
+{% endblock %}
+
+{% block shown_block_to_confirmed_tl %}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <a class="navbar-brand" href="#">BP Tool</a>
+      {{request.user.first_name}} {{request.user.last_name}} ({{request.user.username}})
+    </nav>
+{% endblock %}
+
+
+{% block shown_block_to_student %}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <a class="navbar-brand" href="#">BP Tool</a>
+      {{request.user.first_name}} {{request.user.last_name}} ({{request.user.username}})
+    </nav>
+{% endblock %}
+
+{% block shown_block_to_orga %}
+    {% include "bp/navbar.html" %}
+{% endblock %}
+
