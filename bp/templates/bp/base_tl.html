@@ -9,7 +9,7 @@
     </nav>
     <ol class="breadcrumb">
         {% block breadcrumbs %}
-            <li class="breadcrumb-item active">TL Log</li>
+            <li class="breadcrumb-item"><a href="{% url "bp:index" %}">Übersicht</a></li>
         {% endblock %}
     </ol>
 {% endblock %}
@@ -22,11 +22,21 @@
             </div>
         {% else %}
             {% if request.user.tl and request.user.tl.confirmed %}
-                <h3 class="mb-4">Hallo {{ request.user.tl.name }} <a class="btn btn-info" href="{% url "bp:log_tl_start" %}">{% fa5_icon "level-up-alt" "fas" %}</a></h3>
-
-                {% block tl_content %}{% endblock %}
-            {% else %}
+                {% block tl_content %}
+                    <h3 class="mb-4">Hallo {{ request.user.tl.name }} <a class="btn btn-info" href="{% url "bp:index" %}">{% fa5_icon "level-up-alt" "fas" %}</a></h3>
+                {% endblock %}
+            {% elif request.user.tl %}
                 <h2>Eine Bestätigung des Zugangs als TL durch das Orgateam steht noch aus.</h2>
+            {% elif request.user.student %}
+                {% block student_content %}
+                    <h3 class="mb-4">Hallo {{ request.user.student.name }} <a class="btn btn-info" href="{% url "bp:index" %}">{% fa5_icon "level-up-alt" "fas" %}</a></h3>
+                {% endblock %}
+            {% elif request.user.is_superuser %}
+                {% block orga_content %}
+                    <h3 class="mb-4">Hallo {{request.user.first_name}} {{request.user.last_name}} <a class="btn btn-info" href="{% url "bp:index" %}">{% fa5_icon "level-up-alt" "fas" %}</a></h3>
+                {% endblock %}
+            {% else %}
+                <h2>Ein Fehler ist aufgetreten.</h2>
             {% endif %}
         {% endif %}
     </div>
