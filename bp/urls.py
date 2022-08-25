@@ -1,10 +1,15 @@
-from django.urls import path
+from django.urls import path, include
 from django.views.generic import TemplateView
 
-from bp.views import IndexView, ProjectListView, ProjectUngradedListView, ProjectView, TLView, TLListView, AGGradeView, AGGradeSuccessView, \
-    AGGradeEarlyView, ProjectImportView, StudentListView, StudentImportView, grade_export_view, LogTLOverview, LogTLCreateView, \
-    LogTLUpdateView, LogTLDeleteView, LogListView, LogView, LogAttentionListView, LogUnreadListView, APILogMarkReadView, \
-    APILogMarkHandledView, APILogMarkGoodView, APILogMarkBadView, LogReminderView, LogTLDetailView, LoginView
+from bp.timetracking.urls import timetracking_patterns
+
+from bp.views import IndexView, LoginView, \
+    ProjectListView, ProjectUngradedListView, ProjectView, grade_export_view, ProjectImportView, \
+    TLView, TLListView, StudentListView, StudentImportView, \
+    AGGradeView, AGGradeSuccessView, AGGradeEarlyView, \
+    LogListView, LogAttentionListView, LogUnreadListView, LogView, LogReminderView, \
+    APILogMarkReadView, APILogMarkHandledView, APILogMarkGoodView, APILogMarkBadView, \
+    LogTLOverview, LogTLCreateView, LogTLUpdateView, LogTLDeleteView, LogTLDetailView \
 
 app_name = "bp"
 
@@ -38,5 +43,6 @@ urlpatterns = [
     path('log/<int:group>/detail/<pk>/', LogTLDetailView.as_view(), name="log_tl_detail"),
     path('log/<int:group>/edit/<pk>/', LogTLUpdateView.as_view(), name="log_tl_update"),
     path('log/<int:group>/delete/<pk>/', LogTLDeleteView.as_view(), name="log_tl_delete"),
+    path('timetracking/', include(timetracking_patterns)),
     path('login/', LoginView.as_view(), name="login"),
 ]
