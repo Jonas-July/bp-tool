@@ -2,16 +2,8 @@
 
 {% load fontawesome_5 %}
 
-{% block navbar_breadcrumbs %}
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-      <a class="navbar-brand" href="#">BP Tool</a>
-      {{request.user.first_name}} {{request.user.last_name}} ({{request.user.username}})
-    </nav>
-    <ol class="breadcrumb">
-        {% block breadcrumbs %}
-            <li class="breadcrumb-item"><a href="{% url "bp:index" %}">Übersicht</a></li>
-        {% endblock %}
-    </ol>
+{% block breadcrumbs %}
+    <li class="breadcrumb-item"><a href="{% url "bp:index" %}">Übersicht</a></li>
 {% endblock %}
 
 {% block content %}
