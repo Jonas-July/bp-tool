@@ -1,5 +1,7 @@
-from django.urls import path
+from django.urls import path, include
 from django.views.generic import TemplateView
+
+from bp.timetracking.urls import timetracking_patterns
 
 from bp.views import IndexView, LoginView, \
     ProjectListView, ProjectUngradedListView, ProjectView, grade_export_view, ProjectImportView, \
@@ -43,5 +45,6 @@ urlpatterns = [
     path('log/<int:group>/detail/<pk>/', LogTLDetailView.as_view(), name="log_tl_detail"),
     path('log/<int:group>/edit/<pk>/', LogTLUpdateView.as_view(), name="log_tl_update"),
     path('log/<int:group>/delete/<pk>/', LogTLDeleteView.as_view(), name="log_tl_delete"),
+    path('timetracking/', include(timetracking_patterns)),
     path('login/', LoginView.as_view(), name="login"),
 ]
