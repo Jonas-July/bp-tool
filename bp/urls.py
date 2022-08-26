@@ -1,10 +1,14 @@
 from django.urls import path
 from django.views.generic import TemplateView
 
-from bp.views import IndexView, ProjectListView, ProjectUngradedListView, ProjectView, TLView, TLListView, AGGradeView, AGGradeSuccessView, \
-    AGGradeEarlyView, ProjectImportView, StudentListView, StudentImportView, grade_export_view, LogTLOverview, LogTLCreateView, \
-    LogTLUpdateView, LogTLDeleteView, LogListView, LogView, LogAttentionListView, LogUnreadListView, APILogMarkReadView, \
-    APILogMarkHandledView, APILogMarkGoodView, APILogMarkBadView, LogReminderView, LogTLDetailView, LoginView
+from bp.views import IndexView, LoginView, \
+    ProjectListView, ProjectUngradedListView, ProjectView, grade_export_view, ProjectImportView, \
+    TLView, TLListView, StudentListView, StudentImportView, \
+    AGGradeView, AGGradeSuccessView, AGGradeEarlyView, \
+    LogListView, LogAttentionListView, LogUnreadListView, LogView, LogReminderView, \
+    APILogMarkReadView, APILogMarkHandledView, APILogMarkGoodView, APILogMarkBadView, \
+    LogTLOverview, LogTLCreateView, LogTLUpdateView, LogTLDeleteView, LogTLDetailView, \
+    OrgaLogView \
 
 app_name = "bp"
 
@@ -26,6 +30,7 @@ urlpatterns = [
     path('logs/<pk>/handled/', APILogMarkHandledView.as_view(), name='log_api_mark_handled'),
     path('logs/<pk>/good/', APILogMarkGoodView.as_view(), name='log_api_mark_good'),
     path('logs/<pk>/bad/', APILogMarkBadView.as_view(), name='log_api_mark_bad'),
+    path('orgalogs/<pk>/', OrgaLogView.as_view(), name='orga_log_detail'),
     path('student/', StudentListView.as_view(), name="student_list"),
     path('student/import/', StudentImportView.as_view(), name="student_import"),
     path('grade/invalid/', TemplateView.as_view(template_name="bp/project_grade_invalid_secret.html"),

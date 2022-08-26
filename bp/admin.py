@@ -1,7 +1,6 @@
 from django.contrib import admin
 
-from bp.models import BP, Project, AGGradeBeforeDeadline, AGGradeAfterDeadline, TL, Student, TLLog, TLLogProblem, TLLogReminder
-
+from bp.models import BP, Project, AGGradeBeforeDeadline, AGGradeAfterDeadline, TL, Student, TLLog, TLLogProblem, TLLogReminder, OrgaLog
 
 @admin.register(BP)
 class BPAdmin(admin.ModelAdmin):
@@ -48,6 +47,10 @@ class StudentAdmin(admin.ModelAdmin):
     list_filter = ['bp']
     list_display = ['name', 'project', 'bp']
 
+@admin.register(OrgaLog)
+class OrgaLogAdmin(admin.ModelAdmin):
+    list_filter = ['bp']
+    list_display = ['simple_timestamp', 'group', 'tl', 'bp']
 
 @admin.register(TLLog)
 class TLLogAdmin(admin.ModelAdmin):
