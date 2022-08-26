@@ -1,0 +1,42 @@
+{% extends "bp/base.html" %}
+
+{% load fontawesome_5 %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item"><a href="{% url "bp:index" %}">Übersicht</a></li>
+    <li class="breadcrumb-item"><a href="{% url "bp:project_list" %}">Projekte</a></li>
+    <li class="breadcrumb-item"><a href="{% url "bp:project_detail" log.group.pk %}">{{ log.group }}</a></li>
+    <li class="breadcrumb-item active">{{ log }}</li>
+{% endblock %}
+
+{% block content %}
+    <div class="float-right">
+        <a class="btn btn-primary" href="{% url "admin:bp_orgalog_change" object_id=log.pk %}">Edit</a>
+    </div>
+
+    <h1>Orga-Log</h1>
+
+    <table class="table mt-3">
+        <tr>
+            <td>Projekt:</td><td><a href="{% url "bp:project_detail" pk=log.group.pk %}">{{ log.group }}</a></td>
+        </tr>
+        <tr>
+            <td>Timestamp:</td><td>{{ log.simple_timestamp }}</td>
+        </tr>
+        <tr>
+            <td>TL:</td><td>{{ log.group.tl }}</td>
+        </tr>
+        <tr>
+            <td>Status:</td>
+            <td>{{ log.get_status_display }}</td>
+        </tr>
+        <tr>
+            <td>Probleme:</td>
+            <td>{{ log.problems }}</td>
+        </tr>
+        <tr>
+            <td>Text:</td><td>{{ log.text | linebreaks }}</td>
+        </tr>
+    </table>
+
+{% endblock %}

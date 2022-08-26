@@ -9,7 +9,8 @@ from bp.views import IndexView, LoginView, \
     AGGradeView, AGGradeSuccessView, AGGradeEarlyView, \
     LogListView, LogAttentionListView, LogUnreadListView, LogView, LogReminderView, \
     APILogMarkReadView, APILogMarkHandledView, APILogMarkGoodView, APILogMarkBadView, \
-    LogTLOverview, LogTLCreateView, LogTLUpdateView, LogTLDeleteView, LogTLDetailView \
+    LogTLOverview, LogTLCreateView, LogTLUpdateView, LogTLDeleteView, LogTLDetailView, \
+    OrgaLogView \
 
 app_name = "bp"
 
@@ -31,6 +32,7 @@ urlpatterns = [
     path('logs/<pk>/handled/', APILogMarkHandledView.as_view(), name='log_api_mark_handled'),
     path('logs/<pk>/good/', APILogMarkGoodView.as_view(), name='log_api_mark_good'),
     path('logs/<pk>/bad/', APILogMarkBadView.as_view(), name='log_api_mark_bad'),
+    path('orgalogs/<pk>/', OrgaLogView.as_view(), name='orga_log_detail'),
     path('student/', StudentListView.as_view(), name="student_list"),
     path('student/import/', StudentImportView.as_view(), name="student_import"),
     path('grade/invalid/', TemplateView.as_view(template_name="bp/project_grade_invalid_secret.html"),
