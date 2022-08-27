@@ -1,0 +1,39 @@
+{% extends "bp/base_tl.html" %}
+
+{% load bootstrap4 %}
+{% load fontawesome_5 %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item"><a href="{% url "bp:index" %}">Übersicht</a></li>
+    <li class="breadcrumb-item"><a href="{% url "bp:timetracking_tl_start" %}">Zeiterfassung</a></li>
+    <li class="breadcrumb-item"><a href="{% url "bp:timetracking_project_overview" group=group.nr %}">{{ group.nr }}: {{ group.title }}</a></li>
+    <li class="breadcrumb-item active">{{ timeinterval.name }}</li>
+{% endblock %}
+
+{% block student_content %}
+    {% if is_student_editable %}
+	    <div class="float-right mb-4">
+	        <a class="btn btn-info" href="{% url "bp:timetracking_interval_edit" group=group.nr pk=timeinterval.pk %}">Stunden korrigieren</a>
+	    </div>
+    {% endif %}
+
+    <h1>Zeiten für {{ timeinterval.name }} {% if not is_student_editable %}(Archiviert){% endif %}</h1>
+    <h5>{{ timeinterval.start }} - {{ timeinterval.end }}</h5>
+￼
+    {% include "bp/timetracking/render_timetracking.html" with timetable=timetable %}
+
+{% endblock %}
+
+{% block tl_content %}
+    {% if not is_student_editable %}
+	    <div class="float-right mb-4">
+	        <a class="btn btn-info" href="{% url "bp:timetracking_interval_tl_correct" group=group.nr pk=timeinterval.pk %}">Stunden korrigieren</a>
+	    </div>
+    {% endif %}
+
+    <h1>Zeiten für {{ timeinterval.name }} {% if not is_student_editable %}(Archiviert){% endif %}</h1>
+    <h5>{{ timeinterval.start }} - {{ timeinterval.end }}</h5>
+
+    {% include "bp/timetracking/render_timetracking.html" with timetable=timetable %}
+
+{% endblock %}

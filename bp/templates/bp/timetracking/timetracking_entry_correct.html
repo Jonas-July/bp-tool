@@ -1,0 +1,33 @@
+{% extends "bp/base_tl.html" %}
+
+{% load bootstrap4 %}
+{% load fontawesome_5 %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item"><a href="{% url "bp:index" %}">Übersicht</a></li>
+    <li class="breadcrumb-item"><a href="{% url "bp:timetracking_tl_start" %}">Zeiterfassung</a></li>
+    <li class="breadcrumb-item"><a href="{% url "bp:timetracking_project_overview" group=group.nr %}">{{ group.nr }}: {{ group.title }}</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'bp:timetracking_interval_detail' group=group.nr pk=timeinterval.pk %}">{{ timeinterval.name }}</a></li>
+    <li class="breadcrumb-item active">Korrektur</li>
+{% endblock %}
+
+{% block tl_content %}
+{% block student_content %}
+    <h3 class="my-4">{{ group.nr }}: {{ group.title }}</h3>
+    <h5>Stunden korrigieren ({{ timeinterval.name }})</h5>
+    <h5 >{{ timeinterval.start }} - {{ timeinterval.end }}</h5>
+    <turbo-frame id="form">
+        <form method="POST" class="post-form">{% csrf_token %}
+            {% bootstrap_form form %}
+            {% buttons %}
+                <button type="submit" class="save btn btn-primary float-right">
+                    {% fa5_icon "check" 'fas' %} Korrigieren
+                </button>
+                <a href="{% url 'bp:timetracking_interval_detail' group=group.nr pk=timeinterval.pk %}" class="btn btn-secondary">
+                    Abbrechen
+                </a>
+            {% endbuttons %}
+        </form>
+    </turbo-frame>
+{% endblock %}
+{% endblock %}

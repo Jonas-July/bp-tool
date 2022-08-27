@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from bp.models import BP, Project, AGGradeBeforeDeadline, AGGradeAfterDeadline, TL, Student, TLLog, TLLogProblem, TLLogReminder, OrgaLog
+from bp.models import BP, Project, AGGradeBeforeDeadline, AGGradeAfterDeadline, TL, Student, TLLog, TLLogProblem, TLLogReminder
+from bp.timetracking.models import TimeSpentCategory
 
 @admin.register(BP)
 class BPAdmin(admin.ModelAdmin):
@@ -51,6 +52,11 @@ class StudentAdmin(admin.ModelAdmin):
 class OrgaLogAdmin(admin.ModelAdmin):
     list_filter = ['bp']
     list_display = ['simple_timestamp', 'group', 'tl', 'bp']
+
+@admin.register(TimeSpentCategory)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ['name']
+
 
 @admin.register(TLLog)
 class TLLogAdmin(admin.ModelAdmin):
