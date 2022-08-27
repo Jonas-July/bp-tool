@@ -15,6 +15,9 @@ Including another URLconf
 """
 from django.urls import path, re_path, include
 
+from .views import TLRoutingView
+
 lti_patterns = [
     re_path(r'', include('lti_provider.urls')),
+    path('log', TLRoutingView.as_view()),
 ]
