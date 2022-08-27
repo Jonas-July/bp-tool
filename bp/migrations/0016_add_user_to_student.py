@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('bp', '0015_aggrades_restructure'),
+        ('bp', '0016_orgalog'),
     ]
 
     operations = [
