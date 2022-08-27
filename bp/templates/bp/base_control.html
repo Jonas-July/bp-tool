@@ -1,0 +1,21 @@
+{% if request.user.is_anonymous %}
+    {% block shown_block_to_anonymous_user %}
+    {% endblock %}
+{% else %}
+    {% if request.user.tl and request.user.tl.confirmed %}
+        {% block shown_block_to_confirmed_tl %}
+        {% endblock %}
+    {% elif request.user.tl %}
+        {% block shown_block_to_unconfirmed_tl %}
+        {% endblock %}
+    {% elif request.user.student %}
+        {% block shown_block_to_student %}
+        {% endblock %}
+    {% elif request.user.is_superuser %}
+        {% block shown_block_to_orga %}
+        {% endblock %}
+    {% else %}
+        {% block shown_block_if_error %}
+        {% endblock %}
+    {% endif %}
+{% endif %}
