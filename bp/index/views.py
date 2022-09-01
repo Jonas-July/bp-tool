@@ -73,24 +73,22 @@ class TLIndexView(LoginRequiredMixin, TemplateView):
         return context
 
 class StudentIndexView(LoginRequiredMixin, ActiveBPMixin, TemplateView):
-    template_name = "bp/index/index.html"
+    template_name = "bp/index/index_student.html"
+
+    def get(self, request, *args, **kwargs):
+        if not is_student(request.user):
+            print(f"User {request.user} is no student, but got the student index page")
+            return HttpResponseServerError("Http Error 500: Wrong index page (student)")
+        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['projects'] = Project.get_active()
-        context['projects_count'] = context['projects'].count()
-        context['projects_graded_count'] = context['projects'].annotate(early_grades=Count('aggradebeforedeadline')).filter(Q(early_grades__gt=0) | Q(ag_grade__isnull=False)).count()
-        context['tls'] = TL.get_active()
-        context['tls_count'] = context['tls'].count()
-        context['tls_unconfirmed_count'] = TL.objects.filter(bp__active=True, confirmed=False).count()
-        context['students'] = Student.get_active()
-        context['students_without_project'] = Student.get_active().filter(project=None)
-        context['logs'] = TLLog.get_active()
-        context['logs_count'] = context['logs'].count()
-        context['logs_unread_count'] = context['logs'].filter(read=False).count()
-        context['logs_attention_count'] = context['logs'].filter(requires_attention=True, handled=False).count()
-        context['projects_without_recent_logs_count'] = len(Project.without_recent_logs())
-        context['log_period'] = settings.LOG_REMIND_PERIOD_DAYS
+        student = self.request.user.student
+        context['student'] = student
+        context['bp'] = student.bp
+        context['group'] = student.project
+        context['current_interval'] = context['group'].get_past_and_current_intervals.latest('start')
+        context['most_recently_passed_interval'] = context['group'].get_past_and_current_intervals[1]
         return context
 
 
