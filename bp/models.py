@@ -125,7 +125,7 @@ class Project(models.Model):
     @staticmethod
     def without_recent_logs(projects=None):
         if not projects:
-            projects = Project.get_active().prefetch_related('tllog__timestamp')
+            projects = Project.get_active()
         remind_after_days = timedelta(days=settings.LOG_REMIND_PERIOD_DAYS) + timedelta(days=1)
         latest_day_to_remind = datetime.now() - remind_after_days
         projects_not_covered = projects.annotate(last_log_date=Coalesce(Max('tllog__timestamp'), latest_day_to_remind))\
