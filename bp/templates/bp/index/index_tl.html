@@ -1,0 +1,35 @@
+{% extends "bp/base_tl.html" %}
+
+{% block tl_content %}
+    <h2>Hallo {{ tl.name }}</h2>
+
+    <h2 class="text-info mb-3">{{ bp.name }}</h2>
+
+    <div class="row">
+        <div class="card text-white bg-primary mb-3 mx-2 col-md-5" style="padding:0;">
+            <div class="card-header">Zeiterfassung</div>
+            <div class="card-body">
+                <h4 class="card-title">{{ projects_count}} Projekt{{ projects_count|pluralize:"e" }}</h4>
+                <p class="card-text">
+                    {% if projects_without_iterations %}
+                        {{ projects_without_iterations }} Projekt{{ projects_count|pluralize:"e" }} ohne Iterationen
+                    {% endif %}
+                    <br><br>
+                    <a href="{% url "bp:timetracking_tl_start" %}" class="btn btn-secondary mb-1">Zur Zeiterfassung</a>
+                </p>
+            </div>
+        </div>
+
+        <div class="card bg-info text-white mb-3 mx-2 col-md-5" style="padding:0;">
+            <div class="card-header">Logs</div>
+            <div class="card-body">
+                <h4 class="card-title">{{ logs_count}} Log{{ logs_count|pluralize:"s" }}</h4>
+                <p class="card-text">
+                    {{ projects_without_recent_logs_count }} Projekt{{ projects_without_recent_logs_count|pluralize:"e" }} {{ projects_without_recent_logs_count|pluralize:"hat,haben" }} keine Logs aus den letzten {{ log_period }} Tagen
+                </p>
+                <a href="{% url "bp:log_tl_start" %}" class="btn btn-secondary mb-1">Alle Logs</a>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
