@@ -6,7 +6,7 @@ from django.http import HttpResponseServerError
 from django.views.generic import TemplateView
 
 from bp.models import BP, Project, Student, TL, TLLog
-from bp.roles import is_tl, is_student
+from bp.roles import is_tl, is_student, is_orga
 
 class ActiveBPMixin:
     def get_context_data(self, **kwargs):
@@ -18,7 +18,7 @@ class ActiveBPMixin:
 class IndexView():
 
     def as_callable(request, *args, **kwargs):
-        if request.user.is_superuser:
+        if is_orga(request.user):
             view = OrgaIndexView
         elif is_tl(request.user):
             view = TLIndexView
