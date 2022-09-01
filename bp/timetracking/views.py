@@ -11,7 +11,7 @@ from django.utils import formats
 from django.views.generic import TemplateView, DetailView, CreateView, FormView, UpdateView, DeleteView
 
 from bp.models import BP, Project, Student
-from bp.roles import is_tl, is_student, is_tl_or_student, is_tl_of_group, is_student_of_group, is_neither_tl_nor_student_of_group
+from bp.roles import is_tl, is_student, is_orga, is_tl_or_student, is_tl_of_group, is_student_of_group, is_neither_tl_nor_student_of_group
 
 from .forms import TimeIntervalForm, TimeIntervalGenerationForm, TimeIntervalUpdateForm, \
     TimeIntervalEntryForm, TLTimeIntervalEntryCorrectionForm
@@ -83,7 +83,7 @@ class TimetrackingProjectOverview(ProjectByGroupMixin, LoginRequiredMixin, Templ
     template_name = "bp/timetracking/timetracking_project_overview.html"
 
     def get(self, request, *args, **kwargs):
-        if request.user.is_superuser:
+        if is_orga(request.user):
             return super().get(request, *args, **kwargs)
         if not is_tl_or_student(request.user):
             return redirect("bp:index")

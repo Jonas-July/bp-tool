@@ -2,8 +2,12 @@
 
 def is_tl(user):
     return hasattr(user, 'tl')
+
 def is_student(user):
     return hasattr(user, 'student')
+
+def is_orga(user):
+    return user.is_superuser
 
 def is_tl_or_student(user):
     return is_tl(user) or is_student(user)
