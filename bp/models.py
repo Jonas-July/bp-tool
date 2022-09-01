@@ -5,7 +5,7 @@ from decimal import Decimal
 from django.contrib.auth.models import User
 from django.core.mail import EmailMessage
 from django.db import models
-from django.db.models import Sum
+from django.db.models import Sum, Max
 from django.db.models.functions import Coalesce
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -123,12 +123,14 @@ class Project(models.Model):
         return json.dumps([{'x': log.simple_timestamp, 'y': log.status} for log in self.tllog_set.all().order_by('timestamp')])
 
     @staticmethod
-    def without_recent_logs():
-        x_days_ago = datetime.now() - timedelta(days=settings.LOG_REMIND_PERIOD_DAYS)
-        logs_last_x_days = TLLog.objects.filter(bp__active=True, timestamp__gte=x_days_ago).select_related('group')
-        projects = set(Project.get_active())
-        projects_not_coverd = projects.difference(l.group for l in logs_last_x_days)
-        return projects_not_coverd
+    def without_recent_logs(projects=None):
+        if not projects:
+            projects = Project.get_active().prefetch_related('tllog__timestamp')
+        remind_after_days = timedelta(days=settings.LOG_REMIND_PERIOD_DAYS) + timedelta(days=1)
+        latest_day_to_remind = datetime.now() - remind_after_days
+        projects_not_covered = projects.annotate(last_log_date=Coalesce(Max('tllog__timestamp'), latest_day_to_remind))\
+                                       .filter(last_log_date__lte=latest_day_to_remind).all()
+        return projects_not_covered
 
     def __str__(self):
         return f"{self.nr}: {self.title}"
