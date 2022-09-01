@@ -11,8 +11,8 @@
             <div class="card-body">
                 <h4 class="card-title">{{ projects_count}} Projekt{{ projects_count|pluralize:"e" }}</h4>
                 <p class="card-text">
-                    {% if projects_without_iterations %}
-                        {{ projects_without_iterations }} Projekt{{ projects_count|pluralize:"e" }} ohne Iterationen
+                    {% if projects_without_intervals %}
+                        {{ projects_without_intervals }} Projekt{{ projects_count|pluralize:"e" }} ohne Intervalle
                     {% endif %}
                     <br><br>
                     <a href="{% url "bp:timetracking_tl_start" %}" class="btn btn-secondary mb-1">Zur Zeiterfassung</a>

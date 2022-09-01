@@ -65,7 +65,7 @@ class TLIndexView(LoginRequiredMixin, TemplateView):
         context['bp'] = tl.bp
         context['projects'] = tl.project_set.all()
         context['projects_count'] = context['projects'].count()
-        context['projects_without_iterations'] = context['projects'].annotate(nr_intervals=Count('timeinterval')).filter(nr_intervals=0).count()
+        context['projects_without_intervals'] = context['projects'].annotate(nr_intervals=Count('timeinterval')).filter(nr_intervals=0).count()
         context['logs'] = tl.tllog_set.all()
         context['logs_count'] = context['logs'].count()
         context['projects_without_recent_logs_count'] = Project.without_recent_logs(context['projects']).count() if context['projects'] else 0
