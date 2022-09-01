@@ -11,6 +11,7 @@ from django.utils import formats
 from django.views.generic import TemplateView, DetailView, CreateView, FormView, UpdateView, DeleteView
 
 from bp.models import BP, Project, Student
+from bp.roles import is_tl, is_student, is_tl_or_student, is_tl_of_group, is_student_of_group, is_neither_tl_nor_student_of_group
 
 from .forms import TimeIntervalForm, TimeIntervalGenerationForm, TimeIntervalUpdateForm, \
     TimeIntervalEntryForm, TLTimeIntervalEntryCorrectionForm
@@ -29,26 +30,6 @@ class ProjectByGroupMixin(ProjectByRequestMixin):
     def get_object(self, queryset=None):
         return self.get_project_by_request(self.request)
 
-def is_tl(user):
-    return hasattr(user, 'tl')
-def is_student(user):
-    return hasattr(user, 'student')
-
-def is_tl_or_student(user):
-    return is_tl(user) or is_student(user)
-
-def is_tl_of_group(group, user):
-    return user.tl == group.tl
-
-def is_student_of_group(group, user):
-    return user.student in group.student_set.all()
-
-def is_neither_tl_nor_student_of_group(group, user):
-    if is_tl(user) and is_tl_of_group(group, user):
-        return False
-    if is_student(user) and is_student_of_group(group, user):
-        return False
-    return True
 
 class OnlyOwnTimeIntervalsMixin:
     def get_object(self, queryset=None):
