@@ -15,9 +15,10 @@ Including another URLconf
 """
 from django.urls import path, re_path, include
 
-from .views import TLRoutingView
+from .views import TLRoutingView, StudentRoutingView
 
 lti_patterns = [
     re_path(r'', include('lti_provider.urls')),
     path('log', TLRoutingView.as_view()),
+    path('timetracking', StudentRoutingView.as_view()),
 ]
