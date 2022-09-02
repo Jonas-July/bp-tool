@@ -82,13 +82,16 @@ class StudentIndexView(LoginRequiredMixin, ActiveBPMixin, TemplateView):
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
+        def get_second_entry(qset):
+            return qset.first() and qset.exclude(pk=qset.first().pk).first()
         context = super().get_context_data(**kwargs)
         student = self.request.user.student
         context['student'] = student
         context['bp'] = student.bp
         context['group'] = student.project
-        context['current_interval'] = context['group'].get_past_and_current_intervals.latest('start')
-        context['most_recently_passed_interval'] = context['group'].get_past_and_current_intervals[1]
+        intervals_sorted_by_date_current_first = context['group'].get_past_and_current_intervals
+        context['current_interval'] = intervals_sorted_by_date_current_first.first()
+        context['most_recently_passed_interval'] = get_second_entry(intervals_sorted_by_date_current_first)
         return context
 
 
