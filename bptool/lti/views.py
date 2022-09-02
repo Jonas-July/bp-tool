@@ -24,5 +24,5 @@ class StudentRoutingView(LTIRoutingView):
                 associatedStudent.user = instance
                 associatedStudent.save()
             else:
-                messages.add_message(self.request, messages.WARNING, "E-Mail-Addresse nicht gefunden. Bitte wende dich an die Veranstalter.")
+                messages.add_message(self.request, messages.WARNING, "E-Mail-Addresse nicht gefunden. Bitte wende dich per Mail an die Veranstalter unter bp@cs.tu-darmstadt.de.")
         return response
