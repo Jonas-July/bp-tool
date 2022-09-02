@@ -8,6 +8,17 @@ from django.views.generic import TemplateView
 from bp.models import BP, Project, Student, TL, TLLog
 from bp.roles import is_tl, is_student, is_orga
 
+class OnlyAccessibleByMixin():
+    role = None
+    condition = None
+
+    def get(self, request, *args, **kwargs):
+        if not self.__class__.condition(request.user):
+            print(f"User {request.user} is no {self.role}, but got the {self.role} index page")
+            return HttpResponseServerError(f"Http Error 500: Wrong index page ({self.role})")
+        return super().get(request, *args, **kwargs)
+
+
 class ActiveBPMixin:
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -28,8 +39,9 @@ class IndexView():
             view = LoginView
         return view.as_view()(request, *args, **kwargs)
 
-class OrgaIndexView(LoginRequiredMixin, ActiveBPMixin, TemplateView):
+class OrgaIndexView(LoginRequiredMixin, ActiveBPMixin, OnlyAccessibleByMixin, TemplateView):
     template_name = "bp/index/index.html"
+    role, condition = "Orga member", is_orga
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -49,14 +61,9 @@ class OrgaIndexView(LoginRequiredMixin, ActiveBPMixin, TemplateView):
         context['log_period'] = settings.LOG_REMIND_PERIOD_DAYS
         return context
 
-class TLIndexView(LoginRequiredMixin, TemplateView):
+class TLIndexView(LoginRequiredMixin, OnlyAccessibleByMixin, TemplateView):
     template_name = "bp/index/index_tl.html"
-
-    def get(self, request, *args, **kwargs):
-        if not is_tl(request.user):
-            print(f"User {request.user} is no TL, but got the TL index page")
-            return HttpResponseServerError("Http Error 500: Wrong index page (TL)")
-        return super().get(request, *args, **kwargs)
+    role, condition = "TL", is_tl
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -72,14 +79,9 @@ class TLIndexView(LoginRequiredMixin, TemplateView):
         context['log_period'] = settings.LOG_REMIND_PERIOD_DAYS
         return context
 
-class StudentIndexView(LoginRequiredMixin, ActiveBPMixin, TemplateView):
+class StudentIndexView(LoginRequiredMixin, OnlyAccessibleByMixin, TemplateView):
     template_name = "bp/index/index_student.html"
-
-    def get(self, request, *args, **kwargs):
-        if not is_student(request.user):
-            print(f"User {request.user} is no student, but got the student index page")
-            return HttpResponseServerError("Http Error 500: Wrong index page (student)")
-        return super().get(request, *args, **kwargs)
+    role, condition = "student", is_student
 
     def get_context_data(self, **kwargs):
         def get_second_entry(qset):
