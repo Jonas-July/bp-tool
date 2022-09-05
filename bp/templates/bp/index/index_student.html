@@ -1,0 +1,27 @@
+{% extends "bp/base_tl.html" %}
+
+{% block student_content %}
+    <h2>Hallo {{ student.name }}</h2>
+
+    <h2 class="text-info mb-3">{{ bp.name }}</h2>
+
+    <div class="row">
+        <div class="card text-white bg-primary mb-3 mx-2 col-md-5" style="padding:0;">
+            <div class="card-header">Zeiterfassung</div>
+            <div class="card-body">
+                <h4 class="card-title">{{ group }}</h4>
+                <p class="card-text">
+                    <br><br>
+                    <a href="{% url "bp:timetracking_project_overview" group=group.nr %}" class="btn btn-secondary mb-1">Zur Zeiterfassung</a><br>
+                    {% if current_interval %}
+                        <a href="{% url "bp:timetracking_interval_detail" group=group.nr pk=current_interval.pk %}" class="btn btn-secondary mb-1">Neuestes Intervall</a>
+                    {% endif %}
+                    {% if most_recently_passed_interval %}
+                        <a href="{% url "bp:timetracking_interval_detail" group=group.nr pk=most_recently_passed_interval.pk %}" class="btn btn-secondary mb-1">Vergangenes Intervall</a>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
