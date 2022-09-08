@@ -79,6 +79,12 @@ class Project(models.Model):
         return round(total_hours, 2)
 
     @property
+    def expected_hours(self):
+        expected_hours_per_student = Decimal(270)
+        expected_hours = self.student_set.all().count() * expected_hours_per_student
+        return round(expected_hours, 2)
+
+    @property
     def get_past_and_current_intervals(self):
         return self.timeinterval_set.order_by("-start").filter(start__lte=date.today()).all()
 
