@@ -75,7 +75,7 @@ class Project(models.Model):
 
     @property
     def total_hours(self):
-        total_hours = self.timeinterval_set.aggregate(total_hours=Coalesce(Sum('timetrackingentry__hours'), Decimal(0)))['total_hours']
+        total_hours = sum((s.total_hours for s in self.student_set.all()), Decimal(0))
         return round(total_hours, 2)
 
     @property
