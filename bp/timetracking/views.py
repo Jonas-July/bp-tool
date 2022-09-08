@@ -256,6 +256,7 @@ class TimetrackingIntervalsDetailView(ProjectByRequestMixin, OnlyOwnTimeInterval
         context["group"] = project
         all_students = list(project.student_set.all())
         context["timetable"] = TimeTable(categories, all_students, hours_of_student_in_category).get_table()
+        context["student_summaries"] = [sum((hours_of_student_in_category(s, cat) for cat in categories)) for s in all_students]
         if is_student(self.request.user):
             context["editing_student"] = self.request.user.student
         context["is_student_editable"] = interval.is_editable_by_students()
