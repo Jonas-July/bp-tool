@@ -100,7 +100,8 @@ class TimetrackingProjectOverview(ProjectByGroupMixin, LoginRequiredMixin, Templ
         project = self.get_object()
         context["project"] = project
         context["total_hours"] = project.total_hours
-        context["timetable"] = TimeTable(project.get_past_and_current_intervals, project.student_set.all(), hours_of_student_in_interval).get_table()
+        context["students"] = project.student_set.all()
+        context["timetable"] = TimeTable(project.get_past_and_current_intervals, context["students"], hours_of_student_in_interval).get_table()
 
         return context
 

@@ -211,6 +211,11 @@ class Student(models.Model):
     def get_active():
         return Student.objects.filter(bp__active=True)
 
+    @property
+    def total_hours(self):
+        total_hours = self.timetrackingentry_set.aggregate(total_hours=Coalesce(Sum('hours'), Decimal(0)))['total_hours']
+        return round(total_hours, 2)
+
     def __str__(self):
         return self.name
 
