@@ -30,6 +30,16 @@
                 <a href="{% url "bp:log_tl_start" %}" class="btn btn-secondary mb-1">Alle Logs</a>
             </div>
         </div>
+
+        <div class="card bg-info text-white mb-3 mx-2 col-md-5" style="padding:0;">
+            <div class="card-header">Kontakt</div>
+            <div class="card-body">
+                <h4 class="card-title">Orga-Team</h4>
+                <p class="card-text">
+                    Email: <a href="mailto:{{ orga_mail }}">{{ orga_mail }}</a>
+                </p>
+            </div>
+        </div>
     </div>
 
 {% endblock %}

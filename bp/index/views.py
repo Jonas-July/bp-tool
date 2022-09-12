@@ -77,6 +77,7 @@ class TLIndexView(LoginRequiredMixin, OnlyAccessibleByMixin, TemplateView):
         context['logs_count'] = context['logs'].count()
         context['projects_without_recent_logs_count'] = Project.without_recent_logs(context['projects']).count() if context['projects'] else 0
         context['log_period'] = settings.LOG_REMIND_PERIOD_DAYS
+        context['orga_mail'] = hasattr(settings, 'SEND_MAILS_TO') and settings.SEND_MAILS_TO or ""
         return context
 
 class StudentIndexView(LoginRequiredMixin, OnlyAccessibleByMixin, TemplateView):
@@ -94,6 +95,7 @@ class StudentIndexView(LoginRequiredMixin, OnlyAccessibleByMixin, TemplateView):
         intervals_sorted_by_date_current_first = context['group'].get_past_and_current_intervals
         context['current_interval'] = intervals_sorted_by_date_current_first.first()
         context['most_recently_passed_interval'] = get_second_entry(intervals_sorted_by_date_current_first)
+        context['orga_mail'] = hasattr(settings, 'SEND_MAILS_TO') and settings.SEND_MAILS_TO or ""
         return context
 
 
