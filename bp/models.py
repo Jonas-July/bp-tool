@@ -219,7 +219,7 @@ class Student(models.Model):
 
     @property
     def total_hours(self):
-        total_hours = self.timetrackingentry_set.aggregate(total_hours=Coalesce(Sum('hours'), Decimal(0)))['total_hours']
+        total_hours = self.timetrackingentry_set.filter(interval__group=self.project).aggregate(total_hours=Coalesce(Sum('hours'), Decimal(0)))['total_hours']
         return round(total_hours, 2)
 
     def __str__(self):
