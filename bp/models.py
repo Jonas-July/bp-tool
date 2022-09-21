@@ -11,7 +11,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.conf import settings
 from django.urls import reverse_lazy
-from django.utils.datetime_safe import datetime
+from django.utils import timezone
 
 from bp.timetracking.models import *
 
@@ -133,7 +133,7 @@ class Project(models.Model):
         if not projects:
             projects = Project.get_active()
         remind_after_days = timedelta(days=settings.LOG_REMIND_PERIOD_DAYS) + timedelta(days=1)
-        latest_day_to_remind = datetime.now() - remind_after_days
+        latest_day_to_remind = timezone.now() - remind_after_days
         projects_not_covered = projects.annotate(last_log_date=Coalesce(Max('tllog__timestamp'), latest_day_to_remind))\
                                        .filter(last_log_date__lte=latest_day_to_remind).all()
         return projects_not_covered
