@@ -74,10 +74,7 @@ class TimetrackingOverview(LoginRequiredMixin, TemplateView):
         projects = self.request.user.tl.project_set.all()
         context["projects"] = projects.prefetch_related('student_set', 'timeinterval_set')
         context["timetables"] = \
-            [(project,
-              project.total_hours,
-              TimeTable(project.get_past_and_current_intervals, project.student_set.all(), hours_of_student_in_interval).get_table(),
-             ) for project in context["projects"]]
+            [(project, project.total_hours,) for project in context["projects"]]
         return context
 
 class TimetrackingProjectOverview(ProjectByGroupMixin, LoginRequiredMixin, TemplateView):
