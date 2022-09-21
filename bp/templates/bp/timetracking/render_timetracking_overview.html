@@ -30,4 +30,15 @@
         {% endfor %}
     </tr>
     {% endfor %}
+    {% if students %}
+    <tr>
+        <td>
+            Gesamtstunden:
+        </td>
+        {% for s in students %}
+            <td>{{s.total_hours}}</td>
+        {% endfor %}
+    </tr>
+    {% endif %}
+
 </table>

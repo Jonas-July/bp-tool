@@ -19,7 +19,7 @@
 
     <h1>Zeiten für {{ timeinterval.name }} {% if not is_student_editable %}(Archiviert){% endif %}</h1>
     <h5>{{ timeinterval.start }} - {{ timeinterval.end }}</h5>
-￼
+
     {% include "bp/timetracking/render_timetracking.html" with timetable=timetable %}
 
 {% endblock %}

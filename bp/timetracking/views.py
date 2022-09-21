@@ -100,7 +100,8 @@ class TimetrackingProjectOverview(ProjectByGroupMixin, LoginRequiredMixin, Templ
         project = self.get_object()
         context["project"] = project
         context["total_hours"] = project.total_hours
-        context["timetable"] = TimeTable(project.get_past_and_current_intervals, project.student_set.all(), hours_of_student_in_interval).get_table()
+        context["students"] = project.student_set.all()
+        context["timetable"] = TimeTable(project.get_past_and_current_intervals, context["students"], hours_of_student_in_interval).get_table()
 
         return context
 
@@ -255,6 +256,7 @@ class TimetrackingIntervalsDetailView(ProjectByRequestMixin, OnlyOwnTimeInterval
         context["group"] = project
         all_students = list(project.student_set.all())
         context["timetable"] = TimeTable(categories, all_students, hours_of_student_in_category).get_table()
+        context["student_summaries"] = [sum((hours_of_student_in_category(s, cat) for cat in categories)) for s in all_students]
         if is_student(self.request.user):
             context["editing_student"] = self.request.user.student
         context["is_student_editable"] = interval.is_editable_by_students()
