@@ -11,16 +11,39 @@
 
 {% block shown_block_to_confirmed_tl %}
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-      <a class="navbar-brand" href="#">BP Tool</a>
-      {{request.user.first_name}} {{request.user.last_name}} ({{request.user.username}})
+        <a class="navbar-brand" href="#">BP Tool</a>
+        {{request.user.first_name}} {{request.user.last_name}} ({{request.user.username}})
+
+        <div>
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url "bp:timetracking_tl_start" %}">Zeiterfassung</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url "bp:log_tl_start" %}">Logs</a>
+            </li>
+          </ul>
+        </div>
     </nav>
 {% endblock %}
 
 
 {% block shown_block_to_student %}
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-      <a class="navbar-brand" href="#">BP Tool</a>
-      {{request.user.first_name}} {{request.user.last_name}} ({{request.user.username}})
+        <a class="navbar-brand" href="#">BP Tool</a>
+        {{request.user.first_name}} {{request.user.last_name}} ({{request.user.username}})
+
+        <div>
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url "bp:timetracking_tl_start" %}">Zeiterfassung</a>
+            </li>
+          </ul>
+        </div>
     </nav>
 {% endblock %}
 

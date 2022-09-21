@@ -75,8 +75,14 @@ class Project(models.Model):
 
     @property
     def total_hours(self):
-        total_hours = self.timeinterval_set.aggregate(total_hours=Coalesce(Sum('timetrackingentry__hours'), Decimal(0)))['total_hours']
+        total_hours = sum((s.total_hours for s in self.student_set.all()), Decimal(0))
         return round(total_hours, 2)
+
+    @property
+    def expected_hours(self):
+        expected_hours_per_student = Decimal(270)
+        expected_hours = self.student_set.all().count() * expected_hours_per_student
+        return round(expected_hours, 2)
 
     @property
     def get_past_and_current_intervals(self):
@@ -211,6 +217,11 @@ class Student(models.Model):
     def get_active():
         return Student.objects.filter(bp__active=True)
 
+    @property
+    def total_hours(self):
+        total_hours = self.timetrackingentry_set.filter(interval__group=self.project).aggregate(total_hours=Coalesce(Sum('hours'), Decimal(0)))['total_hours']
+        return round(total_hours, 2)
+
     def __str__(self):
         return self.name
 
@@ -293,7 +304,7 @@ class TLLog(models.Model):
     comment = models.TextField(blank=True, verbose_name="Kommentar", help_text="Interner Kommentar des Orga-Teams zu diesem Eintrag")
     read = models.BooleanField(blank=True, default=False, verbose_name="Gelesen")
     handled = models.BooleanField(blank=True, default=False, verbose_name="Erledigt", help_text="Das Log forderte eine Reaktion des Orga-Teams, die bereits durchgeführt wurde.")
-    good_log = models.NullBooleanField(blank=True, default=None, verbose_name="Gutes Log?")
+    good_log = models.BooleanField(null=True, blank=True, default=None, verbose_name="Gutes Log?")
 
     @property
     def simple_timestamp(self):
