@@ -94,11 +94,11 @@
     {% endfor %}
     {% if student_summaries %}
     <tr>
-        <td>
+        <td class="font-weight-bold">
             Gesamtstunden:
         </td>
         {% for s in student_summaries %}
-            <td>{{s}}</td>
+            <td class="font-weight-bold">{{s}}</td>
         {% endfor %}
     </tr>
     {% endif %}
