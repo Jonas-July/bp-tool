@@ -1,13 +1,12 @@
 from django.urls import path, include
-from django.views.generic import TemplateView
 
+from bp.grading.urls import grading_patterns
 from bp.timetracking.urls import timetracking_patterns
 from bp.index.urls import index_and_login_patterns
 
 from bp.views import \
     ProjectListView, ProjectUngradedListView, ProjectView, grade_export_view, ProjectImportView, \
     TLView, TLListView, StudentListView, StudentImportView, \
-    AGGradeView, AGGradeSuccessView, AGGradeEarlyView, \
     LogListView, LogAttentionListView, LogUnreadListView, LogView, LogReminderView, \
     APILogMarkReadView, APILogMarkHandledView, APILogMarkGoodView, APILogMarkBadView, \
     LogTLOverview, LogTLCreateView, LogTLUpdateView, LogTLDeleteView, LogTLDetailView, \
@@ -36,11 +35,7 @@ urlpatterns = [
     path('orgalogs/<pk>/', OrgaLogView.as_view(), name='orga_log_detail'),
     path('student/', StudentListView.as_view(), name="student_list"),
     path('student/import/', StudentImportView.as_view(), name="student_import"),
-    path('grade/invalid/', TemplateView.as_view(template_name="bp/project_grade_invalid_secret.html"),
-         name="ag_grade_invalid"),
-    path('grade/<str:order_id>/success/', AGGradeSuccessView.as_view(), name="ag_grade_success"),
-    path('grade/<str:order_id>/early/', AGGradeEarlyView.as_view(), name="ag_grade_too_early"),
-    path('grade/<str:order_id>/<str:secret>/', AGGradeView.as_view(), name="ag_grade"),
+    path('grade/', include(grading_patterns)),
     path('log/', LogTLOverview.as_view(), name="log_tl_start"),
     path('log/<int:group>/new/', LogTLCreateView.as_view(), name="log_tl_create"),
     path('log/<int:group>/detail/<pk>/', LogTLDetailView.as_view(), name="log_tl_detail"),
