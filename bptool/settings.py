@@ -179,6 +179,12 @@ SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
 SESSION_COOKIE_SAMESITE = None
 SESSION_COOKIE_SECURE = True
 
+PRETIX_BASE_URL = "https://<your-hostname>/"
+PRETIX_ORGANIZER = "<organizer>"
+PRETIX_API_BASE_URL = f"{PRETIX_BASE_URL}api/v1/"
+PRETIX_API_ORGANIZER = PRETIX_ORGANIZER
+PRETIX_API_TOKEN = "<secret-api-token>"
+
 SEND_MAILS = True
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
