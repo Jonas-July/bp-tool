@@ -14,6 +14,8 @@ class TimeIntervalForm(forms.ModelForm):
 
         widgets = {
             'group': forms.HiddenInput,
+            'start': forms.DateInput(attrs={'type': 'date'}),
+            'end'  : forms.DateInput(attrs={'type': 'date'}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -27,8 +29,9 @@ class TimeIntervalForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
 
-        if cleaned_data['end'] < cleaned_data['start']:
-            return self.add_error('end', "Ende muss später als Beginn sein")
+        if cleaned_data.get('end', None) and cleaned_data.get('start', None):
+            if cleaned_data['end'] < cleaned_data['start']:
+                self.add_error('end', "Ende muss später als Beginn sein")
 
         return cleaned_data
 
@@ -62,8 +65,10 @@ class TimeIntervalGenerationForm(forms.Form):
     interval_length = forms.IntegerField(label="Länge der Intervalle (Tage)",
                                          widget=forms.NumberInput(attrs={'min': 1, 'max': 999, 'required': True, 'type': 'number',}))
     name_generator = forms.TypedChoiceField(label="Namensvergabe", choices=NameGeneratorFactory.get_choices(), coerce=NameGeneratorFactory.get_name_generator)
-    start = forms.DateField(label="Beginn des ersten Intervalls")
-    end = forms.DateField(label="Ende des letzten Intervalls")
+    start = forms.DateField(label="Beginn des ersten Intervalls",
+                            widget=forms.DateInput(attrs={'type': 'date'}))
+    end = forms.DateField(label="Ende des letzten Intervalls",
+                            widget=forms.DateInput(attrs={'type': 'date'}))
 
     def __init__(self, *args, **kwargs):
         """ Grants access to the request object so that only projects of the current user
@@ -81,7 +86,7 @@ class TimeIntervalGenerationForm(forms.Form):
         if cleaned_data.get('end', None) and cleaned_data.get('start', None):
             if cleaned_data['end'] < cleaned_data['start']:
                 self.add_error('end', "Ende muss später als Beginn sein")
-            if cleaned_data['end'] > cleaned_data['start'] + timedelta(weeks=30):
+            elif cleaned_data['end'] > cleaned_data['start'] + timedelta(weeks=30):
                 self.add_error('end', "Es können nur maximal 30 Wochen generiert werden")
 
         if cleaned_data.get('interval_length', None) != None:
