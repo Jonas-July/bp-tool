@@ -62,6 +62,8 @@ class TimetrackingOverview(LoginRequiredMixin, TemplateView):
     def get(self, request, *args, **kwargs):
         if not is_tl_or_student(request.user):
             return redirect("bp:index")
+        if is_student(request.user):
+            return redirect("bp:timetracking_project_overview", group=request.user.student.project.nr)
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -69,14 +71,10 @@ class TimetrackingOverview(LoginRequiredMixin, TemplateView):
             hours = interval.timetrackingentry_set.filter(student=student).aggregate(hours=Coalesce(Sum('hours'), Decimal(0)))['hours']
             return round(hours, 2)
         context = super().get_context_data(**kwargs)
-        projects = self.request.user.tl.project_set.all() if is_tl(self.request.user) \
-                   else Project.objects.filter(pk=self.request.user.student.project.pk)
+        projects = self.request.user.tl.project_set.all()
         context["projects"] = projects.prefetch_related('student_set', 'timeinterval_set')
         context["timetables"] = \
-            [(project,
-              project.total_hours,
-              TimeTable(project.get_past_and_current_intervals, project.student_set.all(), hours_of_student_in_interval).get_table(),
-             ) for project in context["projects"]]
+            [(project, project.total_hours,) for project in context["projects"]]
         return context
 
 class TimetrackingProjectOverview(ProjectByGroupMixin, LoginRequiredMixin, TemplateView):
