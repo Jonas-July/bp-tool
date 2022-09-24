@@ -1,6 +1,7 @@
 {% extends "bp/base.html" %}
 
 {% load fontawesome_5 %}
+{% load tags_bp %}
 
 {% block breadcrumbs %}
     <li class="breadcrumb-item"><a href="{% url "bp:index" %}">Übersicht</a></li>
@@ -12,75 +13,8 @@
 {% block content %}
     <h1>{{ project.nr }}: {{ project.title }}</h1>
 
-    <table class="table">
-        <tr>
-            <td>TL:</td><td>{% if project.tl %}<a href="{% url "bp:tl_detail" pk=project.tl.pk %}">{{ project.tl }}</a>{% else %}-{% endif %}</td>
-        </tr>
-        <tr>
-            <td>Mitglieder:</td><td><a href="mailto:{{ project.student_mail }}">{{ project.student_list }}&nbsp;{% fa5_icon "envelope" "far" %}</a><br>
-                                    {{ project.student_mail }}</td>
-        </tr>
-        <tr>
-            <td>AG:</td><td><a href="mailto:{{ project.ag_mail }}">{{ project.ag }}&nbsp;{% fa5_icon "envelope" "far" %}</a></td>
-        </tr>
-        <tr>
-            <td>Weitere Informationen:</td><td><a href={{ info_url }}>{{ info_url }}</a></td>
-        </tr>
-        {% if user.is_staff and project.ag_points >= 0 %}
-            <tr>
-                <td>Bewertung:</td><td><b>{{ project.ag_points }} Punkte</b><br><br>{{ project.ag_points_justification|linebreaks }}</td>
-            </tr>
-        {% endif %}
-        <tr>
-            <td>Gesamtstunden:</td><td><a href="{% url "bp:timetracking_project_overview" group=project.nr %}">{{ total_hours_spent }}</a></td>
-        </tr>
-    </table>
+    {% project_info_table %}
 
-    {% include "bp/render_all_gradings.html" %}
-
-    <h2>Orga-Logs ({{ orga_log_count }})</h2>
-
-    {% if orga_log_count > 0 %}
-        {% include "bp/render_orga_logs.html" with logs=orga_logs %}
-    {% else %}
-
-    {% endif %}
-
-    <h2>Logs ({{ log_count }})</h2>
-
-    {% if log_count > 0 %}
-        <canvas id="statusChart" width="100%" height="15vh" class="mb-5"></canvas>
-        <script>
-            const ctx = $('#statusChart');
-            const myChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    datasets: [{
-                        label: 'status',
-                        data: {{project.status_json_string|safe}},
-                        backgroundColor: '#1F9BCF',
-                        borderColor: '#1F9BCF',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            suggestedMin: -2,
-                            suggestedMax: 2
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    }
-                }
-            });
-            </script>
-        {% include "bp/render_logs.html" with logs=logs %}
-    {% else %}
-
-    {% endif %}
+    {% project_info_tabs %}
 
 {% endblock %}
