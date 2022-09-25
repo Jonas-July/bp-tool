@@ -23,6 +23,9 @@
         <tr>
             <td>AG:</td><td><a href="mailto:{{ project.ag_mail }}">{{ project.ag }}&nbsp;{% fa5_icon "envelope" "far" %}</a></td>
         </tr>
+        <tr>
+            <td>Weitere Informationen:</td><td><a href={{ info_url }}>{{ info_url }}</a></td>
+        </tr>
         {% if user.is_staff and project.ag_points >= 0 %}
             <tr>
                 <td>Bewertung:</td><td><b>{{ project.ag_points }} Punkte</b><br><br>{{ project.ag_points_justification|linebreaks }}</td>

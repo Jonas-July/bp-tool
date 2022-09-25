@@ -56,6 +56,18 @@ def load_pretix_single_entry(url):
 
     return json.loads(r.text)
 
+def get_pretix_projectinfo_url(project):
+    """
+    Get Pretix url to more infos on the project
+
+    :param project: project of interest
+    :type project: Project
+    :return: Pretix URL
+    :rtype: str
+    """
+    event_slug = project.bp.pretix_event_ag
+    order_id = project.order_id
+    return f"{settings.PRETIX_BASE_URL}control/event/{settings.PRETIX_ORGANIZER}/{event_slug}/orders/{order_id}"
 
 def pretix_url(endpoint, event_slug):
     """

@@ -19,6 +19,7 @@ from bp.grading.ag.views import ProjectGradesMixin
 
 from bp.forms import ProjectImportForm, StudentImportForm, TLLogForm, TLLogUpdateForm, LogReminderForm
 from bp.models import BP, Project, Student, TL, TLLog, OrgaLog
+from bp.pretix import get_pretix_projectinfo_url
 
 
 def error_400(request, exception):
@@ -80,6 +81,7 @@ class ProjectView(PermissionRequiredMixin, ProjectGradesMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context["info_url"] = get_pretix_projectinfo_url(context["project"])
         context["logs"] = context["project"].tllog_set.all().prefetch_related("current_problems")
         context["log_count"] = context["logs"].count()
         context["orga_logs"] = context["project"].orgalog_set.all().prefetch_related("current_problems")
