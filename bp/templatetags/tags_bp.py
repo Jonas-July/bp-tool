@@ -6,6 +6,7 @@ from django.utils.safestring import mark_safe
 from bp.models import TLLog
 
 from bp.grading.ag.views import ProjectGradesMixin
+from .tags_project_info_table import ProjectInfoTable
 
 register = template.Library()
 
@@ -77,6 +78,7 @@ class RenderTagNode(template.Node):
 def project_info_table(context):
     return {
         'project' : context['project'],
+        'infos' : ProjectInfoTable.get_ordered_infos(),
     }
 
 @register.inclusion_tag('bp/project_info_tabs.html', takes_context=True)

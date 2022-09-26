@@ -1,31 +1,10 @@
 {% load fontawesome_5 %}
-{% load tags_project_info_table %}
+{% load tags_bp %}
 
 <table class="table">
-    {% comment The idea for this table is to eventually look like this: %}
     {% for info in infos %}
         <tr>
-            {% info %}
+            {% render info tags_project_info_table %}
         </tr>
     {% endfor %}
-    {% endcomment %}
-
-    <tr>
-        {% tl_info %}
-    </tr>
-    <tr>
-        {% member_info %}
-    </tr>
-    <tr>
-        {% ag_info %}
-    </tr>
-    <tr>
-        {% pretix_info %}
-    </tr>
-    <tr>
-        {% grade_info %}
-    </tr>
-    <tr>
-        {% hours_info %}
-    </tr>
 </table>
