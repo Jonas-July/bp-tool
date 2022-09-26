@@ -45,6 +45,35 @@ def log_status(status):
         return mark_safe(f'<span style="color:{color}">{display}</span>')
     return ""
 
+@register.tag(name='render')
+def render_tag(parser, token):
+    """
+        Tag for rendering other tags based on their name.
+        Since custom tags need to be loaded, their tag set is required.
+        Example Usage:
+        {% render_tag my_tag my_tag_set %}
+        Result is identical to:
+        {% load my_tag from my_tag_set %}
+        {% my_tag %}
+    """
+    try:
+        # split_contents() knows not to split quoted strings.
+        tag_name, tag_to_be_rendered, template_tag_set = token.split_contents()
+    except ValueError:
+        raise template.TemplateSyntaxError(
+            f"{token.contents.split()[0]} tag requires exactly two arguments"
+        )
+    return RenderTagNode(tag_to_be_rendered, template_tag_set)
+
+class RenderTagNode(template.Node):
+    def __init__(self, tag, template_tag_set):
+        self.template_tag_set = template_tag_set
+        self.tag = template.Variable(tag)
+    def render(self, context):
+        tag_name = self.tag.resolve(context)
+        template_code = f"{{% load {tag_name} from {self.template_tag_set} %}}{{% {tag_name} %}}"
+        return template.Template(template_code).render(context)
+
 @register.inclusion_tag('bp/project_info_table.html', takes_context=True)
 def project_info_table(context):
     return {
