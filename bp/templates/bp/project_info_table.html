@@ -1,0 +1,25 @@
+{% load fontawesome_5 %}
+
+<table class="table">
+    <tr>
+        <td>TL:</td><td>{% if project.tl %}<a href="{% url "bp:tl_detail" pk=project.tl.pk %}">{{ project.tl }}</a>{% else %}-{% endif %}</td>
+    </tr>
+    <tr>
+        <td>Mitglieder:</td><td><a href="mailto:{{ project.student_mail }}">{{ project.student_list }}&nbsp;{% fa5_icon "envelope" "far" %}</a><br>
+                                {{ project.student_mail }}</td>
+    </tr>
+    <tr>
+        <td>AG:</td><td><a href="mailto:{{ project.ag_mail }}">{{ project.ag }}&nbsp;{% fa5_icon "envelope" "far" %}</a></td>
+    </tr>
+    <tr>
+        <td>Weitere Informationen:</td><td><a href={{ info_url }}>{{ info_url }}</a></td>
+    </tr>
+    {% if project.ag_points >= 0 %}
+        <tr>
+            <td>Bewertung:</td><td><b>{{ project.ag_points }} Punkte</b><br><br>{{ project.ag_points_justification|linebreaks }}</td>
+        </tr>
+    {% endif %}
+    <tr>
+        <td>Gesamtstunden:</td><td><a href="{% url "bp:timetracking_project_overview" group=project.nr %}">{{ total_hours_spent }}</a></td>
+    </tr>
+</table>
