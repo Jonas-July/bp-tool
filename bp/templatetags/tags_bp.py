@@ -5,7 +5,6 @@ from django.utils.safestring import mark_safe
 
 from bp.models import TLLog
 
-from bp.grading.ag.views import ProjectGradesMixin
 from .tags_project_info_table import ProjectInfoTable
 
 register = template.Library()
@@ -83,15 +82,6 @@ def project_info_table(context):
 
 @register.inclusion_tag('bp/project_info_tabs.html', takes_context=True)
 def project_info_tabs(context):
-    tab_context = dict()
-    tab_context["project"] = context["project"]
-
-    tab_context["logs"] = context["project"].tllog_set.all().prefetch_related("current_problems")
-    tab_context["log_count"] = tab_context["logs"].count()
-
-    tab_context["orga_logs"] = context["project"].orgalog_set.all().prefetch_related("current_problems")
-    tab_context["orga_log_count"] = tab_context["orga_logs"].count()
-
-    tab_context = ProjectGradesMixin.get_grading_context_data(tab_context, context["project"])
-
-    return tab_context
+    return {
+        'project' : context['project'],
+    }
