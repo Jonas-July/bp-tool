@@ -6,6 +6,7 @@ from django.utils.safestring import mark_safe
 from bp.models import TLLog
 
 from .tags_project_info_table import ProjectInfoTable
+from .tags_project_info_misc import ProjectInfoTabs
 
 register = template.Library()
 
@@ -84,4 +85,5 @@ def project_info_table(context):
 def project_info_tabs(context):
     return {
         'project' : context['project'],
+        'infos' : ProjectInfoTabs.get_ordered_infos(),
     }

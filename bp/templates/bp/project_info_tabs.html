@@ -1,44 +1,24 @@
 {% load tags_project_info_misc %}
+{% load tags_bp %}
 
 <ul class="nav nav-tabs">
-    <li class="nav-item">
-        <a class="nav-link active" data-toggle="tab"
-           href="#g_1">
-            {% log_description %}
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link " data-toggle="tab"
-           href="#g_2">
-            {% orgalog_description %}
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link " data-toggle="tab"
-           href="#g_3">
-            {% grading_description %}
-        </a>
-    </li>
+    {% for desc, content in infos %}
+	    <li class="nav-item">
+	        <a class="nav-link {% if forloop.first %}active{% endif %}" data-toggle="tab"
+	           href="#g_{{ forloop.counter }}">
+	            {% render desc tags_project_info_misc %}
+	        </a>
+	    </li>
+    {% endfor %}
 </ul>
 
 <div id="myTabContent" class="tab-content">
 
-    <div class="tab-pane fade active show" id="g_1">
-        <h3 class="my-4">{% log_description %}</h3>
+    {% for desc, content in infos %}
+	    <div class="tab-pane fade {% if forloop.first %}active show{% endif %}" id="g_{{ forloop.counter }}">
+	        <h3 class="my-4">{% render desc tags_project_info_misc %}</h3>
 
-        {% log_content %}
-    </div>
-
-    <div class="tab-pane fade" id="g_2">
-        <h3 class="my-4">{% orgalog_description %}</h3>
-
-        {% orgalog_content %}
-    </div>
-
-    <div class="tab-pane fade" id="g_3">
-        <h3 class="my-4">{% grading_description %}</h3>
-
-        {% grading_content %}
-    </div>
-
+	        {% render content tags_project_info_misc %}
+	    </div>
+    {% endfor %}
 </div>
