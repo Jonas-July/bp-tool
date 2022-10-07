@@ -3,13 +3,13 @@ from django.urls import path, include
 from bp.grading.urls import grading_patterns
 from bp.timetracking.urls import timetracking_patterns
 from bp.index.urls import index_and_login_patterns
+from bp.tllogs.urls import tllog_patterns
 
 from bp.views import \
     ProjectListView, ProjectUngradedListView, ProjectView, grade_export_view, ProjectImportView, \
     TLView, TLListView, StudentListView, StudentImportView, \
     LogListView, LogAttentionListView, LogUnreadListView, LogView, LogReminderView, \
     APILogMarkReadView, APILogMarkHandledView, APILogMarkGoodView, APILogMarkBadView, \
-    LogTLOverview, LogTLCreateView, LogTLUpdateView, LogTLDeleteView, LogTLDetailView, \
     OrgaLogView \
 
 app_name = "bp"
@@ -36,10 +36,6 @@ urlpatterns = [
     path('student/', StudentListView.as_view(), name="student_list"),
     path('student/import/', StudentImportView.as_view(), name="student_import"),
     path('grade/', include(grading_patterns)),
-    path('log/', LogTLOverview.as_view(), name="log_tl_start"),
-    path('log/<int:group>/new/', LogTLCreateView.as_view(), name="log_tl_create"),
-    path('log/<int:group>/detail/<pk>/', LogTLDetailView.as_view(), name="log_tl_detail"),
-    path('log/<int:group>/edit/<pk>/', LogTLUpdateView.as_view(), name="log_tl_update"),
-    path('log/<int:group>/delete/<pk>/', LogTLDeleteView.as_view(), name="log_tl_delete"),
+    path('log/', include(tllog_patterns)),
     path('timetracking/', include(timetracking_patterns)),
 ]
