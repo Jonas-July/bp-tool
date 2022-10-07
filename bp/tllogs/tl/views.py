@@ -5,21 +5,27 @@ from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, DetailView, UpdateView, CreateView, DeleteView
 
-
 from bp.forms import TLLogForm, TLLogUpdateForm
 from bp.models import BP, Project, TLLog
+
+from bp.roles import is_tl, is_tl_of_group
+
+
+class ProjectByRequestMixin:
+    def get_project_by_request(self, request):
+        return get_object_or_404(Project, nr=self.kwargs.get("group", -1), bp=BP.get_active())
 
 
 class LogTLOverview(LoginRequiredMixin, TemplateView):
     template_name = "bp/log_tl_overview.html"
 
     def get(self, request, *args, **kwargs):
-        if request.user.is_superuser:
+        if not is_tl(request.user):
             return redirect("bp:index")
         return super().get(request, *args, **kwargs)
 
 
-class LogTLCreateView(LoginRequiredMixin, CreateView):
+class LogTLCreateView(ProjectByRequestMixin, LoginRequiredMixin, CreateView):
     model = TLLog
     form_class = TLLogForm
     template_name = "bp/log_tl_create_update.html"
@@ -36,12 +42,11 @@ class LogTLCreateView(LoginRequiredMixin, CreateView):
         messages.add_message(self.request, messages.SUCCESS, "Log gespeichert")
         return reverse_lazy('bp:log_tl_start')
 
-    def get_project_by_request(self, request):
-        return get_object_or_404(Project, nr=self.kwargs.get("group", -1), bp=BP.get_active())
-
     def get(self, request, *args, **kwargs):
         project = self.get_project_by_request(request)
-        if self.request.user.tl != project.tl:
+        if not is_tl(request.user):
+            return redirect("bp:index")
+        if not is_tl_of_group(project, request.user):
             messages.add_message(request, messages.WARNING, "Du darfst für diese Gruppe kein Log anlegen")
             return redirect("bp:log_tl_start")
         return super().get(request, *args, **kwargs)
@@ -58,15 +63,16 @@ class LogTLCreateView(LoginRequiredMixin, CreateView):
 
         return initials
 
-class OnlyOwnLogsMixin:
-    def get_object(self, queryset=None):
-        log = super().get_object(queryset)
-        if log.tl != self.request.user.tl:
-            raise Http404("Zugriff verweigert")
-        return log
+
+def does_log_belong_to_group(group, log):
+    return log.group == group
+
+def is_log_of_tl(user, log):
+    author = log.tl
+    return user.tl == author
 
 
-class LogTLUpdateView(LoginRequiredMixin, OnlyOwnLogsMixin, UpdateView):
+class LogTLUpdateView(ProjectByRequestMixin, LoginRequiredMixin, UpdateView):
     model = TLLog
     form_class = TLLogUpdateForm
     template_name = "bp/log_tl_create_update.html"
@@ -75,17 +81,58 @@ class LogTLUpdateView(LoginRequiredMixin, OnlyOwnLogsMixin, UpdateView):
         messages.add_message(self.request, messages.SUCCESS, "Log aktualisiert")
         return reverse_lazy('bp:log_tl_start')
 
+    def get(self, request, *args, **kwargs):
+        project = self.get_project_by_request(request)
+        if not is_tl(request.user):
+            return redirect("bp:index")
+        if not is_tl_of_group(project, request.user):
+            messages.add_message(request, messages.WARNING, "Du darfst für diese Gruppe kein Log ändern")
+            return redirect("bp:log_tl_start")
+        if not does_log_belong_to_group(project, self.get_object()):
+            messages.add_message(request, messages.WARNING, "Ungültiges Log")
+            return redirect("bp:log_tl_start")
+        if not is_log_of_tl(request.user, self.get_object()):
+            messages.add_message(request, messages.WARNING, "Du darfst dieses Log nicht ändern")
+            return redirect("bp:log_tl_start")
+        return super().get(request, *args, **kwargs)
 
-class LogTLDetailView(LoginRequiredMixin, OnlyOwnLogsMixin, DetailView):
+
+class LogTLDetailView(ProjectByRequestMixin, LoginRequiredMixin, DetailView):
     model = TLLog
     template_name = "bp/log_tl_detail.html"
     context_object_name = "log"
 
+    def get(self, request, *args, **kwargs):
+        project = self.get_project_by_request(request)
+        if not is_tl(request.user):
+            return redirect("bp:index")
+        if not is_tl_of_group(project, request.user):
+            messages.add_message(request, messages.WARNING, "Du darfst kein Log dieser Gruppe ansehen")
+            return redirect("bp:log_tl_start")
+        if not does_log_belong_to_group(project, self.get_object()):
+            messages.add_message(request, messages.WARNING, "Ungültiges Log")
+            return redirect("bp:log_tl_start")
+        return super().get(request, *args, **kwargs)
 
-class LogTLDeleteView(LoginRequiredMixin, DeleteView):
+class LogTLDeleteView(ProjectByRequestMixin, LoginRequiredMixin, DeleteView):
     model = TLLog
     template_name = "bp/log_tl_delete.html"
 
     def get_success_url(self):
         messages.add_message(self.request, messages.SUCCESS, "Log gelöscht")
         return reverse_lazy('bp:log_tl_start')
+
+    def get(self, request, *args, **kwargs):
+        project = self.get_project_by_request(request)
+        if not is_tl(request.user):
+            return redirect("bp:index")
+        if not is_tl_of_group(project, request.user):
+            messages.add_message(request, messages.WARNING, "Du darfst für diese Gruppe kein Log löschen")
+            return redirect("bp:log_tl_start")
+        if not does_log_belong_to_group(project, self.get_object()):
+            messages.add_message(request, messages.WARNING, "Ungültiges Log")
+            return redirect("bp:log_tl_start")
+        if not is_log_of_tl(request.user, self.get_object()):
+            messages.add_message(request, messages.WARNING, "Du darfst dieses Log nicht löschen")
+            return redirect("bp:log_tl_start")
+        return super().get(request, *args, **kwargs)
