@@ -1,6 +1,6 @@
 from django.urls import path, include
 
-from bp.views import LogTLOverview, LogTLCreateView, LogTLUpdateView, LogTLDeleteView, LogTLDetailView
+from .tl.views import LogTLOverview, LogTLCreateView, LogTLUpdateView, LogTLDeleteView, LogTLDetailView
 
 tllog_patterns = [
     path('', LogTLOverview.as_view(), name="log_tl_start"),
