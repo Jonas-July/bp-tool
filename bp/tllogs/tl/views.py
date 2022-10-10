@@ -1,19 +1,17 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404
-from django.shortcuts import redirect, render, get_object_or_404
+from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, DetailView, UpdateView, CreateView, DeleteView
 
-from .forms import TLLogForm, TLLogUpdateForm
-from bp.models import BP, Project, TLLog
 
 from bp.roles import is_tl, is_tl_of_group
 
-
-class ProjectByRequestMixin:
-    def get_project_by_request(self, request):
-        return get_object_or_404(Project, nr=self.kwargs.get("group", -1), bp=BP.get_active())
+from ..models import TLLog
+from .forms import TLLogForm, TLLogUpdateForm
+from .mixins import ProjectByRequestMixin
+from .roles import does_log_belong_to_group, is_log_of_tl
 
 
 class LogTLOverview(LoginRequiredMixin, TemplateView):
@@ -69,14 +67,6 @@ class LogTLCreateView(ProjectByRequestMixin, LoginRequiredMixin, CreateView):
         return context
 
 
-def does_log_belong_to_group(group, log):
-    return log.group == group
-
-def is_log_of_tl(user, log):
-    author = log.tl
-    return user.tl == author
-
-
 class LogTLUpdateView(ProjectByRequestMixin, LoginRequiredMixin, UpdateView):
     model = TLLog
     form_class = TLLogUpdateForm
@@ -123,6 +113,7 @@ class LogTLDetailView(ProjectByRequestMixin, LoginRequiredMixin, DetailView):
             messages.add_message(request, messages.WARNING, "Ungültiges Log")
             return redirect("bp:log_tl_start")
         return super().get(request, *args, **kwargs)
+
 
 class LogTLDeleteView(ProjectByRequestMixin, LoginRequiredMixin, DeleteView):
     model = TLLog

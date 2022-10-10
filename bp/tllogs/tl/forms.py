@@ -1,6 +1,6 @@
 from django import forms
 
-from bp.models import TLLog
+from ..models import TLLog
 
 class TLLogForm(forms.ModelForm):
     class Meta:
