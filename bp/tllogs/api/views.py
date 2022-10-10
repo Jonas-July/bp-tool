@@ -5,54 +5,36 @@ from django.views.generic import DetailView
 from bp.models import TLLog
 from bp.roles import is_orga
 
-
-class APILogMarkReadView(LoginRequiredMixin, DetailView):
+class APILogMark(LoginRequiredMixin, DetailView):
     http_method_names = ['post']
     model = TLLog
+
+    def mark(self):
+        return None
 
     def post(self, request, *args, **kwargs):
         if not is_orga(request.user):
             return HttpResponseForbidden("")
         log = self.get_object()
-        log.read = True
+        self.mark(log)
         log.save()
         return HttpResponse("")
 
-
-class APILogMarkHandledView(LoginRequiredMixin, DetailView):
-    http_method_names = ['post']
-    model = TLLog
-
-    def post(self, request, *args, **kwargs):
-        if request.user.is_superuser:
-            log = self.get_object()
-            log.handled = True
-            log.save()
-            return HttpResponse("")
-        return HttpResponseForbidden("")
+class APILogMarkReadView(APILogMark):
+    def mark(self, log):
+        log.read = True
 
 
-class APILogMarkGoodView(LoginRequiredMixin, DetailView):
-    http_method_names = ['post']
-    model = TLLog
-
-    def post(self, request, *args, **kwargs):
-        if request.user.is_superuser:
-            log = self.get_object()
-            log.good_log = True
-            log.save()
-            return HttpResponse("")
-        return HttpResponseForbidden("")
+class APILogMarkHandledView(APILogMark):
+    def mark(self, log):
+        log.handled = True
 
 
-class APILogMarkBadView(LoginRequiredMixin, DetailView):
-    http_method_names = ['post']
-    model = TLLog
+class APILogMarkGoodView(APILogMark):
+    def mark(self, log):
+        log.good_log = True
 
-    def post(self, request, *args, **kwargs):
-        if request.user.is_superuser:
-            log = self.get_object()
-            log.good_log = False
-            log.save()
-            return HttpResponse("")
-        return HttpResponseForbidden("")
+
+class APILogMarkBadView(APILogMark):
+    def mark(self, log):
+        log.good_log = False
