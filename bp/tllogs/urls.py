@@ -1,6 +1,6 @@
 from django.urls import path, include
 
-from bp.views import APILogMarkReadView, APILogMarkHandledView, APILogMarkGoodView, APILogMarkBadView
+from .api.views import APILogMarkReadView, APILogMarkHandledView, APILogMarkGoodView, APILogMarkBadView
 from .orga.views import LogListView, LogAttentionListView, LogUnreadListView, LogReminderView, LogView
 from .tl.views import LogTLOverview, LogTLCreateView, LogTLUpdateView, LogTLDeleteView, LogTLDetailView
 
