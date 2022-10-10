@@ -3,6 +3,12 @@
 {% load bootstrap4 %}
 {% load fontawesome_5 %}
 
+{% block breadcrumbs %}
+    <li class="breadcrumb-item"><a href="{% url "bp:index" %}">Übersicht</a></li>
+    <li class="breadcrumb-item"><a href="{% url "bp:log_tl_start" %}">TL Log</a></li>
+    <li class="breadcrumb-item active">TL Log löschen</li>
+{% endblock %}
+
 {% block tl_content %}
     <p>Soll folgendes Log wirklich gelöscht werden?</p>
 
