@@ -4,7 +4,7 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, FormView
 
-from bp.forms import LogReminderForm
+from .forms import LogReminderForm
 from bp.models import Project, TLLog
 from bp.views import FilterByActiveBPMixin
 
