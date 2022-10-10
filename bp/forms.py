@@ -1,12 +1,9 @@
-from datetime import date
-
 from django import forms
 from django.conf import settings
-from django.core.exceptions import ValidationError
 from django.core.mail import EmailMessage
 from django.forms.utils import ErrorList
 
-from bp.models import Project, TLLog, BP, TL, TLLogReminder
+from bp.models import Project, TLLogReminder
 
 
 class ProjectImportForm(forms.Form):
@@ -17,41 +14,6 @@ class ProjectImportForm(forms.Form):
 class StudentImportForm(forms.Form):
     csvfile = forms.FileField(label="Teilnehmendenliste (CSV)",
                       help_text="CSV-Datei Komma-Separiert. Muss die Spalten ID, Vollständiger Name, E-Mail-Adresse, Gruppe enthalten")
-
-
-class TLLogForm(forms.ModelForm):
-    class Meta:
-        model = TLLog
-        fields = ['status', 'current_problems', 'text', 'requires_attention', 'group', 'bp', 'tl']
-
-        widgets = {
-            'bp': forms.HiddenInput,
-            'tl': forms.HiddenInput,
-            'status': forms.RadioSelect,
-            'current_problems': forms.CheckboxSelectMultiple,
-        }
-
-    def __init__(self, *args, **kwargs):
-        """ Grants access to the request object so that only projects of the current user
-        are given as options"""
-
-        self.request = kwargs.pop('request')
-        super(TLLogForm, self).__init__(*args, **kwargs)
-        self.fields['group'].queryset = Project.objects.filter(
-            tl=self.request.user.tl)
-        self.fields['bp'].queryset = BP.objects.filter(active=True)
-        self.fields['tl'].queryset = TL.objects.filter(pk=self.request.user.tl.pk)
-
-
-class TLLogUpdateForm(forms.ModelForm):
-    class Meta:
-        model = TLLog
-        fields = ['status', 'current_problems', 'text', 'requires_attention']
-
-        widgets = {
-            'status': forms.RadioSelect,
-            'current_problems': forms.CheckboxSelectMultiple,
-        }
 
 
 class LogReminderForm(forms.Form):

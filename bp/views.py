@@ -17,7 +17,7 @@ from django.views.generic import TemplateView, ListView, DetailView, UpdateView,
 
 from bp.grading.ag.views import ProjectGradesMixin
 
-from bp.forms import ProjectImportForm, StudentImportForm, TLLogForm, TLLogUpdateForm, LogReminderForm
+from bp.forms import ProjectImportForm, StudentImportForm, LogReminderForm
 from bp.models import BP, Project, Student, TL, TLLog, OrgaLog
 
 

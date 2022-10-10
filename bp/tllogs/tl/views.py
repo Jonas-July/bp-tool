@@ -5,7 +5,7 @@ from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, DetailView, UpdateView, CreateView, DeleteView
 
-from bp.forms import TLLogForm, TLLogUpdateForm
+from .forms import TLLogForm, TLLogUpdateForm
 from bp.models import BP, Project, TLLog
 
 from bp.roles import is_tl, is_tl_of_group
