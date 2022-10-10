@@ -13,7 +13,7 @@ from .project_info_tags import *
 
 class LogListView(PermissionRequiredMixin, FilterByActiveBPMixin, ListView):
     model = TLLog
-    template_name = "bp/log_overview.html"
+    template_name = "bp/tllogs/orga/log_overview.html"
     context_object_name = "logs"
     permission_required = "bp.view_tllog"
     paginate_by = 20
@@ -49,13 +49,13 @@ class LogUnreadListView(LogListView):
 
 class LogView(PermissionRequiredMixin, DetailView):
     model = TLLog
-    template_name = "bp/log.html"
+    template_name = "bp/tllogs/orga/log.html"
     context_object_name = "log"
     permission_required = "bp.view_tllog"
 
 
 class LogReminderView(PermissionRequiredMixin, FormView):
-    template_name = "bp/log_reminder.html"
+    template_name = "bp/tllogs/orga/log_reminder.html"
     form_class = LogReminderForm
     permission_required = "bp.view_tllog"
     success_url = reverse_lazy("bp:log_list")
