@@ -54,7 +54,7 @@
                 <h3 class="my-4">{{ project.nr }}: {{ project.title }}</h3>
 
                 <h4>Logs ({{ project.tllog_set.count }})</h4>
-                {% include "bp/tllogs/render_logs.html" with logs=project.tllog_set.all %}
+                {% include "bp/tllogs/render_logs.html" with logs=project.tllog_set.all can_read_as_orga=True %}
             </div>
         {% endfor %}
     </div>
