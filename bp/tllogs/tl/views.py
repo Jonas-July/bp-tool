@@ -63,6 +63,11 @@ class LogTLCreateView(ProjectByRequestMixin, LoginRequiredMixin, CreateView):
 
         return initials
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["group"] = self.get_project_by_request(self.request)
+        return context
+
 
 def does_log_belong_to_group(group, log):
     return log.group == group
@@ -95,6 +100,11 @@ class LogTLUpdateView(ProjectByRequestMixin, LoginRequiredMixin, UpdateView):
             messages.add_message(request, messages.WARNING, "Du darfst dieses Log nicht ändern")
             return redirect("bp:log_tl_start")
         return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["group"] = self.get_project_by_request(self.request)
+        return context
 
 
 class LogTLDetailView(ProjectByRequestMixin, LoginRequiredMixin, DetailView):
