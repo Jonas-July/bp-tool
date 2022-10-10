@@ -17,7 +17,7 @@ class ProjectByRequestMixin:
 
 
 class LogTLOverview(LoginRequiredMixin, TemplateView):
-    template_name = "bp/log_tl_overview.html"
+    template_name = "bp/tllogs/tl/log_tl_overview.html"
 
     def get(self, request, *args, **kwargs):
         if not is_tl(request.user):
@@ -28,7 +28,7 @@ class LogTLOverview(LoginRequiredMixin, TemplateView):
 class LogTLCreateView(ProjectByRequestMixin, LoginRequiredMixin, CreateView):
     model = TLLog
     form_class = TLLogForm
-    template_name = "bp/log_tl_create_update.html"
+    template_name = "bp/tllogs/tl/log_tl_create_update.html"
 
     def get_form_kwargs(self):
         """ Passes the request object to the form class.
@@ -75,7 +75,7 @@ def is_log_of_tl(user, log):
 class LogTLUpdateView(ProjectByRequestMixin, LoginRequiredMixin, UpdateView):
     model = TLLog
     form_class = TLLogUpdateForm
-    template_name = "bp/log_tl_create_update.html"
+    template_name = "bp/tllogs/tl/log_tl_create_update.html"
 
     def get_success_url(self):
         messages.add_message(self.request, messages.SUCCESS, "Log aktualisiert")
@@ -99,7 +99,7 @@ class LogTLUpdateView(ProjectByRequestMixin, LoginRequiredMixin, UpdateView):
 
 class LogTLDetailView(ProjectByRequestMixin, LoginRequiredMixin, DetailView):
     model = TLLog
-    template_name = "bp/log_tl_detail.html"
+    template_name = "bp/tllogs/tl/log_tl_detail.html"
     context_object_name = "log"
 
     def get(self, request, *args, **kwargs):
@@ -116,7 +116,7 @@ class LogTLDetailView(ProjectByRequestMixin, LoginRequiredMixin, DetailView):
 
 class LogTLDeleteView(ProjectByRequestMixin, LoginRequiredMixin, DeleteView):
     model = TLLog
-    template_name = "bp/log_tl_delete.html"
+    template_name = "bp/tllogs/tl/log_tl_delete.html"
 
     def get_success_url(self):
         messages.add_message(self.request, messages.SUCCESS, "Log gelöscht")

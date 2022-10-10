@@ -30,7 +30,7 @@
                 <a href="{% url "bp:log_tl_create" project.nr %}" class="btn btn-success">Log hinzufügen</a>
 
                 <h4 class="mt-3">Log{{ project.tllog_set.count|pluralize }} ({{ project.tllog_set.count }})</h4>
-                {% include "bp/render_logs.html" with logs=project.tllog_set.all %}
+                {% include "bp/tllogs/render_logs.html" with logs=project.tllog_set.all %}
             </div>
         {% endfor %}
     </div>
