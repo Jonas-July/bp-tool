@@ -1,0 +1,26 @@
+{% extends "bp/base.html" %}
+
+{% load bootstrap4 %}
+{% load fontawesome_5 %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item"><a href="{% url "bp:index" %}">Übersicht</a></li>
+    <li class="breadcrumb-item"><a href="{% url "bp:project_list" %}">Projekte</a></li>
+    <li class="breadcrumb-item"><a href="{% url "bp:project_detail" group.pk %}">{{ group }}</a></li>
+    <li class="breadcrumb-item active">Orga-Log erstellen</li>
+{% endblock %}
+
+{% block content %}
+    <h3>{{ group }}</h3>
+
+    <form method="POST" class="post-form">{% csrf_token %}
+        {% bootstrap_form form %}
+        {% buttons %}
+            <button type="submit" class="save btn btn-primary float-right">
+                {% fa5_icon "check" 'fas' %} Speichern
+            </button>
+            <a href="{% url "bp:log_tl_start" %}" class="btn btn-warning float-left">Abbrechen</a>
+        {% endbuttons %}
+    </form>
+
+{% endblock %}
