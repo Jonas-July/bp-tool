@@ -1,0 +1,5 @@
+{% if orga_log_count > 0 %}
+    {% include "bp/orgalogs/render_orga_logs.html" with logs=orga_logs can_view_orgalog_detail=True  %}
+{% else %}
+
+{% endif %}

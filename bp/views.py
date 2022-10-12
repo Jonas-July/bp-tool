@@ -18,7 +18,7 @@ from django.views.generic import TemplateView, ListView, DetailView, UpdateView,
 from bp.grading.ag.views import ProjectGradesMixin
 
 from bp.forms import ProjectImportForm, StudentImportForm
-from bp.models import BP, Project, Student, TL, TLLog, OrgaLog
+from bp.models import BP, Project, Student, TL
 
 
 def error_400(request, exception):
@@ -104,13 +104,6 @@ class TLView(PermissionRequiredMixin, DetailView):
         context["reminder_count"] = context["tl"].tllogreminder_set.count()
         context["projects"] = context["tl"].project_set.all().prefetch_related("tllog_set", "tllog_set__current_problems")
         return context
-
-
-class OrgaLogView(PermissionRequiredMixin, DetailView):
-    model = OrgaLog
-    template_name = "bp/orgalog.html"
-    context_object_name = "log"
-    permission_required = "bp.view_orgalog"
 
 
 @permission_required("bp.view_student")

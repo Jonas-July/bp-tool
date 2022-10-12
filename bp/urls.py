@@ -4,11 +4,11 @@ from bp.grading.urls import grading_patterns
 from bp.timetracking.urls import timetracking_patterns
 from bp.index.urls import index_and_login_patterns
 from bp.tllogs.urls import tllog_patterns, tllog_orga_patterns
+from bp.orgalogs.urls import orgalog_patterns
 
 from bp.views import \
     ProjectListView, ProjectUngradedListView, ProjectView, grade_export_view, ProjectImportView, \
-    TLView, TLListView, StudentListView, StudentImportView, \
-    OrgaLogView \
+    TLView, TLListView, StudentListView, StudentImportView
 
 app_name = "bp"
 
@@ -22,7 +22,7 @@ urlpatterns = [
     path('tl/', TLListView.as_view(), name="tl_list"),
     path('tl/<pk>/', TLView.as_view(), name="tl_detail"),
     path('logs/', include(tllog_orga_patterns)),
-    path('orgalogs/<pk>/', OrgaLogView.as_view(), name='orga_log_detail'),
+    path('orgalogs/', include(orgalog_patterns)),
     path('student/', StudentListView.as_view(), name="student_list"),
     path('student/import/', StudentImportView.as_view(), name="student_import"),
     path('grade/', include(grading_patterns)),
