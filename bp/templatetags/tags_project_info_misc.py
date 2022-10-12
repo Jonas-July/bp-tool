@@ -92,23 +92,6 @@ class ProjectInfoTabs():
         heapq.heappush(ProjectInfoTabs.registered_tabs, (priority, tag_names))
 
 
-log_tab = ProjectInfoTabTags(priority=1)
-
-@log_tab.register_description('bp/project_info_misc_log_desc.html')
-def log_description(project):
-    return {
-        'log_count' : project.tllog_set.all().count(),
-    }
-
-@log_tab.register_content('bp/project_info_misc_log_content.html')
-def log_content(project):
-    return {
-        'status_data' : project.status_json_string,
-        'logs'        : project.tllog_set.all(),
-        'log_count'   : project.tllog_set.all().count(),
-    }
-
-
 orgalog_tab = ProjectInfoTabTags(priority=2)
 
 @orgalog_tab.register_description('bp/project_info_misc_orgalog_desc.html')

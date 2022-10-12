@@ -3,13 +3,11 @@ from django.urls import path, include
 from bp.grading.urls import grading_patterns
 from bp.timetracking.urls import timetracking_patterns
 from bp.index.urls import index_and_login_patterns
-from bp.tllogs.urls import tllog_patterns
+from bp.tllogs.urls import tllog_patterns, tllog_orga_patterns
 
 from bp.views import \
     ProjectListView, ProjectUngradedListView, ProjectView, grade_export_view, ProjectImportView, \
     TLView, TLListView, StudentListView, StudentImportView, \
-    LogListView, LogAttentionListView, LogUnreadListView, LogView, LogReminderView, \
-    APILogMarkReadView, APILogMarkHandledView, APILogMarkGoodView, APILogMarkBadView, \
     OrgaLogView \
 
 app_name = "bp"
@@ -23,15 +21,7 @@ urlpatterns = [
     path('project/ungraded', ProjectUngradedListView.as_view(), name="project_list_ungraded"),
     path('tl/', TLListView.as_view(), name="tl_list"),
     path('tl/<pk>/', TLView.as_view(), name="tl_detail"),
-    path('logs/', LogListView.as_view(), name='log_list'),
-    path('logs/attention/', LogAttentionListView.as_view(), name='log_list_attention'),
-    path('logs/unread/', LogUnreadListView.as_view(), name='log_list_unread'),
-    path('logs/remind/', LogReminderView.as_view(), name='log_remind'),
-    path('logs/<pk>/', LogView.as_view(), name='log_detail'),
-    path('logs/<pk>/read/', APILogMarkReadView.as_view(), name='log_api_mark_read'),
-    path('logs/<pk>/handled/', APILogMarkHandledView.as_view(), name='log_api_mark_handled'),
-    path('logs/<pk>/good/', APILogMarkGoodView.as_view(), name='log_api_mark_good'),
-    path('logs/<pk>/bad/', APILogMarkBadView.as_view(), name='log_api_mark_bad'),
+    path('logs/', include(tllog_orga_patterns)),
     path('orgalogs/<pk>/', OrgaLogView.as_view(), name='orga_log_detail'),
     path('student/', StudentListView.as_view(), name="student_list"),
     path('student/import/', StudentImportView.as_view(), name="student_import"),
