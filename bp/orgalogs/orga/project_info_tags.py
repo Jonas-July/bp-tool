@@ -13,4 +13,5 @@ def orgalog_content(project):
     return {
         'orga_logs'      : project.orgalog_set.all(),
         'orga_log_count' : project.orgalog_set.all().count(),
+        'group'          : project,
     }
