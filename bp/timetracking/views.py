@@ -1,4 +1,5 @@
 from decimal import Decimal, InvalidOperation
+import json
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -56,6 +57,13 @@ class TimeTable:
                 *([(None, None, row), *[(col ,  row, self.create_entry(col, row)) for col in self.columns]] for row in self.rows)
                ]
 
+class LineChart:
+    def __init__(self, datapoints):
+        self.datapoints = datapoints
+
+    def get_line_chart_data(self):
+        return json.dumps(self.datapoints)
+
 class TimetrackingOverview(LoginRequiredMixin, TemplateView):
     template_name = "bp/timetracking/timetracking_overview.html"
 
@@ -100,6 +108,12 @@ class TimetrackingProjectOverview(ProjectByGroupMixin, LoginRequiredMixin, Templ
         context["total_hours"] = project.total_hours
         context["students"] = project.student_set.all()
         context["timetable"] = TimeTable(project.get_past_and_current_intervals, context["students"], hours_of_student_in_interval).get_table()
+        context["hours_per_interval"] = LineChart([
+            {
+                'x': f'{itv.name}',
+                'y': f"{sum([hours_of_student_in_interval(s, itv)/len(itv) for s in context['students']])}"
+            } for itv in reversed(project.get_past_and_current_intervals)
+            ]).get_line_chart_data()
 
         return context
 

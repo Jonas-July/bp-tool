@@ -16,6 +16,10 @@ class TimeInterval(models.Model):
     def is_editable_by_students(self):
         return date.today() <= self.end + timedelta(days=21)
 
+    def __len__(self):
+        length = self.end - self.start + timedelta(days=1)
+        return length.days
+
     def __str__(self):
         return f"{self.name} der Gruppe {self.group} von {self.start} bis {self.end}"
 
