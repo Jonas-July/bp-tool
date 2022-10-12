@@ -11,8 +11,12 @@
 
 {% block tl_content %}
     <h3>{{ group }}</h3>
-    <h4>{{ tllog.timestamp }}</h4>
-    <p>Logs anzeigen und eintragen:</p>
+    {% if tllog %}
+        <h4>{{ tllog.timestamp }}</h4>
+    {% else %}
+        <p>Leitfragen der Woche:</p>
+        {{ group.bp.tllogtemplate.text|linebreaks }}
+    {% endif %}
 
     <form method="POST" class="post-form">{% csrf_token %}
         {% bootstrap_form form %}

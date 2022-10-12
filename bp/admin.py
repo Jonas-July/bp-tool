@@ -1,12 +1,17 @@
 from django.contrib import admin
 
-from bp.models import BP, Project, AGGradeBeforeDeadline, AGGradeAfterDeadline, TL, Student, TLLog, TLLogProblem, TLLogReminder
+from bp.models import BP, Project, AGGradeBeforeDeadline, AGGradeAfterDeadline, TL, Student, TLLog, TLLogTemplate, TLLogProblem, TLLogReminder
 from bp.models import OrgaLog
 from bp.timetracking.models import TimeSpentCategory
 
+class TLLogTemplateInline(admin.TabularInline):
+    model = TLLogTemplate
+
 @admin.register(BP)
 class BPAdmin(admin.ModelAdmin):
-    pass
+    inlines = [
+        TLLogTemplateInline,
+    ]
 
 
 @admin.register(Project)
