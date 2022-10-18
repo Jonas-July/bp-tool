@@ -98,3 +98,15 @@ class TLLogReminder(models.Model):
 
     def __str__(self):
         return f"{self.simple_timestamp}: {self.group.nr} - {self.tl}"
+
+
+class TLLogTemplate(models.Model):
+    class Meta:
+        verbose_name = "TL-Log Vorlage"
+        verbose_name_plural = "TL-Log Vorlagen"
+
+    bp = models.OneToOneField("BP", on_delete=models.CASCADE)
+    text = models.TextField(blank=True, verbose_name="Vorlagentext", help_text="Text, der den TLs als Vorlage angezeigt wird")
+
+    def __str__(self):
+        return f"Vorlage für {self.bp}"
