@@ -8,29 +8,13 @@ from .forms import AGGradeForm
 from bp.models import Project
 from bp.pretix import get_order_secret
 
-class ProjectByOrderIDMixin:
-    def get_object(self, queryset=None):
-        return Project.objects.get(order_id=self.kwargs["order_id"])
+from ..mixins import ProjectByOrderIDMixin, ProjectGradesMixin
 
-class ProjectGradesMixin:
-    @staticmethod
-    def get_grading_context_data(context, project):
-        beforedeadline = project.aggradebeforedeadline_set.all().order_by("-timestamp")
-        afterdeadline = project.aggradeafterdeadline_set.all().order_by("-timestamp")
-        context["gradings_before"] = beforedeadline
-        context["gradings_after"] = afterdeadline
-        context["gradings_before_count"] = context["gradings_before"].count()
-        context["gradings_after_count"] = context["gradings_after"].count()
-        context["gradings_count"] = context["gradings_before_count"] + context["gradings_after_count"]
-        context["valid_grade_after"] = (project.ag_grade and project.ag_grade.pk) or None
-        context["valid_grade_before"] = None if (context["valid_grade_after"] or not beforedeadline.first()) \
-                                        else beforedeadline.first().pk
-        return context
 
 class AGGradeView(ProjectByOrderIDMixin, ProjectGradesMixin, CreateView):
     model = Project
     form_class = AGGradeForm
-    template_name = "bp/project_grade.html"
+    template_name = "bp/grading/ag/project_grade.html"
     context_object_name = "project"
 
     def deadline_passed(self):
@@ -85,7 +69,7 @@ class AGGradeView(ProjectByOrderIDMixin, ProjectGradesMixin, CreateView):
 class AGGradeSuccessView(ProjectByOrderIDMixin, ProjectGradesMixin, DetailView):
     model = Project
     context_object_name = "project"
-    template_name = "bp/project_grade_success.html"
+    template_name = "bp/grading/ag/project_grade_success.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -100,4 +84,4 @@ class AGGradeSuccessView(ProjectByOrderIDMixin, ProjectGradesMixin, DetailView):
 class AGGradeEarlyView(ProjectByOrderIDMixin, DetailView):
     model = Project
     context_object_name = "project"
-    template_name = "bp/project_grade_early.html"
+    template_name = "bp/grading/ag/project_grade_early.html"

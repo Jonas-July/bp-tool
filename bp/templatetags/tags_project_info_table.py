@@ -79,14 +79,6 @@ def pretix_info(project):
         'info_url' : get_pretix_projectinfo_url(project),
     }
 
-@ProjectInfoTable.register('bp/project_info_table_grade_info.html', priority=5)
-def grade_info(project):
-    return {
-        'show_aggrade'            : project.ag_points >= 0,
-        'ag_points'               : project.ag_points,
-        'ag_points_justification' : project.ag_points_justification,
-    }
-
 @ProjectInfoTable.register('bp/project_info_table_hours_info.html', priority=6)
 def hours_info(project):
     return {

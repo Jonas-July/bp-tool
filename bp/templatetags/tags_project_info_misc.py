@@ -2,8 +2,6 @@ import heapq
 
 from django import template
 
-from bp.grading.ag.views import ProjectGradesMixin
-
 register = template.Library()
 
 
@@ -90,16 +88,3 @@ class ProjectInfoTabs():
             def new_tag(context):
                 return info_tag(context['project'])
         heapq.heappush(ProjectInfoTabs.registered_tabs, (priority, tag_names))
-
-
-grading_tab = ProjectInfoTabTags(priority=3)
-
-@grading_tab.register_description('bp/project_info_misc_grading_desc.html')
-def grading_description(project):
-    tab_context = {'project' : project}
-    return ProjectGradesMixin.get_grading_context_data(tab_context, project)
-
-@grading_tab.register_content('bp/project_info_misc_grading_content.html')
-def grading_content(project):
-    tab_context = {'project' : project}
-    return ProjectGradesMixin.get_grading_context_data(tab_context, project)
