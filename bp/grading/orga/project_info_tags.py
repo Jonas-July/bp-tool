@@ -16,7 +16,7 @@ def grading_content(project):
     return ProjectGradesMixin.get_grading_context_data(tab_context, project)
 
 
-@ProjectInfoTable.register('bp/grading/orga/project_info_table_grade_info.html', priority=5)
+@ProjectInfoTable.register('bp/grading/orga/project_info_table_grade_info.html', priority=6*128)
 def grade_info(project):
     return {
         'show_aggrade'            : project.ag_points >= 0,
