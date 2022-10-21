@@ -33,3 +33,29 @@ class AGGradeAfterDeadline(AGGrade):
 
     def __str__(self):
         return f"Verspätete Bewertung für Projekt {self.project.nr} am {self.simple_timestamp}"
+
+class PitchGrade(models.Model):
+    class Meta:
+        verbose_name = "Bewertung der Vorträge"
+        verbose_name_plural = "Bewertungen der Vorträge"
+        ordering = ['project']
+
+    project = models.ForeignKey("Project", on_delete=models.CASCADE)
+    grade_points = models.DecimalField(verbose_name="Punkte für die Vorträge", max_digits=5, decimal_places=2)
+    grade_justification = models.TextField(verbose_name="Begründung")
+
+    def __str__(self):
+        return f"Bewertung der Vorträge für Projekt {self.project.nr}"
+
+class DocsGrade(models.Model):
+    class Meta:
+        verbose_name = "Bewertung der Dokumentation"
+        verbose_name_plural = "Bewertungen der Dokumentationen"
+        ordering = ['project']
+
+    project = models.ForeignKey("Project", on_delete=models.CASCADE)
+    grade_points = models.DecimalField(verbose_name="Punkte für die Dokumentation", max_digits=5, decimal_places=2)
+    grade_justification = models.TextField(verbose_name="Begründung")
+
+    def __str__(self):
+        return f"Bewertung der Dokumentation für Projekt {self.project.nr}"

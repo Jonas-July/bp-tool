@@ -19,7 +19,9 @@ def grading_content(project):
 @ProjectInfoTable.register('bp/grading/orga/project_info_table_grade_info.html', priority=6*128)
 def grade_info(project):
     return {
-        'show_aggrade'            : project.ag_points >= 0,
-        'ag_points'               : project.ag_points,
-        'ag_points_justification' : project.ag_points_justification,
+        'total_points' : project.pitch_grade_points_value + project.ag_grade_points_value + project.docs_grade_points_value,
+        'is_complete'  : project.pitch_grade_points and project.ag_grade_points and project.docs_grade_points,
+        'pitch_points' : project.pitch_grade_points,
+        'ag_points'    : project.ag_grade_points,
+        'docs_points'  : project.docs_grade_points,
     }
