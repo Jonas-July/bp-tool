@@ -11,7 +11,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.conf import settings
 from django.urls import reverse_lazy
-from django.utils import timezone
+from django.utils import timezone, formats
 
 # necessary to register models in database
 from bp.grading.models import *
@@ -98,7 +98,7 @@ class Project(models.Model):
 
     @property
     def ag_grade_points(self):
-        return str(self.ag_points) if self.ag_points >= 0 else ""
+        return formats.localize(self.ag_points, use_l10n=True) if self.ag_points >= 0 else ""
 
     @property
     def ag_points(self):
@@ -144,7 +144,7 @@ class Project(models.Model):
     @property
     def pitch_grade_points(self):
         pitch_grade = self.pitchgrade_set.all().first()
-        return pitch_grade and str(round(pitch_grade.grade_points, 2)) or ""
+        return pitch_grade and formats.localize(round(pitch_grade.grade_points, 2), use_l10n=True) or ""
 
     @property
     def pitch_grade_justification(self):
@@ -159,7 +159,7 @@ class Project(models.Model):
     @property
     def docs_grade_points(self):
         docs_grade = self.docsgrade_set.all().first()
-        return docs_grade and str(round(docs_grade.grade_points, 2)) or ""
+        return docs_grade and formats.localize(round(docs_grade.grade_points, 2), use_l10n=True) or ""
 
     @property
     def docs_grade_justification(self):
