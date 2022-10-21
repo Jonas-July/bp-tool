@@ -27,10 +27,10 @@
             <th>Title</th>
             <th>Status</th>
             <th>TL</th>
-            <td>AG</td>
-            <td>Studierende</td>
-            {% if user.is_staff %}
-                <td>Bewertung</td>
+            <th>AG</th>
+            <th>Studierende</th>
+            {% if user.is_superuser %}
+                <th>Bewertung<br>(Pitch/AG/Doku)</th>
             {% endif %}
         </tr>
         </thead>
@@ -43,8 +43,11 @@
                 <td>{% if project.tl %}<a href="{% url "bp:tl_detail" pk=project.tl.pk %}">{{ project.tl }}</a>{% else %}-{% endif %}</td>
                 <td><a href="mailto:{{ project.ag_mail }}">{{ project.ag }}&nbsp;{% fa5_icon "envelope" "far" %}</a></td>
                 <td><a href="mailto:{{ project.student_mail }}">{{ project.student_list }}&nbsp;{% fa5_icon "envelope" "far" %}</a></td>
-                {% if user.is_staff %}
-                    <td>{% if project.ag_points > -1 %}{{ project.ag_points }}{% else %}-{% endif %}</td>
+                {% if user.is_superuser %}
+                    <td>
+                        <pre style="margin-bottom:0">{{ project.pitch_grade_points|default:"--"|rjust:"5" }} / {{ project.ag_grade_points|default:"---"|rjust:"2" }} /
+{{ project.docs_grade_points|default:"--"|rjust:"5" }}</pre>
+                    </td>
                 {% endif %}
             </tr>
         {% endfor %}
