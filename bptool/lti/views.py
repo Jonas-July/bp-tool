@@ -1,9 +1,12 @@
 from django.contrib import messages
+from django.views.decorators.csrf import csrf_exempt
 from lti_provider.views import LTIRoutingView
 
 from bp.views import BP, TL, Student
 
+
 class TLRoutingView(LTIRoutingView):
+    @csrf_exempt
     def dispatch(self, request, *args, **kwargs):
         response = super().dispatch(request, *args, **kwargs)
         # Login happens in dispatch above
@@ -13,7 +16,9 @@ class TLRoutingView(LTIRoutingView):
                               confirmed=False)
         return response
 
+
 class StudentRoutingView(LTIRoutingView):
+    @csrf_exempt
     def dispatch(self, request, *args, **kwargs):
         response = super().dispatch(request, *args, **kwargs)
         # Login happens in dispatch above
