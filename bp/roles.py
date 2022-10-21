@@ -1,4 +1,4 @@
-
+from bp.models import BP
 
 def is_tl(user):
     return hasattr(user, 'tl')
@@ -24,3 +24,12 @@ def is_neither_tl_nor_student_of_group(group, user):
     if is_student(user) and is_student_of_group(group, user):
         return False
     return True
+
+def get_bp_of_user(user):
+    if is_tl(user):
+        return user.tl.bp
+    if is_student(user):
+        return user.student.bp
+    if is_orga(user):
+        return BP.get_active()
+    return None

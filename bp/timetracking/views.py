@@ -13,6 +13,7 @@ from django.views.generic import TemplateView, DetailView, CreateView, FormView,
 
 from bp.models import BP, Project, Student
 from bp.roles import is_tl, is_student, is_orga, is_tl_or_student, is_tl_of_group, is_student_of_group, is_neither_tl_nor_student_of_group
+from bp.roles import get_bp_of_user
 
 from .forms import TimeIntervalForm, TimeIntervalGenerationForm, TimeIntervalUpdateForm, \
     TimeIntervalEntryForm, TLTimeIntervalEntryCorrectionForm
@@ -21,7 +22,7 @@ from .models import TimeInterval, TimeTrackingEntry, TimeSpentCategory
 
 class ProjectByRequestMixin:
     def get_project_by_request(self, request):
-        return get_object_or_404(Project, nr=self.kwargs.get("group", -1), bp=BP.get_active())
+        return get_object_or_404(Project, nr=self.kwargs.get("group", -1), bp=get_bp_of_user(request.user))
 
 class TimeIntervalByRequestMixin:
     def get_interval_by_request(self, request):
