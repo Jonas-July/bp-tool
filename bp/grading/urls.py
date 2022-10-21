@@ -2,7 +2,7 @@ from django.urls import path, include
 from django.views.generic import TemplateView
 
 from .ag.views import AGGradeView, AGGradeSuccessView, AGGradeEarlyView
-from .orga.views import *
+from .orga.views import OrgaGradesImportView
 
 aggrade_patterns = [
     path('invalid/', TemplateView.as_view(template_name="bp/grading/ag/project_grade_invalid_secret.html"),
@@ -12,6 +12,11 @@ aggrade_patterns = [
     path('<str:order_id>/<str:secret>/', AGGradeView.as_view(), name="ag_grade"),
 ]
 
+orga_grades_patterns = [
+    path('import/', OrgaGradesImportView.as_view(), name="orga_grades_import"),
+]
+
 grading_patterns = [
-    path('', include(aggrade_patterns))
+    path('', include(aggrade_patterns)),
+    path('', include(orga_grades_patterns)),
 ]
