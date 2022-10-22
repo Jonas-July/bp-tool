@@ -2,6 +2,7 @@ from django.contrib import admin
 
 from bp.models import BP, Project, AGGradeBeforeDeadline, AGGradeAfterDeadline, TL, Student, TLLog, TLLogTemplate, TLLogProblem, TLLogReminder
 from bp.models import OrgaLog
+from bp.grading.models import PitchGrade, DocsGrade
 from bp.timetracking.models import TimeSpentCategory
 
 class TLLogTemplateInline(admin.TabularInline):
@@ -42,6 +43,16 @@ class AGGradeBeforeDeadlineAdmin(admin.ModelAdmin):
 class AGGradeAfterDeadlineAdmin(admin.ModelAdmin):
     list_filter = ['project']
     list_display = ['project', 'timestamp', 'ag_points']
+
+@admin.register(PitchGrade)
+class PitchGradeAdmin(admin.ModelAdmin):
+    list_filter = ['project']
+    list_display = ['project', 'grade_points']
+
+@admin.register(DocsGrade)
+class DocsGradeAdmin(admin.ModelAdmin):
+    list_filter = ['project']
+    list_display = ['project', 'grade_points']
 
 @admin.register(TL)
 class TLAdmin(admin.ModelAdmin):
