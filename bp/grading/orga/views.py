@@ -11,7 +11,7 @@ from django.views.generic import FormView
 
 from bp.models import BP
 
-from .forms import OrgaGradesImportForm
+from .forms import OrgaGradesImportForm, OrgaGradeCsvImportSpecification as Spec
 from ..models import PitchGrade, DocsGrade
 
 # necessary to load the project info tags
@@ -27,21 +27,20 @@ class OrgaGradesImportView(LoginRequiredMixin, FormView):
         For a version using the match statement, see below
         """
         import_count = 0
-        separator = ','
-        reader = csv.DictReader(io.TextIOWrapper(form.cleaned_data.get("csvfile").file), delimiter=separator)
+        reader = csv.DictReader(io.TextIOWrapper(form.cleaned_data.get("csvfile").file), delimiter=Spec.SEPARATOR.value)
         active_bp = BP.get_active()
         lines_ignored = defaultdict(lambda:0)
         for row in reader:
-            if 'nr' in row and 'notes' in row:
-                nr, notes = row["nr"], row["notes"]
+            if Spec.PROJECT.value in row and Spec.NOTES.value in row:
+                nr, notes = row[Spec.PROJECT.value], row[Spec.NOTES.value]
                 project = active_bp.project_set.filter(nr=nr).first()
                 if not project:
                     print(f"Project mit Nummer '{nr}' existiert nicht")
                     lines_ignored["Projekt existiert nicht"] += 1
                     continue
-                if 'pitch_grade' in row or 'docs_grade' in row:
-                    grade_points = row['pitch_grade'] if 'pitch_grade' in row else row['docs_grade']
-                    grade_type = PitchGrade if 'pitch_grade' in row else DocsGrade
+                if Spec.PITCH_GRADE.value in row or Spec.DOCS_GRADE.value in row:
+                    grade_points = row[Spec.PITCH_GRADE.value] if Spec.PITCH_GRADE.value in row else row[Spec.DOCS_GRADE.value]
+                    grade_type = PitchGrade if Spec.PITCH_GRADE.value in row else DocsGrade
                     try:
                         grade_type.objects.create(project=project,
                                               grade_points=grade_points,
@@ -56,10 +55,10 @@ class OrgaGradesImportView(LoginRequiredMixin, FormView):
                     else:
                         import_count += 1
                 else:
-                    lines_ignored["Spalten 'pitch_grade' und 'docs_grade' nicht gefunden"] += 1
+                    lines_ignored[f"Spalten '{Spec.PITCH_GRADE.value}' und '{Spec.DOCS_GRADE.value}' nicht gefunden"] += 1
                     continue
             else:
-                lines_ignored["Spalten 'nr' und/oder 'notes' nicht gefunden"] += 1
+                lines_ignored[f"Spalten '{Spec.PROJECT.value}' und/oder '{Spec.NOTES.value}' nicht gefunden"] += 1
                 continue
         messages.add_message(self.request, messages.SUCCESS, f"{import_count} Bewertung(en) erfolgreich importiert")
         for error_msg, ignored_lines in lines_ignored.items():
@@ -73,24 +72,23 @@ class OrgaGradesImportView(LoginRequiredMixin, FormView):
         which is only available in 3.10+
         """
         import_count = 0
-        separator = ','
-        reader = csv.DictReader(io.TextIOWrapper(form.cleaned_data.get("csvfile").file), delimiter=separator)
+        reader = csv.DictReader(io.TextIOWrapper(form.cleaned_data.get("csvfile").file), delimiter=Spec.SEPARATOR.value)
         active_bp = BP.get_active()
         lines_ignored = defaultdict(lambda:0)
         for row in reader:
             match row:
-                case {'nr' : nr, 'notes' : notes}:
+                case {Spec.PROJECT.value : nr, Spec.NOTES.value : notes}:
                     project = active_bp.project_set.filter(nr=nr).first()
                     if not project:
                         print(f"Project mit Nummer '{nr}' existiert nicht")
                         lines_ignored["Projekt existiert nicht"] += 1
                         continue
                     match row:
-                        case {'pitch_grade' : grade_points} | {'docs_grade' : grade_points}:
+                        case {Spec.PITCH_GRADE.value : grade_points} | {Spec.DOCS_GRADE.value : grade_points}:
                             match row:
-                                case {'pitch_grade' : _}:
+                                case {Spec.PITCH_GRADE.value : _}:
                                     grade_type = PitchGrade
-                                case {'docs_grade' : _}:
+                                case {Spec.DOCS_GRADE.value : _}:
                                     grade_type = DocsGrade
 
                             try:
@@ -107,10 +105,10 @@ class OrgaGradesImportView(LoginRequiredMixin, FormView):
                             else:
                                 import_count += 1
                         case {}:
-                            lines_ignored["Spalten 'pitch_grade' und 'docs_grade' nicht gefunden"] += 1
+                            lines_ignored[f"Spalten '{Spec.PITCH_GRADE.value}' und '{Spec.DOCS_GRADE.value}' nicht gefunden"] += 1
                             continue
                 case {}:
-                    lines_ignored["Spalten 'nr' und/oder 'notes' nicht gefunden"] += 1
+                    lines_ignored[f"Spalten '{Spec.PROJECT.value}' und/oder '{Spec.NOTES.value}' nicht gefunden"] += 1
                     continue
         messages.add_message(self.request, messages.SUCCESS, f"{import_count} Projekt(e) erfolgreich importiert")
         for error_msg, ignored_lines in lines_ignored.items():
