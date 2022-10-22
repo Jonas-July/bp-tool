@@ -1,15 +1,18 @@
-from datetime import date
+from enum import Enum
 
 from django import forms
-from django.conf import settings
-from django.core.exceptions import ValidationError
-from django.core.mail import EmailMessage
-from django.urls import reverse_lazy
 
-from bp.models import AGGradeBeforeDeadline, AGGradeAfterDeadline
-from bp.pretix import get_order_secret
+class OrgaGradeCsvImportSpecification(Enum):
+    SEPARATOR = ','
 
+    PROJECT = 'nr'
+    NOTES = 'notes'
+    PITCH_GRADE = 'pitch_grade'
+    DOCS_GRADE = 'docs_grade'
 
 class OrgaGradesImportForm(forms.Form):
+    Spec = OrgaGradeCsvImportSpecification
     csvfile = forms.FileField(label="Projektliste (CSV)",
-                      help_text="CSV-Datei Komma-Separiert. Muss die Spalte 'nr' und 'notes' enthalten, sowie entweder die Spalte 'pitch_grade' oder die Spalte 'docs_grade'")
+                      help_text=f"""CSV-Datei Komma-Separiert. \
+Muss die Spalten '{Spec.PROJECT.value}' und '{Spec.NOTES.value}' enthalten, \
+sowie entweder die Spalte '{Spec.PITCH_GRADE.value}' oder die Spalte '{Spec.DOCS_GRADE.value}'""")
