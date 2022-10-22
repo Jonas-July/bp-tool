@@ -138,33 +138,33 @@ class Project(models.Model):
 
     @property
     def pitch_grade_points_value(self):
-        pitch_grade = self.pitchgrade_set.all().first()
+        pitch_grade = hasattr(self, 'pitchgrade') and self.pitchgrade
         return pitch_grade and round(pitch_grade.grade_points, 2) or 0
 
     @property
     def pitch_grade_points(self):
-        pitch_grade = self.pitchgrade_set.all().first()
+        pitch_grade = hasattr(self, 'pitchgrade') and self.pitchgrade
         return pitch_grade and formats.localize(round(pitch_grade.grade_points, 2), use_l10n=True) or ""
 
     @property
-    def pitch_grade_justification(self):
-        pitch_grade = self.pitchgrade_set.all().first()
-        return pitch_grade and str(pitch_grade.grade_justification) or ""
+    def pitch_grade_notes(self):
+        pitch_grade = hasattr(self, 'pitchgrade') and self.pitchgrade
+        return pitch_grade and str(pitch_grade.grade_notes) or ""
 
     @property
     def docs_grade_points_value(self):
-        docs_grade = self.docsgrade_set.all().first()
+        docs_grade = hasattr(self, 'docsgrade') and self.docsgrade
         return docs_grade and round(docs_grade.grade_points, 2) or 0
 
     @property
     def docs_grade_points(self):
-        docs_grade = self.docsgrade_set.all().first()
+        docs_grade = hasattr(self, 'docsgrade') and self.docsgrade
         return docs_grade and formats.localize(round(docs_grade.grade_points, 2), use_l10n=True) or ""
 
     @property
-    def docs_grade_justification(self):
-        docs_grade = self.docsgrade_set.all().first()
-        return docs_grade and str(docs_grade.grade_justification) or ""
+    def docs_grade_notes(self):
+        docs_grade = hasattr(self, 'docsgrade') and self.docsgrade
+        return docs_grade and str(docs_grade.grade_notes) or ""
 
     @property
     def status_json_string(self):

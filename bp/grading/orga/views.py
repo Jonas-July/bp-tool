@@ -32,8 +32,8 @@ class OrgaGradesImportView(LoginRequiredMixin, FormView):
         active_bp = BP.get_active()
         lines_ignored = defaultdict(lambda:0)
         for row in reader:
-            if 'nr' in row and 'justification' in row:
-                nr, justification = row["nr"], row["justification"]
+            if 'nr' in row and 'notes' in row:
+                nr, notes = row["nr"], row["notes"]
                 project = active_bp.project_set.filter(nr=nr).first()
                 if not project:
                     print(f"Project mit Nummer '{nr}' existiert nicht")
@@ -45,7 +45,7 @@ class OrgaGradesImportView(LoginRequiredMixin, FormView):
                     try:
                         grade_type.objects.create(project=project,
                                               grade_points=grade_points,
-                                              grade_justification=justification)
+                                              grade_notes=notes)
                     except IntegrityError:
                         print(f"Bewertung des Typs {grade_type} für Projekt {project} existiert bereits")
                         lines_ignored["Bewertung existiert bereits"] += 1
@@ -59,7 +59,7 @@ class OrgaGradesImportView(LoginRequiredMixin, FormView):
                     lines_ignored["Spalten 'pitch_grade' und 'docs_grade' nicht gefunden"] += 1
                     continue
             else:
-                lines_ignored["Spalten 'nr' und/oder 'justification' nicht gefunden"] += 1
+                lines_ignored["Spalten 'nr' und/oder 'notes' nicht gefunden"] += 1
                 continue
         messages.add_message(self.request, messages.SUCCESS, f"{import_count} Bewertung(en) erfolgreich importiert")
         for error_msg, ignored_lines in lines_ignored.items():
@@ -79,7 +79,7 @@ class OrgaGradesImportView(LoginRequiredMixin, FormView):
         lines_ignored = defaultdict(lambda:0)
         for row in reader:
             match row:
-                case {'nr' : nr, 'justification' : justification}:
+                case {'nr' : nr, 'notes' : notes}:
                     project = active_bp.project_set.filter(nr=nr).first()
                     if not project:
                         print(f"Project mit Nummer '{nr}' existiert nicht")
@@ -96,7 +96,7 @@ class OrgaGradesImportView(LoginRequiredMixin, FormView):
                             try:
                                 grade_type.objects.create(project=project,
                                                       grade_points=grade_points,
-                                                      grade_justification=justification)
+                                                      grade_notes=notes)
                             except IntegrityError:
                                 print(f"Bewertung des Typs {grade_type} für Projekt {project} existiert bereits")
                                 lines_ignored["Bewertung existiert bereits"] += 1
@@ -110,7 +110,7 @@ class OrgaGradesImportView(LoginRequiredMixin, FormView):
                             lines_ignored["Spalten 'pitch_grade' und 'docs_grade' nicht gefunden"] += 1
                             continue
                 case {}:
-                    lines_ignored["Spalten 'nr' und/oder 'justification' nicht gefunden"] += 1
+                    lines_ignored["Spalten 'nr' und/oder 'notes' nicht gefunden"] += 1
                     continue
         messages.add_message(self.request, messages.SUCCESS, f"{import_count} Projekt(e) erfolgreich importiert")
         for error_msg, ignored_lines in lines_ignored.items():
