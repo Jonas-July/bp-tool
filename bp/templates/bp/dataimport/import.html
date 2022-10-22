@@ -1,0 +1,27 @@
+{% extends "bp/base.html" %}
+
+{% load bootstrap4 %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item"><a href="{% url "bp:index" %}">Übersicht</a></li>
+    <li class="breadcrumb-item active">Datenimport</li>
+{% endblock %}
+
+
+{% block content %}
+    <h1>Datenimport</h1>
+
+    {% buttons %}
+
+        <a href="{% url 'bp:project_import' %}" class="btn btn-danger">
+            Projekte importieren
+        </a>
+        <a href="{% url 'bp:orga_grades_import' %}" class="btn btn-warning">
+            Bewertungen importieren
+        </a>
+        <a href="{% url 'bp:student_import' %}" class="btn btn-info">
+            Teilnehmende importieren
+        </a>
+    {% endbuttons %}
+
+{% endblock %}
