@@ -22,8 +22,8 @@ def grade_info(project):
         'total_points' : project.pitch_grade_points_value + project.ag_grade_points_value + project.docs_grade_points_value,
         'is_complete'  : project.pitch_grade_points and project.ag_grade_points and project.docs_grade_points,
         'pitch_points' : project.pitch_grade_points,
-        'pitch_grade_justification' : project.pitch_grade_justification and f"({project.pitch_grade_justification})",
+        'pitch_grade_notes' : project.pitch_grade_notes and f"({project.pitch_grade_notes})",
         'ag_points'    : project.ag_grade_points,
         'docs_points'  : project.docs_grade_points,
-        'docs_grade_justification' : project.docs_grade_justification and f"({project.docs_grade_justification})",
+        'docs_grade_notes' : project.docs_grade_notes and f"({project.docs_grade_notes})",
     }

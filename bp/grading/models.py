@@ -40,9 +40,9 @@ class PitchGrade(models.Model):
         verbose_name_plural = "Bewertungen der Vorträge"
         ordering = ['project']
 
-    project = models.ForeignKey("Project", on_delete=models.CASCADE)
+    project = models.OneToOneField("Project", on_delete=models.CASCADE)
     grade_points = models.DecimalField(verbose_name="Punkte für die Vorträge", max_digits=5, decimal_places=2)
-    grade_justification = models.TextField(verbose_name="Begründung")
+    grade_notes = models.TextField(verbose_name="Notiz")
 
     def __str__(self):
         return f"Bewertung der Vorträge für Projekt {self.project.nr}"
@@ -53,9 +53,9 @@ class DocsGrade(models.Model):
         verbose_name_plural = "Bewertungen der Dokumentationen"
         ordering = ['project']
 
-    project = models.ForeignKey("Project", on_delete=models.CASCADE)
+    project = models.OneToOneField("Project", on_delete=models.CASCADE)
     grade_points = models.DecimalField(verbose_name="Punkte für die Dokumentation", max_digits=5, decimal_places=2)
-    grade_justification = models.TextField(verbose_name="Begründung")
+    grade_notes = models.TextField(verbose_name="Notiz")
 
     def __str__(self):
         return f"Bewertung der Dokumentation für Projekt {self.project.nr}"

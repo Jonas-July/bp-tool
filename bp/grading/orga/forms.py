@@ -12,4 +12,4 @@ from bp.pretix import get_order_secret
 
 class OrgaGradesImportForm(forms.Form):
     csvfile = forms.FileField(label="Projektliste (CSV)",
-                      help_text="CSV-Datei Komma-Separiert. Muss die Spalte 'nr' und 'justification' enthalten, sowie entweder die Spalte 'pitch_grade' oder die Spalte 'docs_grade'")
+                      help_text="CSV-Datei Komma-Separiert. Muss die Spalte 'nr' und 'notes' enthalten, sowie entweder die Spalte 'pitch_grade' oder die Spalte 'docs_grade'")
