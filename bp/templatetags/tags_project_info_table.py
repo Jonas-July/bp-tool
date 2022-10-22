@@ -53,35 +53,28 @@ class ProjectInfoTable():
         return create_and_register_tag
 
 
-@ProjectInfoTable.register('bp/project_info_table_tl_info.html', priority=1)
+@ProjectInfoTable.register('bp/project/project_info/table_tl_info.html', priority=1)
 def tl_info(project):
     return {
         'tl' : project.tl,
     }
 
-@ProjectInfoTable.register('bp/project_info_table_member_info.html', priority=2)
+@ProjectInfoTable.register('bp/project/project_info/table_member_info.html', priority=2)
 def member_info(project):
     return {
         'student_list'  : project.student_list,
         'student_mails' : project.student_mail,
     }
 
-@ProjectInfoTable.register('bp/project_info_table_ag_info.html', priority=3)
+@ProjectInfoTable.register('bp/project/project_info/table_ag_info.html', priority=3)
 def ag_info(project):
     return {
         'ag'      : project.ag,
         'ag_mail' : project.ag_mail,
     }
 
-@ProjectInfoTable.register('bp/project_info_table_pretix_info.html', priority=4)
+@ProjectInfoTable.register('bp/project/project_info/table_pretix_info.html', priority=4)
 def pretix_info(project):
     return {
         'info_url' : get_pretix_projectinfo_url(project),
-    }
-
-@ProjectInfoTable.register('bp/project_info_table_hours_info.html', priority=6)
-def hours_info(project):
-    return {
-        'project'           : project,
-        'total_hours_spent' : project.total_hours,
     }

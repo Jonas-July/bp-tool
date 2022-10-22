@@ -50,7 +50,7 @@ class FilterByActiveBPMixin:
 
 class ProjectListView(PermissionRequiredMixin, FilterByActiveBPMixin, ListView):
     model = Project
-    template_name = "bp/project_overview.html"
+    template_name = "bp/project/project_overview.html"
     context_object_name = "projects"
     permission_required = 'bp.view_project'
 
@@ -74,7 +74,7 @@ class ProjectUngradedListView(ProjectListView):
 
 class ProjectView(PermissionRequiredMixin, ProjectGradesMixin, DetailView):
     model = Project
-    template_name = "bp/project.html"
+    template_name = "bp/project/project.html"
     context_object_name = "project"
     permission_required = 'bp.view_project'
 
@@ -122,7 +122,7 @@ def grade_export_view(request):
 
 
 class ProjectImportView(PermissionRequiredMixin, FormView):
-    template_name = "bp/projects_import.html"
+    template_name = "bp/project/projects_import.html"
     form_class = ProjectImportForm
     success_url = reverse_lazy("bp:project_list")
     permission_required = "bp.add_project"

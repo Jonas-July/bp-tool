@@ -74,14 +74,14 @@ class RenderTagNode(template.Node):
         template_code = f"{{% load {tag_name} from {self.template_tag_set} %}}{{% {tag_name} %}}"
         return template.Template(template_code).render(context)
 
-@register.inclusion_tag('bp/project_info_table.html', takes_context=True)
+@register.inclusion_tag('bp/project/project_info/table.html', takes_context=True)
 def project_info_table(context):
     return {
         'project' : context['project'],
         'infos' : ProjectInfoTable.get_ordered_infos(),
     }
 
-@register.inclusion_tag('bp/project_info_tabs.html', takes_context=True)
+@register.inclusion_tag('bp/project/project_info/tabs.html', takes_context=True)
 def project_info_tabs(context):
     return {
         'project' : context['project'],

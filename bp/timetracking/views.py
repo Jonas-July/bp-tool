@@ -19,6 +19,9 @@ from .forms import TimeIntervalForm, TimeIntervalGenerationForm, TimeIntervalUpd
     TimeIntervalEntryForm, TLTimeIntervalEntryCorrectionForm
 from .models import TimeInterval, TimeTrackingEntry, TimeSpentCategory
 
+# necessary to load the project info tags
+from . import project_info_tags
+
 
 class ProjectByRequestMixin:
     def get_project_by_request(self, request):
