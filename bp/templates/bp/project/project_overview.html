@@ -20,38 +20,6 @@
 
     <h1>{{ page_title }}</h1>
 
-    <table class="table table-striped">
-        <thead>
-        <tr>
-            <th>Nr</th>
-            <th>Title</th>
-            <th>Status</th>
-            <th>TL</th>
-            <th>AG</th>
-            <th>Studierende</th>
-            {% if user.is_superuser %}
-                <th>Bewertung<br>(Pitch/AG/Doku)</th>
-            {% endif %}
-        </tr>
-        </thead>
-        <tbody>
-        {% for project in projects %}
-            <tr>
-                <td><a href="{% url 'bp:project_detail' project.pk %}">{{ project.nr }}</a></td>
-                <td><a href="{% url 'bp:project_detail' project.pk %}">{{ project.title }}</a></td>
-                <td>{{ project.tllog_set.first.status | log_status }}</td>
-                <td>{% if project.tl %}<a href="{% url "bp:tl_detail" pk=project.tl.pk %}">{{ project.tl }}</a>{% else %}-{% endif %}</td>
-                <td><a href="mailto:{{ project.ag_mail }}">{{ project.ag }}&nbsp;{% fa5_icon "envelope" "far" %}</a></td>
-                <td><a href="mailto:{{ project.student_mail }}">{{ project.student_list }}&nbsp;{% fa5_icon "envelope" "far" %}</a></td>
-                {% if user.is_superuser %}
-                    <td>
-                        <pre style="margin-bottom:0">{{ project.pitch_grade_points|default:"--"|rjust:"5" }} / {{ project.ag_grade_points|default:"---"|rjust:"2" }} /
-{{ project.docs_grade_points|default:"--"|rjust:"5" }}</pre>
-                    </td>
-                {% endif %}
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    {% project_overview_list %}
 
 {% endblock %}

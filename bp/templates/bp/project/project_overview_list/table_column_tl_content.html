@@ -1,0 +1,7 @@
+{% if project.tl %}
+    <a href="{% url "bp:tl_detail" pk=project.tl.pk %}">
+        {{ project.tl }}
+    </a>
+{% else %}
+    -
+{% endif %}

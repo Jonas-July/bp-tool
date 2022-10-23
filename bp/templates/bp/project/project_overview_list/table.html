@@ -1,0 +1,21 @@
+{% load tags_bp %}
+{% load fontawesome_5 %}
+
+<table class="table table-striped">
+    <thead>
+    <tr>
+        {% for description, content in columns %}
+            <th>{% render description tags_project_overview_list %}</th>
+        {% endfor %}
+    </tr>
+    </thead>
+    <tbody>
+    {% for project in projects %}
+        <tr>
+            {% for description, content in columns %}
+                <td>{% render content tags_project_overview_list %}</td>
+            {% endfor %}
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
