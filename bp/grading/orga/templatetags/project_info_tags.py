@@ -1,7 +1,7 @@
 from bp.templatetags.tags_project_info_misc import ProjectInfoTabTags
 from bp.templatetags.tags_project_info_table import ProjectInfoTable
 
-from ..mixins import ProjectGradesMixin
+from ...mixins import ProjectGradesMixin
 
 grading_tab = ProjectInfoTabTags(priority=3*128)
 

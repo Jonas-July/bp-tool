@@ -127,18 +127,6 @@ register_pair(priority=2*128, common_name="title_column",
               description_template='bp/project/project_overview_list/table_column_title_desc.html',
               content_template='bp/project/project_overview_list/table_column_title_content.html')
 
-status_column = ProjectOverviewColumnTags(priority=3*128)
-
-@status_column.register_description('bp/project/project_overview_list/table_column_status_desc.html')
-def status_column_description(**kwargs):
-    return {}
-
-@status_column.register_content('bp/project/project_overview_list/table_column_status_content.html')
-def status_column_content(project, **kwargs):
-    most_recent_tllog = project.tllog_set.order_by('-timestamp').first()
-    status = most_recent_tllog.status if most_recent_tllog else ""
-    return {'status' : status}
-
 register_pair(priority=4*128, common_name="tl_column",
               description_template='bp/project/project_overview_list/table_column_tl_desc.html',
               content_template='bp/project/project_overview_list/table_column_tl_content.html')
@@ -150,16 +138,3 @@ register_pair(priority=5*128, common_name="ag_column",
 register_pair(priority=6*128, common_name="team_column",
               description_template='bp/project/project_overview_list/table_column_team_desc.html',
               content_template='bp/project/project_overview_list/table_column_team_content.html')
-
-grade_column = ProjectOverviewColumnTags(priority=7*128)
-
-@grade_column.register_description('bp/project/project_overview_list/table_column_grade_desc.html')
-def grade_column_description(**kwargs):
-    return {}
-
-@grade_column.register_content('bp/project/project_overview_list/table_column_grade_content.html')
-def grade_column_content(project, **kwargs):
-    return {'pitch'  : project.pitch_grade_points,
-            'ag'     : project.ag_grade_points,
-            'docs'   : project.docs_grade_points,
-           }

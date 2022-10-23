@@ -8,8 +8,8 @@ from .forms import LogReminderForm
 from bp.models import Project, TLLog
 from bp.views import FilterByActiveBPMixin
 
-# necessary to load the project info tags
-from .project_info_tags import *
+# necessary to load the custom tags
+from .templatetags import project_info_tags, project_overview_list_tags
 
 class LogListView(PermissionRequiredMixin, FilterByActiveBPMixin, ListView):
     model = TLLog
