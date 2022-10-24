@@ -2,7 +2,7 @@
 {% load tags_bp %}
 
 <ul class="nav nav-tabs">
-    {% for desc, content in infos %}
+    {% for desc, content in tabs %}
 	    <li class="nav-item">
 	        <a class="nav-link {% if forloop.first %}active{% endif %}" data-toggle="tab"
 	           href="#g_{{ forloop.counter }}">
@@ -14,7 +14,7 @@
 
 <div id="myTabContent" class="tab-content">
 
-    {% for desc, content in infos %}
+    {% for desc, content in tabs %}
 	    <div class="tab-pane fade {% if forloop.first %}active show{% endif %}" id="g_{{ forloop.counter }}">
 	        <h3 class="my-4">{% render desc tags_project_info_misc %}</h3>
 

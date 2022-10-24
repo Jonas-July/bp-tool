@@ -86,7 +86,7 @@ def project_info_table(context):
 def project_info_tabs(context):
     return {
         'project' : context['project'],
-        'infos' : ProjectInfoTabs.get_ordered_infos(),
+        'tabs' : ProjectInfoTabs.get_ordered_tabs(),
     }
 
 @register.inclusion_tag('bp/project/project_overview_list/table.html', takes_context=True)
