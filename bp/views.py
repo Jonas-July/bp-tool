@@ -15,8 +15,6 @@ from django.urls import reverse, reverse_lazy
 from django.views.defaults import bad_request, permission_denied, server_error, page_not_found
 from django.views.generic import TemplateView, ListView, DetailView, UpdateView, FormView, CreateView, DeleteView
 
-from bp.grading.ag.views import ProjectGradesMixin
-
 from bp.forms import ProjectImportForm, StudentImportForm
 from bp.models import BP, Project, Student, TL
 
@@ -72,7 +70,7 @@ class ProjectUngradedListView(ProjectListView):
         return super().get_queryset().annotate(early_grades=Count('aggradebeforedeadline')).filter(Q(early_grades=0) & Q(ag_grade__isnull=True))
 
 
-class ProjectView(PermissionRequiredMixin, ProjectGradesMixin, DetailView):
+class ProjectView(PermissionRequiredMixin, DetailView):
     model = Project
     template_name = "bp/project/project.html"
     context_object_name = "project"

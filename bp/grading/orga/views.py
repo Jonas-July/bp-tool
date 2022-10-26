@@ -14,8 +14,8 @@ from bp.models import BP
 from .forms import OrgaGradesImportForm, OrgaGradeCsvImportSpecification as Spec
 from ..models import PitchGrade, DocsGrade
 
-# necessary to load the project info tags
-from . import project_info_tags
+# necessary to load the custom tags
+from .templatetags import project_info_tags, project_overview_list_tags
 
 class OrgaGradesImportView(LoginRequiredMixin, FormView):
     template_name = "bp/grading/orga/grades_import.html"

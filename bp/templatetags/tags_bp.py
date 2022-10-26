@@ -7,6 +7,7 @@ from bp.models import TLLog
 
 from .tags_project_info_table import ProjectInfoTable
 from .tags_project_info_misc import ProjectInfoTabs
+from .tags_project_overview_list import ProjectOverviewList
 
 register = template.Library()
 
@@ -86,4 +87,11 @@ def project_info_tabs(context):
     return {
         'project' : context['project'],
         'infos' : ProjectInfoTabs.get_ordered_infos(),
+    }
+
+@register.inclusion_tag('bp/project/project_overview_list/table.html', takes_context=True)
+def project_overview_list(context):
+    return {
+        'projects' : context['projects'],
+        'columns' : ProjectOverviewList.get_ordered_columns(),
     }
