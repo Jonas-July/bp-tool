@@ -93,6 +93,14 @@ class Project(models.Model):
         return self.timeinterval_set.order_by("-start").filter(start__lte=date.today()).all()
 
     @property
+    def grade_complete(self):
+        return all([self.ag_grade_points, self.pitch_grade_points, self.docs_grade_points])
+
+    @property
+    def total_points(self):
+        return sum([self.ag_grade_points_value, self.pitch_grade_points_value, self.docs_grade_points_value])
+
+    @property
     def ag_grade_points_value(self):
         return self.ag_points if self.ag_points >= 0 else 0
 
