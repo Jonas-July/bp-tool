@@ -2,6 +2,7 @@ from django.urls import path, include
 
 from bp.grading.urls import grading_patterns
 from bp.timetracking.urls import timetracking_patterns
+from bp.dataimport.urls import import_patterns
 from bp.index.urls import index_and_login_patterns
 from bp.tllogs.urls import tllog_patterns, tllog_orga_patterns
 from bp.orgalogs.urls import orgalog_patterns
@@ -28,4 +29,5 @@ urlpatterns = [
     path('grade/', include(grading_patterns)),
     path('log/', include(tllog_patterns)),
     path('timetracking/', include(timetracking_patterns)),
+    path('import/', include(import_patterns))
 ]

@@ -11,7 +11,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.conf import settings
 from django.urls import reverse_lazy
-from django.utils import timezone
+from django.utils import timezone, formats
 
 # necessary to register models in database
 from bp.grading.models import *
@@ -93,6 +93,14 @@ class Project(models.Model):
         return self.timeinterval_set.order_by("-start").filter(start__lte=date.today()).all()
 
     @property
+    def ag_grade_points_value(self):
+        return self.ag_points if self.ag_points >= 0 else 0
+
+    @property
+    def ag_grade_points(self):
+        return formats.localize(self.ag_points, use_l10n=True) if self.ag_points >= 0 else ""
+
+    @property
     def ag_points(self):
         if self.ag_grade:
             return self.ag_grade.ag_points
@@ -127,6 +135,36 @@ class Project(models.Model):
                          .order_by('-timestamp').values_list('ag_points_justification', flat=True).first()
 
         return after_deadline or before_deadline or ""
+
+    @property
+    def pitch_grade_points_value(self):
+        pitch_grade = hasattr(self, 'pitchgrade') and self.pitchgrade
+        return pitch_grade and round(pitch_grade.grade_points, 2) or 0
+
+    @property
+    def pitch_grade_points(self):
+        pitch_grade = hasattr(self, 'pitchgrade') and self.pitchgrade
+        return pitch_grade and formats.localize(round(pitch_grade.grade_points, 2), use_l10n=True) or ""
+
+    @property
+    def pitch_grade_notes(self):
+        pitch_grade = hasattr(self, 'pitchgrade') and self.pitchgrade
+        return pitch_grade and str(pitch_grade.grade_notes) or ""
+
+    @property
+    def docs_grade_points_value(self):
+        docs_grade = hasattr(self, 'docsgrade') and self.docsgrade
+        return docs_grade and round(docs_grade.grade_points, 2) or 0
+
+    @property
+    def docs_grade_points(self):
+        docs_grade = hasattr(self, 'docsgrade') and self.docsgrade
+        return docs_grade and formats.localize(round(docs_grade.grade_points, 2), use_l10n=True) or ""
+
+    @property
+    def docs_grade_notes(self):
+        docs_grade = hasattr(self, 'docsgrade') and self.docsgrade
+        return docs_grade and str(docs_grade.grade_notes) or ""
 
     @property
     def status_json_string(self):

@@ -1,8 +1,22 @@
 {% load fontawesome_5 %}
 
-{% if show_aggrade %}
-    <td>AG Bewertung:</td>
+    <td>Gesamtbewertung:</td>
     <td>
-        <b>{{ ag_points }} Punkte</b>
+        {% if is_complete %}
+            {{ total_points }} Punkte
+        {% else %}
+            ({{ total_points }}) Punkte
+        {% endif %}
     </td>
-{% endif %}
+</tr>
+<tr>
+    <td>
+        Pitch:<br>
+        AG:<br>
+        Doku:<br>
+    </td>
+    <td>
+        {{ pitch_points|default:"-" }} Punkte {{ pitch_grade_notes }}<br>
+        {{ ag_points   |default:"-" }} Punkte<br>
+        {{ docs_points |default:"-" }} Punkte {{ docs_grade_notes }}
+    </td>
