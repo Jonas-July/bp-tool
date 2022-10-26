@@ -1,6 +1,16 @@
-<div>
+<div id='{{ div_id }}'>
 
 <pre style="margin-bottom:0">{{ pitch | default:"--" | rjust:"5" }} / {{ ag | default:"---" | rjust:"2" }} /
 {{ docs | default:"--" | rjust:"5" }}</pre>
 
 </div>
+
+{% if grade_is_close_to_higher_grade %}
+<script>
+    // select the parent element to color in the whole field
+    var parent = document.getElementById('{{ div_id }}').parentElement;
+    // grades close to the next higher one should be highlighted
+    // as those are the ones creating the most work during exam review
+    parent.classList.add('bg-warning');
+</script>
+{% endif %}

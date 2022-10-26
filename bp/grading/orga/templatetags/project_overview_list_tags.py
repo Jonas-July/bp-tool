@@ -11,4 +11,6 @@ def grade_column_content(project, **kwargs):
     return {'pitch'  : project.pitch_grade_points,
             'ag'     : project.ag_grade_points,
             'docs'   : project.docs_grade_points,
+            'div_id' : f"div_{project.pk}",
+            'grade_is_close_to_higher_grade' : project.grade_complete and project.total_points > 100 and project.total_points % 10 > (10-2),
            }
