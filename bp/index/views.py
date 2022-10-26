@@ -19,13 +19,6 @@ class OnlyAccessibleByMixin():
         return super().get(request, *args, **kwargs)
 
 
-class ActiveBPMixin:
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['bp'] = BP.get_active()
-        return context
-
-
 class IndexView():
 
     def as_callable(request, *args, **kwargs):
@@ -39,21 +32,28 @@ class IndexView():
             view = LoginView
         return view.as_view()(request, *args, **kwargs)
 
-class OrgaIndexView(LoginRequiredMixin, ActiveBPMixin, OnlyAccessibleByMixin, TemplateView):
+class OrgaIndexView(LoginRequiredMixin, OnlyAccessibleByMixin, TemplateView):
     template_name = "bp/index/index.html"
     role, condition = "Orga member", is_orga
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['projects'] = Project.get_active()
+        context['bp'] = BP.get_active()
+
+        context['projects'] = context['bp'].project_set.all()
         context['projects_count'] = context['projects'].count()
-        context['projects_graded_count'] = context['projects'].annotate(early_grades=Count('aggradebeforedeadline')).filter(Q(early_grades__gt=0) | Q(ag_grade__isnull=False)).count()
-        context['tls'] = TL.get_active()
+        context['projects_graded_count'] = context['projects'].annotate(early_grades=Count('aggradebeforedeadline'))\
+                                                              .filter(Q(early_grades__gt=0) | Q(ag_grade__isnull=False))\
+                                                              .count()
+
+        context['tls'] = context['bp'].tl_set.filter(confirmed=True).all()
         context['tls_count'] = context['tls'].count()
-        context['tls_unconfirmed_count'] = TL.objects.filter(bp__active=True, confirmed=False).count()
-        context['students'] = Student.get_active()
-        context['students_without_project'] = Student.get_active().filter(project=None)
-        context['logs'] = TLLog.get_active()
+        context['tls_unconfirmed_count'] = context['bp'].tl_set.filter(confirmed=False).all().count()
+
+        context['students'] = context['bp'].student_set.all()
+        context['students_without_project'] = context['students'].filter(project=None)
+
+        context['logs'] = context['bp'].tllog_set.all()
         context['logs_count'] = context['logs'].count()
         context['logs_unread_count'] = context['logs'].filter(read=False).count()
         context['logs_attention_count'] = context['logs'].filter(requires_attention=True, handled=False).count()
