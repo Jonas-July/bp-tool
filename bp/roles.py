@@ -33,3 +33,6 @@ def get_bp_of_user(user):
     if is_orga(user):
         return BP.get_active()
     return None
+
+def has_role(user):
+    return is_orga(user) or is_tl(user) or is_student(user)
