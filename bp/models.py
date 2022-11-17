@@ -65,6 +65,9 @@ class Project(models.Model):
 
     ag_grade = models.ForeignKey("AGGradeAfterDeadline", related_name="valid_grade", verbose_name="Derzeit gültige Bewertung", on_delete=models.SET_NULL, blank=True, null=True)
 
+    peer_group = models.ForeignKey("PeerGroup", related_name='projects', verbose_name='Peer Group', blank=True,
+                                   on_delete=models.SET_NULL, null=True)
+
     @staticmethod
     def get_active():
         return Project.objects.filter(bp__active=True)
@@ -194,6 +197,25 @@ class Project(models.Model):
     @property
     def moodle_name(self):
         return f"{self.nr:02d}_{self.title}"
+
+
+class PeerGroup(models.Model):
+    class Meta:
+        verbose_name = "Peergruppe"
+        verbose_name_plural = "Peergruppen"
+        ordering = ['bp', 'nr']
+        unique_together = [('bp', 'nr')]
+
+    nr = models.PositiveSmallIntegerField(verbose_name="Nummer")
+
+    bp = models.ForeignKey(BP, verbose_name="Zugehöriges BP", on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"Peergroup {self.nr:02}"
+
+    @property
+    def member_groups(self):
+        return "\n".join(str(p) for p in self.projects.all())
 
 
 class TL(models.Model):

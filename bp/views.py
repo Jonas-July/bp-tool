@@ -58,7 +58,7 @@ class ProjectListView(PermissionRequiredMixin, FilterByActiveBPMixin, ListView):
         return context
 
     def get_queryset(self):
-        return super().get_queryset().select_related('tl').prefetch_related("student_set", "tllog_set")
+        return super().get_queryset().select_related('tl').select_related('peer_group').prefetch_related("student_set", "tllog_set")
 
 class ProjectUngradedListView(ProjectListView):
     def get_context_data(self, **kwargs):
