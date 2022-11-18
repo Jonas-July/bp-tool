@@ -2,6 +2,7 @@ import math
 import random
 from collections import Counter
 
+from django.conf import settings
 from django.contrib import admin, messages
 from django.db.models import QuerySet
 
@@ -52,8 +53,8 @@ class ProjectAdmin(admin.ModelAdmin):
 
     @admin.action(description='In Peergruppen einteilen')
     def create_peer_groups(self, request, queryset: QuerySet):
-        GROUPS_PER_PEERGROUP = 3
-        MAX_TRIES = 1_000
+        GROUPS_PER_PEERGROUP = settings.PEER_GROUPS_MEMBER_GROUPS_COUNT
+        MAX_TRIES = settings.PEER_GROUPS_OPTIMISATION_LIMIT
 
         group_count = queryset.count()
         groups_to_create = math.ceil(group_count / GROUPS_PER_PEERGROUP)
