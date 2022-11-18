@@ -1,3 +1,4 @@
+import csv
 import math
 import random
 from collections import Counter
@@ -5,6 +6,7 @@ from collections import Counter
 from django.conf import settings
 from django.contrib import admin, messages
 from django.db.models import QuerySet
+from django.http import HttpResponse
 
 from bp.models import BP, Project, AGGradeBeforeDeadline, AGGradeAfterDeadline, TL, Student, TLLog, TLLogTemplate, \
     TLLogProblem, TLLogReminder, PeerGroup
@@ -185,6 +187,23 @@ class TLAdmin(admin.ModelAdmin):
 class StudentAdmin(admin.ModelAdmin):
     list_filter = ['bp']
     list_display = ['name', 'project', 'bp']
+    actions = ["export_peer_group_csv"]
+
+    @admin.action(description="Peergruppeneinteilung als CSV exportieren")
+    def export_peer_group_csv(self, request, queryset):
+        response = HttpResponse(content_type="application/json")
+        response['Content-Disposition'] = "attachment; filename=peergroups.csv"
+        writer = csv.writer(response)
+        writer.writerow(["name", "moodle_id", "mail", "group"])
+        for student in queryset.all():
+           writer.writerow([
+               student.name,
+               student.moodle_id,
+               student.mail,
+               str(student.project.peer_group)
+           ])
+
+        return response
 
 
 @admin.register(OrgaLog)
