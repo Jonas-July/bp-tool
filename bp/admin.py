@@ -62,95 +62,88 @@ class ProjectAdmin(admin.ModelAdmin):
         groups_to_create = math.ceil(group_count / GROUPS_PER_PEERGROUP)
         active_bp = BP.get_active()
 
+        def peer_groups_from_list(groups: list, groups_per_peergroup):
+            """
+            Create virtual Peer Groups of size groups_per_peergroup from consecutive groups
+            """
+            yield from (groups[j:j+groups_per_peergroup] for j in range(0, len(groups), groups_per_peergroup))
+
+        def check_constraints(peer_group):
+            ag_counter = Counter()
+            tl_counter = Counter()
+            for peer in peer_group:
+                ag_counter[peer.ag_mail] += 1
+                tl_counter[peer.tl] += 1
+
+            if len(ag_counter) == 0 or len(tl_counter) == 0:
+                print(f"No AGs or no TLs in peer group: {peer_group}")
+
+            # Check if group contains constraint violations
+            # Find cases where multiple groups of the same AG or TL are in the same peer group
+            most_common_ag, most_common_ag_count = ag_counter.most_common(1)[0]
+            most_common_tl, most_common_tl_count = tl_counter.most_common(1)[0]
+            if most_common_ag_count > 1:
+                print(f"Found violation (two groups of AG {most_common_ag})")
+                return False
+            elif most_common_tl_count > 1:
+                print(f"Found violation (two groups of TL {most_common_tl})")
+                return False
+            else:
+                # Group is clear, no need for handling
+                return True
+
+        def is_valid_assignment(groups, groups_per_peergroup):
+            for peer_group in peer_groups_from_list(groups, groups_per_peergroup):
+                if not check_constraints(peer_group):
+                    return False
+            return True
+
+        def generate_peer_groups(groups, groups_per_peergroup, max_tries):
+            """
+            Generate valid peer groups of size groups_per_peergroup from groups.
+            Tries at most max_tries times to randomly find a valid group assignment.
+
+            :param groups: groups that are to be assigned to peer groups
+            :type groups: list of Project
+            :param groups_per_peergroup: number of groups per peer group
+            :type groups_per_peergroup: int
+            :param max_tries: maximum number of tries before returning
+            :type max_tries: int
+            :return index of last try (0 <= try <= max_tries). try == max_tries indicates no solution found
+            :type int
+            """
+            for current_try in range(max_tries):
+                random.shuffle(groups)
+                if is_valid_assignment(groups, groups_per_peergroup):
+                    return current_try
+            return max_tries
+
         if PeerGroup.objects.filter(bp=active_bp).count() > 0:
             self.message_user(request, "Es existieren bereits Peergruppen, bitte zunächst löschen, um eine neue "
                                        "Einteilung vorzunehmen", messages.ERROR)
         else:
+            groups = list(queryset.all())
+            if groups == []:
+                return
+
+            tries = generate_peer_groups(groups, GROUPS_PER_PEERGROUP, MAX_TRIES)
             # Create new peer groups
             for nr in range(1, groups_to_create+1):
                 PeerGroup.objects.create(bp=active_bp, nr=nr)
             self.message_user(request, f"{groups_to_create} Peergruppen angelegt", messages.SUCCESS)
 
-            # Initially assign groups to peer groups
-            groups = list(queryset.all())
-            random.shuffle(groups)
-
-            dirty_groups = []
-            index = 0
             peer_groups = list(PeerGroup.objects.filter(bp=active_bp))
-            for pg in peer_groups:
-                for i in range(GROUPS_PER_PEERGROUP):
-                    if index < len(groups):
-                        project: Project = groups[index]
-                        project.peer_group = pg
-                        project.save()
-                        index += 1
-                dirty_groups.append(pg)
-            dirty_groups_set = set(dirty_groups)
+            for peer, grp in zip(peer_groups, peer_groups_from_list(groups, GROUPS_PER_PEERGROUP)):
+                for project in grp:
+                    project.peer_group = peer
+                    project.save()
 
-            # Check and correct
-            current_try = 0
-            clean_solution = False
-            while current_try < MAX_TRIES:
-                dirty_groups = list(dirty_groups_set)
-
-                current_try += 1
-                if len(dirty_groups) == 0:
-                    clean_solution = True
-                    break
-
-                random.shuffle(dirty_groups)
-                pg = dirty_groups.pop()
-                dirty_groups_set = set(dirty_groups)
-
-                ag_counter = Counter()
-                tl_counter = Counter()
-                for p in pg.projects.all():
-                    ag_counter[p.ag_mail] += 1
-                    tl_counter[p.tl] += 1
-
-                if len(ag_counter) == 0:
-                    print(pg)
-
-                # Check if group contains constraint violations
-                # Find cases where multiple groups of the same AG or TL are in the same peer group
-                most_common_ag, most_common_ag_count = ag_counter.most_common(1)[0]
-                most_common_tl, most_common_tl_count = tl_counter.most_common(1)[0]
-                if most_common_ag_count > 1:
-                    exchange_candidate: Project = pg.projects.filter(ag_mail=most_common_ag).first()
-                    print(f"Found violation (two groups of AG {most_common_ag})")
-                elif most_common_tl_count > 1:
-                    exchange_candidate: Project = pg.projects.filter(tl=most_common_tl).first()
-                    print(f"Found violation (two groups of TL {most_common_tl})")
-                else:
-                    # Group is clear, no need for handling
-                    continue
-
-                # Perform the exchange
-                # Get random exchange group
-                other_candidate: Project = random.choice(list(BP.get_active().project_set.all()))
-                other_peer_group = other_candidate.peer_group
-
-                if pg != other_peer_group:
-                    # Switch groups
-                    print(f"{pg}: {exchange_candidate.peer_group} <-> {other_candidate.peer_group}")
-                    exchange_candidate.peer_group = other_peer_group
-                    exchange_candidate.save()
-                    other_candidate.peer_group = pg
-                    other_candidate.save()
-
-                    # Mark both groups as dirty
-                    dirty_groups_set.add(pg)
-                    dirty_groups_set.add(other_peer_group)
-                else:
-                    # Unfortunately selected two candidates from the same group?
-                    # Just mark as dirty again and try next time
-                    dirty_groups_set.add(pg)
-
-            if clean_solution:
-                self.message_user(request, "Found solution that satisfied all constraints", messages.SUCCESS)
+            if tries < MAX_TRIES:
+                self.message_user(request, f"Found solution that satisfied all constraints within {tries+1} tries", messages.SUCCESS)
             else:
-                self.message_user(request, f"Solution violates constraints for peer groups {', '.join(str(pg) for pg in dirty_groups_set)}", messages.WARNING)
+                violated_groups = [peer for peer in peer_groups if not check_constraints(peer.projects.all())]
+                self.message_user(request, f"No solution found that satisfied all constraints within {tries} tries. "
+                                           f"Solution violates constraints for peer groups {', '.join(str(pg) for pg in violated_groups)}", messages.WARNING)
 
 
 @admin.register(AGGradeBeforeDeadline)
