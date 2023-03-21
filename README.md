@@ -1,8 +1,16 @@
 # BP Tool
 
+Tool to assist the organization of a software lab course.
+
+In the course, groups of 4-5 students work in teams on software projects. Each team is supported by a master student, who reports weekly to the organization team how the team work is going. These reports are written in the BP tool. Additionally, the teams use the BP Tool to track their time and report it to their team support and the organization team.
+
 ## Description
 
-Support system.
+**Log System**
+
+**Time Tracking**
+
+**Overview of grades**
 
 ## Setup
 
