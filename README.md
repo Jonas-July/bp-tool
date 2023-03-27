@@ -1,16 +1,24 @@
 # BP Tool
 
-Tool to assist the organization of a software lab course.
+The "BP Tool" is developed to assist the organization the software lab course "Bachelorpraktikum (BP)".
 
 In the course, groups of 4-5 students work in teams on software projects. Each team is supported by a master student, who reports weekly to the organization team how the team work is going. These reports are written in the BP tool. Additionally, the teams use the BP Tool to track their time and report it to their team support and the organization team.
 
 ## Description
 
+![Admin Dashboard](Admin_Dashboard.png)
+
+**Overview over Students and Projects**
+The system provides lists to get an overview over the projects and included students, whole teams can be contacted easily via e-mail.
+
 **Log System**
+The system provides the functionality for students to write short reports (logs) on how the team work is going, additionally they can flag an log as *important* and it will be sent to the organization team per mail.
 
 **Time Tracking**
+Students have the functionality to track their time spent on the course for different categories, and can see the time tracking from the other members of their team. 
 
 **Overview of grades**
+The BP Tool provides functionality to enter the grades for the software development part, as well as the project pitch and project documentation.
 
 ## Setup
 
