@@ -138,7 +138,7 @@ BOOTSTRAP4 = {
         "url": STATIC_URL + "bp/vendor/bootstrap/bootstrap-4.3.1.min.js",
     },
     "jquery_slim_url": {
-        "url": STATIC_URL + "bp/vendor/jquery/jquery-3.3.1.slim.min.js",
+        "url": STATIC_URL + "bp/vendor/jquery/jquery-3.6.4.slim.min.js",
     },
     "popper_url": {
         "url": STATIC_URL + "bp/vendor/popper/popper-1.14.7.min.js",
