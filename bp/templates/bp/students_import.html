@@ -27,5 +27,25 @@
         {% endbuttons %}
     </form>
 
+    <h5>Struktur CSV-Datei:</h5>
+    <ul>
+        <li>Die CSV-Datei muss Komma-separiert sein</li>
+        <li>Die Datei muss folgende Spalten enthalten:</li>
+        <ul>
+            <li><u>ID</u>: Moodle-ID des/der Studenten*in</li>
+            <li><u>Vollständiger Name</u>: Vollständiger Name des/der Studenten*in</li>
+            <li><u>E-Mail-Adresse</u>: E-Mail-Adresse des/der Studenten*in</li>
+            <li><u>Gruppe</u>: Projektnummer des Projekts, dem der/die Student*in zugeordnet ist</li>
+        </ul>
+    </ul>
+
+    <h5>Beispielhafte CSV-Datei:</h5>
+    <div class="code-example">
+        ID,Name,E-Mail-Adresse,Gruppe<br>
+        mm35kdst,Max Mustermann,max-mustermann@mail.de,2<br>
+        mm78ggfp,Milia Musterfrau,milia-musterfrau@mail.de,2<br>
+        cw22jkdd,Charlotte Wagner,charlotte-wagner@mail.de,3
+    </div>
+
 {% endblock %}
 

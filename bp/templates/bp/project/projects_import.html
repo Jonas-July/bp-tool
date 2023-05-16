@@ -36,5 +36,26 @@
         {% endbuttons %}
     </form>
 
+    <h5>Struktur CSV-Datei:</h5>
+    <ul>
+        <li>Die CSV-Datei muss Semikolon-separiert sein</li>
+        <li>Die Datei muss folgende Spalten enthalten:</li>
+        <ul>
+            <li><u>nr</u>: Nummer des Projekts</li>
+            <li><u>ag</u>: Name Auftraggeber</li>
+            <li><u>ag_mail</u>: E-Mail-Adresse Auftraggeber</li>
+            <li><u>title</u>: Name des Projekts</li>
+            <li><u>order_id</u>: ???</li>
+        </ul>
+    </ul>
+
+    <h5>Beispielhafte CSV-Datei:</h5>
+    <div class="code-example">
+        nr;ag;ag_mail;title;order_id<br>
+        1;Auftraggeber2;auftraggeber2@mail.de;Projekt 4;2<br>
+        3;Auftraggeber15;auftraggeber15@mail.de;Projekt 3;3<br>
+        4;Auftraggeber7;auftraggeber7@mail.de;Projekt 6;4
+    </div>
+
 {% endblock %}
 
