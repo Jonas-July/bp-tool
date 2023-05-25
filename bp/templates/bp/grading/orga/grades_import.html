@@ -38,25 +38,25 @@
 
     <h5>Struktur CSV-Datei:</h5>
     <ul>
-        <li>Die CSV-Datei muss Komma-separiert sein</li>
+        <li>Die CSV-Datei muss {{ separator_name }}-separiert sein</li>
         <li>Die Datei muss folgende Spalten enthalten:</li>
         <ul>
-            <li><u>nr</u>: Nummer des Projekts</li>
-            <li><u>notes</u>: Notizen zur Bewertung</li>
-            <li>Entweder <u>pitch_grade</u> oder <u>docs_grade</u></li>
+            <li><u>{{ project }}</u>: Nummer des Projekts</li>
+            <li><u>{{ notes }}</u>: Notizen zur Bewertung</li>
+            <li>Entweder <u>{{ pitch_grade }}</u> oder <u>{{ docs_grade }}</u></li>
             <ul>
-                <li><u>pitch_grade</u>: Note des Vortrags (Dezimaltrennzeichen: Punkt)</li>
-                <li><u>docs_grade</u>: Note der Dokumentation (Dezimaltrennzeichen: Punkt)</li>
+                <li><u>{{ pitch_grade }}</u>: Note des Vortrags (Dezimaltrennzeichen: Punkt)</li>
+                <li><u>{{ docs_grade }}</u>: Note der Dokumentation (Dezimaltrennzeichen: Punkt)</li>
             </ul>
         </ul>
     </ul>
 
     <h5>Beispielhafte CSV-Datei:</h5>
     <div class="code-example">
-        nr,notes,docs_grade<br>
-        2,Toll gemacht!,1<br>
-        4,Geht besser!,3.7<br>
-        7,Beispieltext,1.3
+        {{ project }}{{ separator }}{{ notes }}{{ separator }}{{ pitch_grade }}<br>
+        2{{ separator }}Toll gemacht!{{ separator }}1<br>
+        4{{ separator }}Geht besser!{{ separator }}3.7<br>
+        7{{ separator }}Beispieltext{{ separator }}1.3
     </div>
 
 {% endblock %}

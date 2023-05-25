@@ -2,13 +2,16 @@ from enum import Enum
 
 from django import forms
 
+
 class OrgaGradeCsvImportSpecification(Enum):
-    SEPARATOR = ','
+    SEPARATOR = ';'
+    SEPARATOR_NAME = 'Semikolon'
 
     PROJECT = 'nr'
-    NOTES = 'notes'
+    NOTES = 'notizen'
     PITCH_GRADE = 'pitch_grade'
-    DOCS_GRADE = 'docs_grade'
+    DOCS_GRADE = 'documentation_grade'
+
 
 class OrgaGradesImportForm(forms.Form):
     Spec = OrgaGradeCsvImportSpecification

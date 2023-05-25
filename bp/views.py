@@ -1,11 +1,13 @@
 import csv
 import io
 import datetime
+from collections import defaultdict
 
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.core.exceptions import ValidationError
 from django.core.mail import EmailMessage
 from django.db import IntegrityError
 from django.db.models import Count, Q
@@ -15,8 +17,9 @@ from django.urls import reverse, reverse_lazy
 from django.views.defaults import bad_request, permission_denied, server_error, page_not_found
 from django.views.generic import TemplateView, ListView, DetailView, UpdateView, FormView, CreateView, DeleteView
 
-from bp.forms import ProjectImportForm, StudentImportForm
+from bp.forms import ProjectImportForm, StudentImportForm, ProjectImportSpecification as ProjectSpec, StudentImportSpecification as StudentSpec
 from bp.models import BP, Project, Student, TL
+from bp.forms import ProjectImportForm as Spec
 
 
 def error_400(request, exception):
@@ -124,26 +127,68 @@ class ProjectImportView(PermissionRequiredMixin, FormView):
     form_class = ProjectImportForm
     success_url = reverse_lazy("bp:project_list")
     permission_required = "bp.add_project"
+    extra_context = {'separator': ProjectSpec.SEPARATOR.value,
+                     'separator_name': ProjectSpec.SEPARATOR_NAME.value,
+                     'project': ProjectSpec.PROJECT.value,
+                     'client': ProjectSpec.CLIENT.value,
+                     'client_mail': ProjectSpec.CLIENT_MAIL.value,
+                     'project_name': ProjectSpec.PROJECT_NAME.value,
+                     'pretix_id': ProjectSpec.PRETIX_ID.value
+                     }
 
     def form_valid(self, form):
         import_count = 0
         reader = csv.DictReader(io.TextIOWrapper(form.cleaned_data.get("csvfile").file), delimiter=";")
         active_bp = BP.get_active()
+        lines_ignored = defaultdict(lambda: 0)
         for row in reader:
+            '''check if all columns exist'''
+            if ProjectSpec.PROJECT.value not in row:
+                lines_ignored[f"Spalte '{ProjectSpec.PROJECT.value}' nicht gefunden"] += 1
+                continue
+            if ProjectSpec.CLIENT.value not in row:
+                lines_ignored[f"Spalte '{ProjectSpec.CLIENT.value}' nicht gefunden"] += 1
+                continue
+            if ProjectSpec.CLIENT_MAIL.value not in row:
+                lines_ignored[f"Spalte '{ProjectSpec.CLIENT_MAIL.value}' nicht gefunden"] += 1
+                continue
+            if ProjectSpec.PROJECT_NAME.value not in row:
+                lines_ignored[f"Spalte '{ProjectSpec.PROJECT_NAME.value}' nicht gefunden"] += 1
+                continue
+            if ProjectSpec.PRETIX_ID.value not in row:
+                lines_ignored[f"Spalte '{ProjectSpec.PRETIX_ID.value}' nicht gefunden"] += 1
+                continue
+
+            '''try to create object from row'''
+            project_nr = row[ProjectSpec.PROJECT.value]
+            client = row[ProjectSpec.CLIENT.value]
+            client_mail = row[ProjectSpec.CLIENT.value]
+            project_name = row[ProjectSpec.PROJECT_NAME.value]
+            pretix_id = row[ProjectSpec.PRETIX_ID.value]
             try:
-                Project.objects.create(**{
-                    "nr": row["nr"],
-                    "ag": row["ag"],
-                    "ag_mail": row["ag_mail"],
-                    "title": row["title"],
-                    "order_id": row["order_id"],
-                    "bp": active_bp,
-                })
-                print(f"Projekt {row['title']} importiert")
-                import_count += 1
+                Project.objects.create(nr=project_nr,
+                                       ag=client,
+                                       ag_mail=client_mail,
+                                       title=project_name,
+                                       order_id=pretix_id,
+                                       bp=active_bp
+                                       )
             except IntegrityError:
-                print(f"Projekt {row['title']} existiert bereits")
+                print(f"Project mit Nummer '{project_nr}' existiert bereits")
+                lines_ignored["Projekt existiert bereits"] += 1
+                continue
+            except ValueError:
+                lines_ignored[f"Ungültiger Wert für '{ProjectSpec.PROJECT.value}' (ValueError)"] += 1
+                continue
+            else:
+                import_count += 1
+
+        '''print success/error messages'''
         messages.add_message(self.request, messages.SUCCESS, f"{import_count} Projekt(e) erfolgreich importiert")
+        for error_msg, ignored_lines in lines_ignored.items():
+            messages.add_message(self.request, messages.WARNING,
+                                 f"{ignored_lines} Zeile(n) ignoriert wegen: {error_msg}")
+
         return super().form_valid(form)
 
 
@@ -162,25 +207,68 @@ class StudentImportView(PermissionRequiredMixin, FormView):
     form_class = StudentImportForm
     success_url = reverse_lazy("bp:student_list")
     permission_required = "bp.add_student"
+    extra_context = {'separator': StudentSpec.SEPARATOR.value,
+                     'separator_name': StudentSpec.SEPARATOR_NAME.value,
+                     'id': StudentSpec.ID.value,
+                     'name': StudentSpec.NAME.value,
+                     'mail': StudentSpec.MAIL.value,
+                     'project': StudentSpec.PROJECT.value
+                     }
 
     def form_valid(self, form):
         import_count = 0
-        reader = csv.DictReader(io.TextIOWrapper(form.cleaned_data.get("csvfile").file), delimiter=",")
+        reader = csv.DictReader(io.TextIOWrapper(form.cleaned_data.get("csvfile").file), delimiter=StudentSpec.SEPARATOR.value)
         active_bp = BP.get_active()
+        lines_ignored = defaultdict(lambda: 0)
         for row in reader:
+            '''check if all columns exist'''
+            if StudentSpec.ID.value not in row:
+                lines_ignored[f"Spalte '{StudentSpec.ID.value}' nicht gefunden"] += 1
+                continue
+            if StudentSpec.NAME.value not in row:
+                lines_ignored[f"Spalte '{StudentSpec.NAME.value}' nicht gefunden"] += 1
+                continue
+            if StudentSpec.MAIL.value not in row:
+                lines_ignored[f"Spalte '{StudentSpec.MAIL.value}' nicht gefunden"] += 1
+                continue
+            if StudentSpec.PROJECT.value not in row:
+                lines_ignored[f"Spalte '{StudentSpec.PROJECT.value}' nicht gefunden"] += 1
+                continue
+
+            '''check if project exists'''
+            project_nr = row[StudentSpec.PROJECT.value]
             try:
-                if not row["Gruppe"].startswith("Nicht Mitglied einer Gruppe"):
-                    project = Project.objects.get(nr=row["Gruppe"].split("_")[0])
-                    Student.objects.create(**{
-                        "name": row["Vollständiger Name"],
-                        "moodle_id": row["ID"],
-                        "mail": row["E-Mail-Adresse"],
-                        "project": project,
-                        "bp": active_bp,
-                    })
-                    print(f"Teilnehmer*in {row['Vollständiger Name']} importiert")
-                    import_count += 1
+                project = active_bp.project_set.filter(nr=project_nr).first()
+            except ValueError:
+                lines_ignored[f"Ungültiger Wert für '{StudentSpec.PROJECT.value}' (ValueError)"] += 1
+                continue
+            if not project:
+                print(f"Project mit Nummer '{project_nr}' existiert nicht")
+                lines_ignored["Teilnehmer existiert nicht"] += 1
+                continue
+
+            '''try to create object from row'''
+            moodle_id = row[StudentSpec.ID.value]
+            name = row[StudentSpec.NAME.value]
+            mail = row[StudentSpec.MAIL.value]
+            try:
+                Student.objects.create(moodle_id=moodle_id,
+                                       name=name,
+                                       mail=mail,
+                                       project=project,
+                                       bp=active_bp
+                                       )
             except IntegrityError:
-                print(f"Teilnehmer*in {row['Vollständiger Name']} existiert bereits")
-        messages.add_message(self.request, messages.SUCCESS, f"{import_count} Teilnehmende erfolgreich importiert")
+                print(f"Teilnehmer mit Moodle-ID '{moodle_id}' existiert bereits")
+                lines_ignored["Teilnehmer existiert bereits"] += 1
+                continue
+            else:
+                import_count += 1
+
+        '''print success/error messages'''
+        messages.add_message(self.request, messages.SUCCESS, f"{import_count} Teilnehmer erfolgreich importiert")
+        for error_msg, ignored_lines in lines_ignored.items():
+            messages.add_message(self.request, messages.WARNING,
+                                 f"{ignored_lines} Zeile(n) ignoriert wegen: {error_msg}")
+
         return super().form_valid(form)
