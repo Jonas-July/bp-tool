@@ -165,7 +165,7 @@ class TimetrackingIntervalsCreateView(ProjectByGroupMixin, LoginRequiredMixin, C
         if not is_tl(request.user):
             return redirect("bp:index")
         if not is_tl_of_group(project, request.user):
-            messages.add_message(request, messages.WARNING, "Du darfst für diese Gruppe keine Intervalle anlegen")
+            messages.add_message(request, messages.WARNING, "Du darfst für diese Gruppe keine Intervalle anlegen.")
             return redirect("bp:timetracking_tl_start")
         return super().get(request, *args, **kwargs)
 
@@ -231,9 +231,24 @@ class TimetrackingIntervalUpdateView(ProjectByRequestMixin, LoginRequiredMixin, 
     template_name = "bp/timetracking/timetracking_interval_create_update.html"
     context_object_name = "timeinterval"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        project_nr = self.get_object()._meta.get_field("group").value_from_object(self.get_object())
+        context["project"] = BP.get_active().project_set.filter(nr=project_nr).first()
+        return context
+
     def get_success_url(self):
         messages.add_message(self.request, messages.SUCCESS, "Intervall aktualisiert")
         return reverse_lazy('bp:timetracking_intervals', kwargs={'group' : self.get_project_by_request(self.request).nr})
+
+    def get(self, request, *args, **kwargs):
+        project = self.get_project_by_request(request)
+        if not is_tl(request.user):
+            return redirect("bp:index")
+        if not is_tl_of_group(project, request.user):
+            messages.add_message(request, messages.WARNING, "Du darfst für diese Gruppe keine Intervalle bearbeiten.")
+            return redirect("bp:timetracking_tl_start")
+        return super().get(request, *args, **kwargs)
 
 class TimetrackingIntervalDeleteView(ProjectByRequestMixin, OnlyOwnEmptyTimeIntervalsMixin, LoginRequiredMixin, DeleteView):
     model = TimeInterval
