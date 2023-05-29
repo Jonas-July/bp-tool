@@ -66,6 +66,7 @@ class AGGradeView(ProjectByOrderIDMixin, ProjectGradesMixin, CreateView):
         context = self.get_grading_context_data(context, self.get_object())
         return context
 
+
 class AGGradeSuccessView(ProjectByOrderIDMixin, ProjectGradesMixin, DetailView):
     model = Project
     context_object_name = "project"

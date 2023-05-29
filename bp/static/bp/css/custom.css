@@ -1,0 +1,8 @@
+.code-example {
+  border: 0.1vw solid #1a1a1a;
+  display: inline-block;
+  padding: 0.2vw;
+  background-color: #f1f1f1;
+  color: #3d3d3d;
+  font-family: "DejaVu Sans mono";
+}

@@ -36,5 +36,26 @@
         {% endbuttons %}
     </form>
 
+    <h5>Struktur CSV-Datei:</h5>
+    <ul>
+        <li>Die CSV-Datei muss {{ separator_name }}-separiert sein</li>
+        <li>Die Datei muss folgende Spalten enthalten:</li>
+        <ul>
+            <li><u>{{ project }}</u>: Nummer des Projekts</li>
+            <li><u>{{ client }}</u>: Name Auftraggeber</li>
+            <li><u>{{ client_mail }}</u>: E-Mail-Adresse Auftraggeber</li>
+            <li><u>{{ project_name }}</u>: Name des Projekts</li>
+            <li><u>{{ pretix_id }}</u>: Pretix Order ID des Projekts</li>
+        </ul>
+    </ul>
+
+    <h5>Beispielhafte CSV-Datei:</h5>
+    <div class="code-example">
+        {{ project }}{{ separator }}{{ client }}{{ separator }}{{ client_mail }}{{ separator }}{{ project_name }}{{ separator }}{{ pretix_id }}<br>
+        1{{ separator }}Auftraggeber2{{ separator }}auftraggeber2@mail.de{{ separator }}Projekt 4{{ separator }}2<br>
+        3{{ separator }}Auftraggeber15{{ separator }}auftraggeber15@mail.de{{ separator }}Projekt 3{{ separator }}3<br>
+        4{{ separator }}Auftraggeber7{{ separator }}auftraggeber7@mail.de{{ separator }}Projekt 6{{ separator }}4
+    </div>
+
 {% endblock %}
 

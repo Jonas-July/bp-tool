@@ -242,6 +242,7 @@ class Student(models.Model):
         verbose_name = "Teilnehmende*r"
         verbose_name_plural = "Teilnehmende"
         ordering = ['bp', 'name']
+        unique_together = ['moodle_id']
 
     name = models.CharField(verbose_name="Name", max_length=100)
     moodle_id = models.CharField(verbose_name="Moodle ID", max_length=50, blank=True)
