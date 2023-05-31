@@ -233,8 +233,7 @@ class TimetrackingIntervalUpdateView(ProjectByRequestMixin, LoginRequiredMixin, 
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        project_nr = self.get_object()._meta.get_field("group").value_from_object(self.get_object())
-        context["project"] = BP.get_active().project_set.filter(nr=project_nr).first()
+        context["project"] = self.get_project_by_request(self.request)
         return context
 
     def get_success_url(self):
