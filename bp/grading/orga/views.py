@@ -25,7 +25,8 @@ class OrgaGradesImportView(LoginRequiredMixin, FormView):
     extra_context = {'separator': Spec.SEPARATOR.value,
                      'separator_name': Spec.SEPARATOR_NAME.value,
                      'project': Spec.PROJECT.value,
-                     'notes': Spec.NOTES.value,
+                     'pitch_notes': Spec.PITCH_NOTES.value,
+                     'docs_notes': Spec.DOCS_NOTES.value,
                      'pitch_grade': Spec.PITCH_GRADE.value,
                      'docs_grade': Spec.DOCS_GRADE.value
                      }
@@ -34,21 +35,37 @@ class OrgaGradesImportView(LoginRequiredMixin, FormView):
         """
         For a version using the match statement, see below
         """
-        import_count = 0
+        pitch_import_count = 0
+        docs_import_count = 0
         reader = csv.DictReader(io.TextIOWrapper(form.cleaned_data.get("csvfile").file), delimiter=Spec.SEPARATOR.value)
         active_bp = BP.get_active()
         lines_ignored = defaultdict(lambda: 0)
+        grading_ignored = defaultdict(lambda: 0)
+
+        '''return if neither pitch nor docs grade columns exist'''
+        has_pitch_col = Spec.PITCH_GRADE.value in reader.fieldnames
+        has_docs_col = Spec.DOCS_GRADE.value in reader.fieldnames
+        if not (has_pitch_col or has_docs_col):
+            messages.add_message(self.request, messages.WARNING,
+                                 f"Alle Zeile(n) ignoriert wegen: Spalten '{Spec.PITCH_GRADE.value}' oder '{Spec.DOCS_GRADE.value}' nicht gefunden")
+            return super().form_valid(form)
+
         for row in reader:
             '''check if all columns exist'''
             if Spec.PROJECT.value not in row:
                 lines_ignored[f"Spalte '{Spec.PROJECT.value}' nicht gefunden"] += 1
                 continue
-            if Spec.NOTES.value not in row:
-                lines_ignored[f"Spalte '{Spec.NOTES.value}' nicht gefunden"] += 1
+            if has_pitch_col and Spec.PITCH_NOTES.value not in row:
+                lines_ignored[f"Spalte '{Spec.PITCH_NOTES.value}' nicht gefunden"] += 1
                 continue
-            if not (Spec.PITCH_GRADE.value in row or Spec.DOCS_GRADE.value in row):
-                lines_ignored[
-                    f"Spalten '{Spec.PITCH_GRADE.value}' und '{Spec.DOCS_GRADE.value}' nicht gefunden"] += 1
+            if has_docs_col and Spec.DOCS_NOTES.value not in row:
+                lines_ignored[f"Spalte '{Spec.DOCS_NOTES.value}' nicht gefunden"] += 1
+                continue
+            if has_pitch_col and Spec.PITCH_GRADE.value not in row:
+                lines_ignored[f"Spalte '{Spec.PITCH_GRADE.value}' nicht gefunden"] += 1
+                continue
+            if has_docs_col and Spec.DOCS_GRADE.value not in row:
+                lines_ignored[f"Spalte '{Spec.DOCS_GRADE.value}' nicht gefunden"] += 1
                 continue
 
             '''check if project exists'''
@@ -63,36 +80,47 @@ class OrgaGradesImportView(LoginRequiredMixin, FormView):
                 lines_ignored["Projekt existiert nicht"] += 1
                 continue
 
-            '''try to create object from row'''
-            notes = row[Spec.NOTES.value]
-            grade_points = row[Spec.PITCH_GRADE.value] if Spec.PITCH_GRADE.value in row else row[
-                Spec.DOCS_GRADE.value]
-            grade_type = PitchGrade if Spec.PITCH_GRADE.value in row else DocsGrade
-            try:
-                grade_type.objects.create(project=project,
-                                          grade_points=grade_points,
-                                          grade_notes=notes)
-            except IntegrityError:
-                print(f"Bewertung des Typs {grade_type} für Projekt {project} existiert bereits")
-                lines_ignored["Bewertung existiert bereits"] += 1
-                continue
-            except ValidationError:
-                lines_ignored[f"Ungültiger Wert für die Bewertung (ValidationError)"] += 1
-                continue
-            else:
-                import_count += 1
+            '''try to create object(s) from row'''
+            if has_pitch_col:
+                try:
+                    PitchGrade.objects.create(project=project,
+                                              grade_points=row[Spec.PITCH_GRADE.value],
+                                              grade_notes=row[Spec.PITCH_NOTES.value])
+                except IntegrityError:
+                    grading_ignored[f"Bewertung aus Spalte '{Spec.PITCH_GRADE.value}' existiert bereits"] += 1
+                except ValidationError:
+                    grading_ignored[f"Ungültiger Wert für '{Spec.PITCH_GRADE.value}' (ValidationError)"] += 1
+                else:
+                    pitch_import_count += 1
+            if has_docs_col:
+                try:
+                    DocsGrade.objects.create(project=project,
+                                             grade_points=row[Spec.DOCS_GRADE.value],
+                                             grade_notes=row[Spec.DOCS_GRADE.value])
+                except IntegrityError:
+                    grading_ignored[f"Bewertung aus Spalte '{Spec.DOCS_GRADE.value}' existiert bereits"] += 1
+                except ValidationError:
+                    grading_ignored[f"Ungültiger Wert für '{Spec.DOCS_GRADE.value}' (ValidationError)"] += 1
+                else:
+                    docs_import_count += 1
 
         '''print success/error messages'''
-        messages.add_message(self.request, messages.SUCCESS, f"{import_count} Bewertung(en) erfolgreich importiert")
+        messages.add_message(self.request, messages.SUCCESS,
+                             f"{pitch_import_count} Pitch-Bewertung(en) und {docs_import_count} Dokumentations-Bewertung(en) erfolgreich importiert")
         for error_msg, ignored_lines in lines_ignored.items():
             messages.add_message(self.request, messages.WARNING,
                                  f"{ignored_lines} Zeile(n) ignoriert wegen: {error_msg}")
+        for error_msg, ignored_lines in grading_ignored.items():
+            messages.add_message(self.request, messages.WARNING,
+                                 f"{ignored_lines} Bewertung(en) ignoriert wegen: {error_msg}")
 
         return super().form_valid(form)
 
     '''
     def form_valid_py3p10(self, form):
         """
+        This version isn't supported in the current dashboard. It would need some changes to be used.
+        
         This version of form_valid uses the match statement
         which is only available in 3.10+
         """
