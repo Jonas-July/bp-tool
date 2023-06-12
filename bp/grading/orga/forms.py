@@ -8,7 +8,8 @@ class OrgaGradeCsvImportSpecification(Enum):
     SEPARATOR_NAME = 'Semikolon'
 
     PROJECT = 'nr'
-    NOTES = 'notizen'
+    PITCH_NOTES = 'pitch_notizen'
+    DOCS_NOTES = 'documentation_notizen'
     PITCH_GRADE = 'pitch_grade'
     DOCS_GRADE = 'documentation_grade'
 
