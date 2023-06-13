@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.urls import reverse_lazy
+from lti_provider.auth import User
 
 
 class TLLog(models.Model):
@@ -29,15 +30,18 @@ class TLLog(models.Model):
         default=0,
         help_text="Wie läuft es bei der Gruppe insgesamt aktuell?"
     )
-    current_problems = models.ManyToManyField(verbose_name="Aktuelle Probleme", to="TLLogProblem", blank=True, help_text="Trifft davon etwas bei der Gruppe zu?")
+    current_problems = models.ManyToManyField(verbose_name="Aktuelle Probleme", to="TLLogProblem", blank=True,
+                                              help_text="Trifft davon etwas bei der Gruppe zu?")
     text = models.TextField(
         help_text="Berichte kurz: Was war die Aktivität vergangene Woche? Hast du dich mit der Gruppe getroffen? Hattet ihr anderweitig Kontakt? Gab es ein AG Treffen? Gibt es Probleme?"
     )
-    requires_attention = models.BooleanField(verbose_name="Besondere Aufmerksamkeit", blank=True, default=False, help_text="Benötigt diese Gruppe aktuell besondere Aufmerksamkeit durch das Organisationsteam/sollten wir das Log besonders dringend lesen?")
-    comment = models.TextField(blank=True, verbose_name="Kommentar", help_text="Interner Kommentar des Orga-Teams zu diesem Eintrag")
+    requires_attention = models.BooleanField(verbose_name="Besondere Aufmerksamkeit", blank=True, default=False,
+                                             help_text="Benötigt diese Gruppe aktuell besondere Aufmerksamkeit durch das Organisationsteam/sollten wir das Log besonders dringend lesen?")
+    comment = models.TextField(blank=True, verbose_name="Kommentar",
+                               help_text="Interner Kommentar des Orga-Teams zu diesem Eintrag")
     read = models.BooleanField(blank=True, default=False, verbose_name="Gelesen")
-    handled = models.BooleanField(blank=True, default=False, verbose_name="Erledigt", help_text="Das Log forderte eine Reaktion des Orga-Teams, die bereits durchgeführt wurde.")
-    good_log = models.BooleanField(null=True, blank=True, default=None, verbose_name="Gutes Log?")
+    handled = models.BooleanField(blank=True, default=False, verbose_name="Erledigt",
+                                  help_text="Das Log forderte eine Reaktion des Orga-Teams, die bereits durchgeführt wurde.")
 
     @property
     def simple_timestamp(self):
@@ -106,7 +110,34 @@ class TLLogTemplate(models.Model):
         verbose_name_plural = "TL-Log Vorlagen"
 
     bp = models.OneToOneField("BP", on_delete=models.CASCADE)
-    text = models.TextField(blank=True, verbose_name="Vorlagentext", help_text="Text, der den TLs als Vorlage angezeigt wird")
+    text = models.TextField(blank=True, verbose_name="Vorlagentext",
+                            help_text="Text, der den TLs als Vorlage angezeigt wird")
 
     def __str__(self):
         return f"Vorlage für {self.bp}"
+
+
+class TLLogEvaluation(models.Model):
+    class Meta:
+        verbose_name = "TL-Log-Bewertung"
+        verbose_name_plural = "TL-Log-Bewertungen"
+        unique_together = [('log', 'rater')]
+
+    bp = models.ForeignKey("BP", on_delete=models.CASCADE)
+    log = models.ForeignKey("TLLog", on_delete=models.CASCADE)
+    rater = models.ForeignKey(verbose_name="Rater", to=User, on_delete=models.CASCADE)
+    rating = models.SmallIntegerField(choices=[(x+1, f'{x+1} Star(s)') for x in range(5)], null=True)
+
+    @staticmethod
+    def average_rating_of(log):
+        ratings = list(TLLogEvaluation.objects.filter(log=log))
+        if len(ratings) == 0:
+            return
+        return round(sum([x.rating for x in ratings]) / len(ratings), 2)
+
+    @staticmethod
+    def get_rating_of(log, user):
+        return TLLogEvaluation.objects.filter(log=log, rater=user).first()
+
+    def __str__(self):
+        return f"TL-Log-Bewertung für {self.bp}"

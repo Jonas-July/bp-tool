@@ -1,3 +1,5 @@
+from functools import reduce
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import PermissionRequiredMixin
@@ -10,6 +12,8 @@ from bp.views import FilterByActiveBPMixin
 
 # necessary to load the custom tags
 from .templatetags import project_info_tags, project_overview_list_tags
+from ..models import TLLogEvaluation
+
 
 class LogListView(PermissionRequiredMixin, FilterByActiveBPMixin, ListView):
     model = TLLog
@@ -52,6 +56,24 @@ class LogView(PermissionRequiredMixin, DetailView):
     template_name = "bp/tllogs/orga/log.html"
     context_object_name = "log"
     permission_required = "bp.view_tllog"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        evaluation = TLLogEvaluation.get_rating_of(context['log'], self.request.user)
+        average_rating = TLLogEvaluation.average_rating_of(context['log'])
+
+        if average_rating:
+            context["average_rating"] = average_rating
+        else:
+            context["average_rating"] = 0
+
+        if evaluation:
+            context["rating_of_user"] = evaluation.rating
+        else:
+            context["rating_of_user"] = 0
+
+        return context
 
 
 class LogReminderView(PermissionRequiredMixin, FormView):
