@@ -4,7 +4,6 @@ from django.views.generic import DetailView
 
 from bp.models import TLLog
 from bp.roles import is_orga
-from bp.tllogs.models import TLLogEvaluation
 
 
 class APILogMark(LoginRequiredMixin, DetailView):
@@ -18,7 +17,11 @@ class APILogMark(LoginRequiredMixin, DetailView):
         if not is_orga(request.user):
             return HttpResponseForbidden("")
         log = self.get_object()
-        self.mark(log)
+        rating = request.POST.get('rating', None)
+        if rating:
+            self.mark(log, rating)
+        else:
+            self.mark(log)
         log.save()
         return HttpResponse("")
 
@@ -33,25 +36,6 @@ class APILogMarkHandledView(APILogMark):
         log.handled = True
 
 
-class APILogRate(LoginRequiredMixin, DetailView):
-    http_method_names = ['post']
-    model = TLLog
-
-    def post(self, request, *args, **kwargs):
-        if not is_orga(request.user):
-            return HttpResponseForbidden("")
-
-        log = self.get_object()
-        evaluation = TLLogEvaluation.get_rating_of(log, request.user)
-
-        if evaluation:
-            evaluation.rating = request.POST['rating']
-            evaluation.save()
-        else:
-            TLLogEvaluation.objects.create(bp=log.bp,
-                                           log=log,
-                                           rater=request.user,
-                                           rating=request.POST['rating']
-                                           )
-
-        return HttpResponse(TLLogEvaluation.average_rating_of(log))
+class APILogRate(APILogMark):
+    def mark(self, log, rating):
+        log.rating = rating

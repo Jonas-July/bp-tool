@@ -12,7 +12,6 @@ from bp.views import FilterByActiveBPMixin
 
 # necessary to load the custom tags
 from .templatetags import project_info_tags, project_overview_list_tags
-from ..models import TLLogEvaluation
 
 
 class LogListView(PermissionRequiredMixin, FilterByActiveBPMixin, ListView):
@@ -60,18 +59,13 @@ class LogView(PermissionRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        evaluation = TLLogEvaluation.get_rating_of(context['log'], self.request.user)
-        average_rating = TLLogEvaluation.average_rating_of(context['log'])
+        log = self.get_object()
+        rating = log.rating
 
-        if average_rating:
-            context["average_rating"] = average_rating
+        if rating:
+            context["rating"] = rating
         else:
-            context["average_rating"] = 0
-
-        if evaluation:
-            context["rating_of_user"] = evaluation.rating
-        else:
-            context["rating_of_user"] = 0
+            context["rating"] = 0
 
         return context
 

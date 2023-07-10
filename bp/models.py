@@ -19,6 +19,7 @@ from bp.orgalogs.models import *
 from bp.timetracking.models import *
 from bp.tllogs.models import *
 
+
 class BP(models.Model):
     class Meta:
         verbose_name = "BP"
@@ -63,7 +64,9 @@ class Project(models.Model):
     bp = models.ForeignKey(BP, verbose_name="Zugehöriges BP", on_delete=models.CASCADE)
     tl = models.ForeignKey("TL", verbose_name="Zugehörige TL", on_delete=models.SET_NULL, blank=True, null=True)
 
-    ag_grade = models.ForeignKey("AGGradeAfterDeadline", related_name="valid_grade", verbose_name="Derzeit gültige Bewertung", on_delete=models.SET_NULL, blank=True, null=True)
+    ag_grade = models.ForeignKey("AGGradeAfterDeadline", related_name="valid_grade",
+                                 verbose_name="Derzeit gültige Bewertung", on_delete=models.SET_NULL, blank=True,
+                                 null=True)
 
     peer_group = models.ForeignKey("PeerGroup", related_name='projects', verbose_name='Peer Group', blank=True,
                                    on_delete=models.SET_NULL, null=True)
@@ -116,7 +119,7 @@ class Project(models.Model):
         if self.ag_grade:
             return self.ag_grade.ag_points
         recent = self.aggradebeforedeadline_set \
-                         .order_by('-timestamp').values_list('ag_points', flat=True).first()
+            .order_by('-timestamp').values_list('ag_points', flat=True).first()
         return recent or -1
 
     @property
@@ -124,26 +127,26 @@ class Project(models.Model):
         if self.ag_grade:
             return self.ag_grade.ag_points_justification
         recent = self.aggradebeforedeadline_set \
-                         .order_by('-timestamp').values_list('ag_points_justification', flat=True).first()
+            .order_by('-timestamp').values_list('ag_points_justification', flat=True).first()
         return recent or ""
 
     @property
     def most_recent_ag_points(self):
         after_deadline = self.aggradeafterdeadline_set \
-                         .order_by('-timestamp').values_list('ag_points', flat=True).first()
+            .order_by('-timestamp').values_list('ag_points', flat=True).first()
 
         before_deadline = self.aggradebeforedeadline_set \
-                         .order_by('-timestamp').values_list('ag_points', flat=True).first()
+            .order_by('-timestamp').values_list('ag_points', flat=True).first()
 
         return after_deadline or before_deadline or -1
 
     @property
     def most_recent_ag_points_justification(self):
         after_deadline = self.aggradeafterdeadline_set \
-                         .order_by('-timestamp').values_list('ag_points_justification', flat=True).first()
+            .order_by('-timestamp').values_list('ag_points_justification', flat=True).first()
 
         before_deadline = self.aggradebeforedeadline_set \
-                         .order_by('-timestamp').values_list('ag_points_justification', flat=True).first()
+            .order_by('-timestamp').values_list('ag_points_justification', flat=True).first()
 
         return after_deadline or before_deadline or ""
 
@@ -179,7 +182,8 @@ class Project(models.Model):
 
     @property
     def status_json_string(self):
-        return json.dumps([{'x': log.simple_timestamp, 'y': log.status} for log in self.tllog_set.all().order_by('timestamp')])
+        return json.dumps(
+            [{'x': log.simple_timestamp, 'y': log.status} for log in self.tllog_set.all().order_by('timestamp')])
 
     @staticmethod
     def without_recent_logs(projects=None):
@@ -187,8 +191,8 @@ class Project(models.Model):
             projects = Project.get_active()
         remind_after_days = timedelta(days=settings.LOG_REMIND_PERIOD_DAYS) + timedelta(days=1)
         latest_day_to_remind = timezone.now() - remind_after_days
-        projects_not_covered = projects.annotate(last_log_date=Coalesce(Max('tllog__timestamp'), latest_day_to_remind))\
-                                       .filter(last_log_date__lte=latest_day_to_remind).all()
+        projects_not_covered = projects.annotate(last_log_date=Coalesce(Max('tllog__timestamp'), latest_day_to_remind)) \
+            .filter(last_log_date__lte=latest_day_to_remind).all()
         return projects_not_covered
 
     def __str__(self):
@@ -257,7 +261,8 @@ class Student(models.Model):
 
     @property
     def total_hours(self):
-        total_hours = self.timetrackingentry_set.filter(interval__group=self.project).aggregate(total_hours=Coalesce(Sum('hours'), Decimal(0)))['total_hours']
+        total_hours = self.timetrackingentry_set.filter(interval__group=self.project).aggregate(
+            total_hours=Coalesce(Sum('hours'), Decimal(0)))['total_hours']
         return round(total_hours, 2)
 
     def __str__(self):

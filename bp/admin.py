@@ -13,7 +13,6 @@ from bp.models import BP, Project, AGGradeBeforeDeadline, AGGradeAfterDeadline, 
 from bp.models import OrgaLog
 from bp.grading.models import PitchGrade, DocsGrade
 from bp.timetracking.models import TimeSpentCategory, TimeInterval
-from bp.tllogs.models import TLLogEvaluation
 
 
 class TLLogTemplateInline(admin.TabularInline):
@@ -236,11 +235,4 @@ class TLLogReminderAdmin(admin.ModelAdmin):
     list_filter = ['bp']
     list_display = ['timestamp', 'group', 'tl', 'bp']
     list_display_links = ['timestamp', 'group', 'tl']
-
-
-@admin.register(TLLogEvaluation)
-class TLLogReminderAdmin(admin.ModelAdmin):
-    list_filter = ['bp', 'log']
-    list_display = ['log', 'rater', 'rating', 'bp']
-    list_display_links = ['log']
 

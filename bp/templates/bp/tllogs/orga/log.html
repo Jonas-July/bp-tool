@@ -86,9 +86,9 @@
                     data: {
                        'rating': $(event.target).attr("data-value")
                     },
-                    success: function (avg) {
-                       $("#labelLogQuality").html(avg + ' Star(s)');
+                    success: function (response) {
                         const rating = $(event.target).attr("data-value");
+                       $("#labelLogQuality").html(rating + ' Star(s)');
                         $(".star-rating").children().each(function () {
                             if($(this).attr("data-value") <= rating) {
                                 $(this).css('color', 'orange')
@@ -146,7 +146,7 @@
         {% endif %}
         <tr>
             <td>Logqualität:</td>
-            <td id="labelLogQuality">{% if average_rating > 0 %}{{ average_rating }} Star(s){% else %}Noch keine Bewertung.{% endif %}</td>
+            <td id="labelLogQuality">{% if rating > 0 %}{{ rating }} Star(s){% else %}Noch keine Bewertung.{% endif %}</td>
         </tr>
         <tr>
             <td>Von:</td><td>{{ log.tl }}</td>
@@ -173,10 +173,10 @@
     <a href="#" class="btn btn-info" id="btnMarkHandled">{% fa5_icon "check-square" "fas" %} Als erledigt markieren</a>
 
     <div class="star-rating btn">
-        <a href="#" {% if rating_of_user >= 5 %}style="color: orange"{% endif %} data-value="5">★</a>
-        <a href="#" {% if rating_of_user >= 4 %}style="color: orange"{% endif %} data-value="4">★</a>
-        <a href="#" {% if rating_of_user >= 3 %}style="color: orange"{% endif %} data-value="3">★</a>
-        <a href="#" {% if rating_of_user >= 2 %}style="color: orange"{% endif %} data-value="2">★</a>
-        <a href="#" {% if rating_of_user >= 1 %}style="color: orange"{% endif %} data-value="1">★</a>
+        <a href="#" {% if rating >= 5 %}style="color: orange"{% endif %} data-value="5">★</a>
+        <a href="#" {% if rating >= 4 %}style="color: orange"{% endif %} data-value="4">★</a>
+        <a href="#" {% if rating >= 3 %}style="color: orange"{% endif %} data-value="3">★</a>
+        <a href="#" {% if rating >= 2 %}style="color: orange"{% endif %} data-value="2">★</a>
+        <a href="#" {% if rating >= 1 %}style="color: orange"{% endif %} data-value="1">★</a>
     </div>
 {% endblock %}

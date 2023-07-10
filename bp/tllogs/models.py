@@ -4,7 +4,6 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.urls import reverse_lazy
-from lti_provider.auth import User
 
 
 class TLLog(models.Model):
@@ -25,6 +24,7 @@ class TLLog(models.Model):
     group = models.ForeignKey("Project", on_delete=models.CASCADE)
     tl = models.ForeignKey("TL", on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True, blank=True)
+    rating = models.SmallIntegerField("Bewertung", choices=[(x+1, f'{x+1} Star(s)') for x in range(5)], null=True)
     status = models.SmallIntegerField(
         choices=STATUS_CHOICES,
         default=0,
@@ -115,29 +115,3 @@ class TLLogTemplate(models.Model):
 
     def __str__(self):
         return f"Vorlage für {self.bp}"
-
-
-class TLLogEvaluation(models.Model):
-    class Meta:
-        verbose_name = "TL-Log-Bewertung"
-        verbose_name_plural = "TL-Log-Bewertungen"
-        unique_together = [('log', 'rater')]
-
-    bp = models.ForeignKey("BP", on_delete=models.CASCADE)
-    log = models.ForeignKey("TLLog", on_delete=models.CASCADE)
-    rater = models.ForeignKey(verbose_name="Rater", to=User, on_delete=models.CASCADE)
-    rating = models.SmallIntegerField(choices=[(x+1, f'{x+1} Star(s)') for x in range(5)], null=True)
-
-    @staticmethod
-    def average_rating_of(log):
-        ratings = list(TLLogEvaluation.objects.filter(log=log))
-        if len(ratings) == 0:
-            return
-        return round(sum([x.rating for x in ratings]) / len(ratings), 2)
-
-    @staticmethod
-    def get_rating_of(log, user):
-        return TLLogEvaluation.objects.filter(log=log, rater=user).first()
-
-    def __str__(self):
-        return f"TL-Log-Bewertung für {self.bp}"
