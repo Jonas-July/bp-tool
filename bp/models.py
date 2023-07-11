@@ -88,6 +88,10 @@ class Project(models.Model):
         total_hours = sum((s.total_hours for s in self.student_set.all()), Decimal(0))
         return round(total_hours, 2)
 
+    def total_hours_of_category(self, category):
+        total_hours = sum((s.total_hours_of_category(category) for s in self.student_set.all()), Decimal(0))
+        return round(total_hours, 2)
+
     @property
     def expected_hours(self):
         expected_hours_per_student = Decimal(270)
@@ -262,6 +266,11 @@ class Student(models.Model):
     @property
     def total_hours(self):
         total_hours = self.timetrackingentry_set.filter(interval__group=self.project).aggregate(
+            total_hours=Coalesce(Sum('hours'), Decimal(0)))['total_hours']
+        return round(total_hours, 2)
+
+    def total_hours_of_category(self, category):
+        total_hours = self.timetrackingentry_set.filter(interval__group=self.project, category=category).aggregate(
             total_hours=Coalesce(Sum('hours'), Decimal(0)))['total_hours']
         return round(total_hours, 2)
 
