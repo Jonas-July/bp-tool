@@ -68,6 +68,7 @@ class TimeTable:
                 ]
 
 
+# needed for timetracking graphs
 class Chart:
     def __init__(self, datapoints):
         self.datapoints = datapoints
@@ -83,11 +84,13 @@ class Chart:
         return f'{colors}'
 
 
+# needed for timetracking graphs of time spent - group comparison
 class HoursPerGroupData:
-    def __init__(self, category_names, data, colors):
-        self.category_names = category_names
+    def __init__(self, category_name, data, colors, identifier):
+        self.category_name = category_name
         self.data = data
         self.colors = colors
+        self.chart_id = identifier
 
 
 class TimetrackingOverview(LoginRequiredMixin, TemplateView):
@@ -116,6 +119,7 @@ class TimetrackingOverview(LoginRequiredMixin, TemplateView):
         return context
 
 
+# needed for timetracking graphs of time spent - group comparison
 def get_hours_per_group(category=None):
     chart = Chart([
         {
@@ -156,33 +160,24 @@ class TimetrackingProjectOverview(ProjectByGroupMixin, LoginRequiredMixin, Templ
         context["students"] = project.student_set.all()
         context["timetable"] = TimeTable(project.get_past_and_current_intervals, context["students"],
                                          hours_of_student_in_interval).get_table()
+
+        # data for graph 1 (time spent per interval)
         context["hours_per_interval"] = Chart([
             {
                 'x': f'{itv.name}',
                 'y': f"{sum([hours_of_student_in_interval(s, itv) / len(itv) for s in context['students']])}"
             } for itv in reversed(project.get_past_and_current_intervals)
         ]).get_chart_data()
-        # chart = Chart([
-        #     {
-        #         'x': f'Projekt {proj.nr}',
-        #         'y': f'{proj.total_hours}'
-        #     } for proj in Project.get_active()
-        # ])
-        # chart.sort()
-        # context["hours_per_group"] = chart.get_chart_data()
-        # context["hours_per_group_color"] = chart.single_bar_highlighted(project.nr)
 
+        # data for remaining graphs (time spent - group comparison: total and for every category)
         categories = TimeSpentCategory.objects.all()
-        chart_data = [get_hours_per_group()] + [get_hours_per_group(category=c) for c in categories]
-        # context["hours_per_interval_data"] = {
-        #     "categories": ["Gesamt"] + list(categories.values_list("name", flat=True)),
-        #     "data": [cd.get_chart_data() for cd in chart_data],
-        #     "colors": [cd.single_bar_highlighted(project.nr) for cd in chart_data]
-        # }
-        context["hours_per_group_data"] = HoursPerGroupData(
-            ["Gesamt"] + list(categories.values_list("name", flat=True)),
-            [cd.get_chart_data() for cd in chart_data],
-            [cd.single_bar_highlighted(project.nr) for cd in chart_data])
+        charts = [get_hours_per_group()] + [get_hours_per_group(category=c) for c in categories]
+        context["hours_per_group_data"] = [
+            HoursPerGroupData(cat, chart.get_chart_data(), chart.single_bar_highlighted(project.nr), i)
+            for cat, chart, i in zip(["Gesamt"] + list(categories.values_list("name", flat=True)),
+                                     charts,
+                                     range(len(charts)))
+        ]
 
         return context
 
