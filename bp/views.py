@@ -138,7 +138,7 @@ class ProjectImportView(PermissionRequiredMixin, FormView):
 
     def form_valid(self, form):
         import_count = 0
-        reader = csv.DictReader(io.TextIOWrapper(form.cleaned_data.get("csvfile").file), delimiter=";")
+        reader = csv.DictReader(io.TextIOWrapper(form.cleaned_data.get("csvfile").file), delimiter=ProjectSpec.SEPARATOR.value)
         active_bp = BP.get_active()
         lines_ignored = defaultdict(lambda: 0)
         for row in reader:
