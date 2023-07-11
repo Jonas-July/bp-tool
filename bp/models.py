@@ -237,6 +237,12 @@ class TL(models.Model):
     def get_active():
         return TL.objects.filter(bp__active=True, confirmed=True)
 
+    @property
+    def average_rating(self):
+        # logs = TLLog.objects.filter(TL=self)
+        ratings = [log.rating for log in self.tllog_set.all() if log.rating]
+        return round(sum(ratings)/len(ratings), 2)
+
     def __str__(self):
         return self.name
 

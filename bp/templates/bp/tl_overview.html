@@ -1,5 +1,7 @@
 {% extends "bp/base.html" %}
 
+{% load fontawesome_5 %}
+
 {% block breadcrumbs %}
     <li class="breadcrumb-item"><a href="{% url "bp:index" %}">Übersicht</a></li>
     <li class="breadcrumb-item active">TLs</li>
@@ -15,6 +17,7 @@
             <th>Name</th>
             <th>Anzahl Gruppen</th>
             <th>Anzahl Logs</th>
+            <th>⌀ Bewertung</th>
             <th>Gruppen</th>
         </tr>
         </thead>
@@ -24,6 +27,7 @@
                 <td><a href="{% url 'bp:tl_detail' tl.pk %}">{{ tl.name }}</a></td>
                 <td>{{ tl.project_set.count }}</td>
                 <td>{{ tl.tllog_set.count}}</td>
+                <td>{{ tl.average_rating}}{% fa5_icon "star" 'fas' %}</td>
                 <td>
                     {% for project in tl.project_set.all %}
                         <a href="{% url 'bp:project_detail' project.pk %}">{{ project.nr }}: {{ project.title }}</a>{% if not forloop.last %}, {% endif %}
