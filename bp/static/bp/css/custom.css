@@ -6,3 +6,32 @@
   color: #3d3d3d;
   font-family: "DejaVu Sans mono";
 }
+
+.star-rating {
+	overflow:hidden;
+    background-color: #939393;
+    padding-left: 1em;
+    padding-right: 1em;
+}
+
+.star-rating a {
+	font-size: 30px;
+    max-height: 30px;
+	float: right;
+    color: #1a1a1a;
+}
+
+.star-rating a:hover {
+    color: orange;
+    text-decoration: none;
+    -webkit-transition: color .2s;
+    -moz-transition: color .2s;
+    -o-transition: color .2s;
+    transition: color .2s;
+}
+
+.star-rating a:hover ~ a,
+.star-rating a:focus,
+.star-rating a:focus ~ a {
+    color: orange;
+}

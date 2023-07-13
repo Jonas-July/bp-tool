@@ -1,6 +1,7 @@
 {% extends "bp/base.html" %}
 
 {% load fontawesome_5 %}
+{% load static %}
 
 {% block breadcrumbs %}
     <li class="breadcrumb-item"><a href="{% url "bp:index" %}">Übersicht</a></li>
@@ -76,38 +77,29 @@
                });
             });
 
-            // Mark as good
-            $('#btnMarkGood').click(function () {
+            // Rate log
+            $(".star-rating").click(function (event) {
                 $.ajax({
-                   url: "{% url "bp:log_api_mark_good" pk=log.pk %}",
+                   url: "{% url "bp:log_api_rate" pk=log.pk %}",
                     type: 'POST',
                     data: {
+                       'rating': $(event.target).parent().attr("data-value")
                     },
                     success: function (response) {
-                       $("#labelLogQuality").html('{% fa5_icon 'thumbs-up' 'fas' %} Gut');
-                       $("#btnMarkGood").html('{% fa5_icon 'check' 'fas' %} Gutes Log').off('click');
+                        const rating = $(event.target).parent().attr("data-value");
+                       $("#labelLogQuality").html(rating + '{% fa5_icon "star" 'fas' %}');
+                        $(".star-rating").children().each(function () {
+                            if($(this).attr("data-value") <= rating) {
+                                $(this).css('color', 'orange')
+                            } else {
+                                $(this).css('color', '#1a1a1a')
+                            }
+                        });
                     },
                     error: function (response) {
-                       alert("Fehler! Konnte nicht als gut markiert werden.");
+                       alert("Fehler! Konnte nicht bewertet werden.");
                     }
-               });
-            });
-
-            // Mark as handled
-            $('#btnMarkBad').click(function () {
-                $.ajax({
-                   url: "{% url "bp:log_api_mark_bad" pk=log.pk %}",
-                    type: 'POST',
-                    data: {
-                    },
-                    success: function (response) {
-                       $("#labelLogQuality").html('{% fa5_icon 'thumbs-down' 'fas' %} Schlecht');
-                       $("#btnMarkBad").html('{% fa5_icon 'check' 'fas' %} Schlechtes Log').off('click');
-                    },
-                    error: function (response) {
-                       alert("Fehler! Konnte nicht als schlecht markiert werden.");
-                    }
-               });
+                });
             });
         });
     </script>
@@ -153,7 +145,7 @@
         {% endif %}
         <tr>
             <td>Logqualität:</td>
-            <td id="labelLogQuality">{% if log.good_log %}{% fa5_icon "thumbs-up" "fas" %} Gut{% elif log.good_log == False %}{% fa5_icon "thumbs-down" "fas" %} Schlecht{% else %}-{% endif %}</td>
+            <td id="labelLogQuality">{% if rating > 0 %}{{ rating }}{% fa5_icon "star" 'fas' %}{% else %}Noch keine Bewertung.{% endif %}</td>
         </tr>
         <tr>
             <td>Von:</td><td>{{ log.tl }}</td>
@@ -178,6 +170,12 @@
 
     <a href="#" class="btn btn-primary" id="btnMarkRead">{% fa5_icon "eye" "fas" %} Als gelesen markieren</a>
     <a href="#" class="btn btn-info" id="btnMarkHandled">{% fa5_icon "check-square" "fas" %} Als erledigt markieren</a>
-    <a href="#" class="btn btn-success" id="btnMarkGood">{% fa5_icon "thumbs-up" "fas" %} Als gut markieren</a>
-    <a href="#" class="btn btn-warning" id="btnMarkBad">{% fa5_icon "thumbs-down" "fas" %} Als schlecht markieren</a>
+
+    <div class="star-rating btn">
+        <a href="#" {% if rating >= 5 %}style="color: orange"{% endif %} data-value="5">{% fa5_icon "star" 'fas' %}</a>
+        <a href="#" {% if rating >= 4 %}style="color: orange"{% endif %} data-value="4">{% fa5_icon "star" 'fas' %}</a>
+        <a href="#" {% if rating >= 3 %}style="color: orange"{% endif %} data-value="3">{% fa5_icon "star" 'fas' %}</a>
+        <a href="#" {% if rating >= 2 %}style="color: orange"{% endif %} data-value="2">{% fa5_icon "star" 'fas' %}</a>
+        <a href="#" {% if rating >= 1 %}style="color: orange"{% endif %} data-value="1">{% fa5_icon "star" 'fas' %}</a>
+    </div>
 {% endblock %}

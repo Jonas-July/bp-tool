@@ -66,7 +66,7 @@ class ProjectAdmin(admin.ModelAdmin):
             """
             Create virtual Peer Groups of size groups_per_peergroup from consecutive groups
             """
-            yield from (groups[j:j+groups_per_peergroup] for j in range(0, len(groups), groups_per_peergroup))
+            yield from (groups[j:j + groups_per_peergroup] for j in range(0, len(groups), groups_per_peergroup))
 
         def check_constraints(peer_group):
             ag_counter = Counter()
@@ -128,7 +128,7 @@ class ProjectAdmin(admin.ModelAdmin):
 
             tries = generate_peer_groups(groups, GROUPS_PER_PEERGROUP, MAX_TRIES)
             # Create new peer groups
-            for nr in range(1, groups_to_create+1):
+            for nr in range(1, groups_to_create + 1):
                 PeerGroup.objects.create(bp=active_bp, nr=nr)
             self.message_user(request, f"{groups_to_create} Peergruppen angelegt", messages.SUCCESS)
 
@@ -139,11 +139,13 @@ class ProjectAdmin(admin.ModelAdmin):
                     project.save()
 
             if tries < MAX_TRIES:
-                self.message_user(request, f"Found solution that satisfied all constraints within {tries+1} tries", messages.SUCCESS)
+                self.message_user(request, f"Found solution that satisfied all constraints within {tries + 1} tries",
+                                  messages.SUCCESS)
             else:
                 violated_groups = [peer for peer in peer_groups if not check_constraints(peer.projects.all())]
                 self.message_user(request, f"No solution found that satisfied all constraints within {tries} tries. "
-                                           f"Solution violates constraints for peer groups {', '.join(str(pg) for pg in violated_groups)}", messages.WARNING)
+                                           f"Solution violates constraints for peer groups {', '.join(str(pg) for pg in violated_groups)}",
+                                  messages.WARNING)
 
 
 @admin.register(AGGradeBeforeDeadline)
@@ -189,12 +191,12 @@ class StudentAdmin(admin.ModelAdmin):
         writer = csv.writer(response)
         writer.writerow(["name", "moodle_id", "mail", "group"])
         for student in queryset.all():
-           writer.writerow([
-               student.name,
-               student.moodle_id,
-               student.mail,
-               str(student.project.peer_group)
-           ])
+            writer.writerow([
+                student.name,
+                student.moodle_id,
+                student.mail,
+                str(student.project.peer_group)
+            ])
 
         return response
 
@@ -219,7 +221,7 @@ class TimeIntervalAdmin(admin.ModelAdmin):
 
 @admin.register(TLLog)
 class TLLogAdmin(admin.ModelAdmin):
-    list_filter = ['bp', 'read', 'requires_attention', 'good_log']
+    list_filter = ['bp', 'read', 'requires_attention']
     list_display = ['simple_timestamp', 'group', 'tl', 'requires_attention', 'bp']
 
 
@@ -233,3 +235,4 @@ class TLLogReminderAdmin(admin.ModelAdmin):
     list_filter = ['bp']
     list_display = ['timestamp', 'group', 'tl', 'bp']
     list_display_links = ['timestamp', 'group', 'tl']
+
