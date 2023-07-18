@@ -79,16 +79,15 @@
 
             // Rate log
             $(".star-rating").click(function (event) {
-                {#alert();#}
                 $.ajax({
                    url: "{% url "bp:log_api_rate" pk=log.pk %}",
                     type: 'POST',
                     data: {
-                       'rating': $(event.target).attr("data-value")
+                       'rating': $(event.target).parent().attr("data-value")
                     },
                     success: function (response) {
-                        const rating = $(event.target).attr("data-value");
-                       $("#labelLogQuality").html(rating + ' Star(s)');
+                        const rating = $(event.target).parent().attr("data-value");
+                       $("#labelLogQuality").html(rating + '{% fa5_icon "star" 'fas' %}');
                         $(".star-rating").children().each(function () {
                             if($(this).attr("data-value") <= rating) {
                                 $(this).css('color', 'orange')
@@ -146,7 +145,7 @@
         {% endif %}
         <tr>
             <td>Logqualität:</td>
-            <td id="labelLogQuality">{% if rating > 0 %}{{ rating }} Star(s){% else %}Noch keine Bewertung.{% endif %}</td>
+            <td id="labelLogQuality">{% if rating > 0 %}{{ rating }}{% fa5_icon "star" 'fas' %}{% else %}Noch keine Bewertung.{% endif %}</td>
         </tr>
         <tr>
             <td>Von:</td><td>{{ log.tl }}</td>
@@ -173,10 +172,10 @@
     <a href="#" class="btn btn-info" id="btnMarkHandled">{% fa5_icon "check-square" "fas" %} Als erledigt markieren</a>
 
     <div class="star-rating btn">
-        <a href="#" {% if rating >= 5 %}style="color: orange"{% endif %} data-value="5">★</a>
-        <a href="#" {% if rating >= 4 %}style="color: orange"{% endif %} data-value="4">★</a>
-        <a href="#" {% if rating >= 3 %}style="color: orange"{% endif %} data-value="3">★</a>
-        <a href="#" {% if rating >= 2 %}style="color: orange"{% endif %} data-value="2">★</a>
-        <a href="#" {% if rating >= 1 %}style="color: orange"{% endif %} data-value="1">★</a>
+        <a href="#" {% if rating >= 5 %}style="color: orange"{% endif %} data-value="5">{% fa5_icon "star" 'fas' %}</a>
+        <a href="#" {% if rating >= 4 %}style="color: orange"{% endif %} data-value="4">{% fa5_icon "star" 'fas' %}</a>
+        <a href="#" {% if rating >= 3 %}style="color: orange"{% endif %} data-value="3">{% fa5_icon "star" 'fas' %}</a>
+        <a href="#" {% if rating >= 2 %}style="color: orange"{% endif %} data-value="2">{% fa5_icon "star" 'fas' %}</a>
+        <a href="#" {% if rating >= 1 %}style="color: orange"{% endif %} data-value="1">{% fa5_icon "star" 'fas' %}</a>
     </div>
 {% endblock %}
