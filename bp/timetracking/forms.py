@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.core.exceptions import ValidationError
 
 from .models import TimeInterval, TimeTrackingEntry
+from ..grading.models import PitchGrade
 
 
 class TimeIntervalForm(forms.ModelForm):
@@ -233,3 +234,14 @@ class TLTimeIntervalEntryCorrectionForm(forms.ModelForm):
                                                                   defaults={'hours' : self.cleaned_data['hours']})
 
         self.instance = obj
+
+
+class ProjectPitchPointsUpdateForm(forms.ModelForm):
+    class Meta:
+        model = PitchGrade
+        fields = ['grade_points', 'grade_notes']
+
+        widgets = {
+            'grade_points': forms.NumberInput(attrs={'step': 0.25}),
+            'grade_notes': forms.TextInput()
+        }

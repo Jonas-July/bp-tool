@@ -17,21 +17,28 @@ from django.urls import reverse, reverse_lazy
 from django.views.defaults import bad_request, permission_denied, server_error, page_not_found
 from django.views.generic import TemplateView, ListView, DetailView, UpdateView, FormView, CreateView, DeleteView
 
-from bp.forms import ProjectImportForm, StudentImportForm, ProjectImportSpecification as ProjectSpec, StudentImportSpecification as StudentSpec
+from bp.forms import ProjectImportForm, StudentImportForm, ProjectImportSpecification as ProjectSpec, \
+    StudentImportSpecification as StudentSpec
+from bp.grading.models import DocsGrade, PitchGrade, AGGrade
 from bp.models import BP, Project, Student, TL
 from bp.forms import ProjectImportForm as Spec
+from bp.roles import is_orga
+from bp.timetracking.forms import ProjectPitchPointsUpdateForm
 
 
 def error_400(request, exception):
     return bad_request(request, exception, template_name="bp/400.html")
 
+
 def error_403(request, exception):
     return permission_denied(request, exception, template_name="bp/403.html")
+
 
 def error_404(request, exception):
     return page_not_found(request, exception, template_name="bp/404.html")
 
-def error_500(request,):
+
+def error_500(request, ):
     return server_error(request, template_name="bp/500.html")
 
 
@@ -61,7 +68,9 @@ class ProjectListView(PermissionRequiredMixin, FilterByActiveBPMixin, ListView):
         return context
 
     def get_queryset(self):
-        return super().get_queryset().select_related('tl').select_related('peer_group').prefetch_related("student_set", "tllog_set")
+        return super().get_queryset().select_related('tl').select_related('peer_group').prefetch_related("student_set",
+                                                                                                         "tllog_set")
+
 
 class ProjectUngradedListView(ProjectListView):
     def get_context_data(self, **kwargs):
@@ -70,7 +79,8 @@ class ProjectUngradedListView(ProjectListView):
         return context
 
     def get_queryset(self):
-        return super().get_queryset().annotate(early_grades=Count('aggradebeforedeadline')).filter(Q(early_grades=0) & Q(ag_grade__isnull=True))
+        return super().get_queryset().annotate(early_grades=Count('aggradebeforedeadline')).filter(
+            Q(early_grades=0) & Q(ag_grade__isnull=True))
 
 
 class ProjectView(PermissionRequiredMixin, DetailView):
@@ -101,8 +111,44 @@ class TLView(PermissionRequiredMixin, DetailView):
         context["logs"] = context["tl"].tllog_set.all()
         context["logs_count"] = context["logs"].count()
         context["reminder_count"] = context["tl"].tllogreminder_set.count()
-        context["projects"] = context["tl"].project_set.all().prefetch_related("tllog_set", "tllog_set__current_problems")
+        context["projects"] = context["tl"].project_set.all().prefetch_related("tllog_set",
+                                                                               "tllog_set__current_problems")
         return context
+
+
+class ProjectEditPitchPoints(LoginRequiredMixin, UpdateView):
+    model = PitchGrade
+    form_class = ProjectPitchPointsUpdateForm
+    template_name = "bp/project/edit_points.html"
+    context_object_name = "pitch_grade"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["project"] = Project.objects.get(nr=self.kwargs.get("pk"))
+        # print(self.object)
+        # print(context["project"])
+        # print(Project.objects.get(nr=self.kwargs.get("pk")))
+        context["grade_type"] = "Pitch"
+        return context
+
+    def get_success_url(self):
+        messages.add_message(self.request, messages.SUCCESS, "Pitch-Punkte aktualisiert")
+        return reverse_lazy('bp:project_detail', kwargs={'pk': self.kwargs.get("pk")})
+
+    def get(self, request, *args, **kwargs):
+        if not is_orga(request.user):
+            return redirect("bp:index")
+        return super().get(request, *args, **kwargs)
+
+class ProjectEditAGPoints(LoginRequiredMixin, UpdateView):
+    model = AGGrade
+    # form_class = TimeIntervalEntryForm
+    template_name = "bp/timetracking/timetracking_entry_correct.html"
+
+class ProjectEditDocumentationPoints(LoginRequiredMixin, UpdateView):
+    model = DocsGrade
+    # form_class = TimeIntervalEntryForm
+    template_name = "bp/timetracking/timetracking_entry_correct.html"
 
 
 @permission_required("bp.view_student")
@@ -112,10 +158,13 @@ def grade_export_view(request):
     response['Content-Disposition'] = 'attachment; filename="Bewertung-AG.csv"'
 
     writer = csv.writer(response, delimiter=",")
-    writer.writerow(['ID', 'Vollständiger Name', 'E-Mail-Adresse', 'Status', 'Gruppe', 'Bewertung', 'Bestwertung', 'Bewertung kann geändert werden', 'Zuletzt geändert (Bewertung)', 'Feedback als Kommentar'])
+    writer.writerow(['ID', 'Vollständiger Name', 'E-Mail-Adresse', 'Status', 'Gruppe', 'Bewertung', 'Bestwertung',
+                     'Bewertung kann geändert werden', 'Zuletzt geändert (Bewertung)', 'Feedback als Kommentar'])
 
     for student in Student.get_active().filter(project__isnull=False):
-        writer.writerow([student.moodle_id, student.name, student.mail, "", student.project.moodle_name, student.project.ag_points, 100, "Ja", "-", student.project.ag_points_justification])
+        writer.writerow(
+            [student.moodle_id, student.name, student.mail, "", student.project.moodle_name, student.project.ag_points,
+             100, "Ja", "-", student.project.ag_points_justification])
 
     return response
 
@@ -136,7 +185,8 @@ class ProjectImportView(PermissionRequiredMixin, FormView):
 
     def form_valid(self, form):
         import_count = 0
-        reader = csv.DictReader(io.TextIOWrapper(form.cleaned_data.get("csvfile").file), delimiter=ProjectSpec.SEPARATOR.value)
+        reader = csv.DictReader(io.TextIOWrapper(form.cleaned_data.get("csvfile").file),
+                                delimiter=ProjectSpec.SEPARATOR.value)
         active_bp = BP.get_active()
         lines_ignored = defaultdict(lambda: 0)
         for row in reader:
@@ -215,7 +265,8 @@ class StudentImportView(PermissionRequiredMixin, FormView):
 
     def form_valid(self, form):
         import_count = 0
-        reader = csv.DictReader(io.TextIOWrapper(form.cleaned_data.get("csvfile").file), delimiter=StudentSpec.SEPARATOR.value)
+        reader = csv.DictReader(io.TextIOWrapper(form.cleaned_data.get("csvfile").file),
+                                delimiter=StudentSpec.SEPARATOR.value)
         active_bp = BP.get_active()
         lines_ignored = defaultdict(lambda: 0)
         for row in reader:

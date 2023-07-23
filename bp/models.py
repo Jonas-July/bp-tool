@@ -111,6 +111,31 @@ class Project(models.Model):
         return sum([self.ag_grade_points_value, self.pitch_grade_points_value, self.docs_grade_points_value])
 
     @property
+    def grade(self):
+        points = round(self.total_points, 0) - round(self.total_points, 0) % 10
+        if points < 100:
+            grade = 5.0
+        else:
+            grades = {
+                100: 4.0,
+                110: 3.7,
+                120: 3.3,
+                130: 3.0,
+                140: 2.7,
+                150: 2.3,
+                160: 2.0,
+                170: 1.7,
+                180: 1.3,
+                190: 1.0
+            }
+            grade = grades[points]
+        return grade
+
+    @property
+    def grade_close_to_higher_grade(self):
+        return self.grade_complete and self.total_points > 100 and self.total_points % 10 > (10 - 2)
+
+    @property
     def ag_grade_points_value(self):
         return self.ag_points if self.ag_points >= 0 else 0
 

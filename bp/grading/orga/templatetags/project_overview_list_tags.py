@@ -14,29 +14,7 @@ def grade_column_content(project, **kwargs):
             'ag': project.ag_grade_points,
             'docs': project.docs_grade_points,
             'total': project.total_points,
-            'grade': calculate_grade(project.total_points) if project.grade_complete else 0,
+            'grade': project.grade if project.grade_complete else 0,
             'div_id': f"div_{project.pk}",
-            'grade_is_close_to_higher_grade': project.grade_complete and project.total_points > 100 and project.total_points % 10 > (
-                    10 - 2),
+            'grade_is_close_to_higher_grade': project.grade_close_to_higher_grade,
             }
-
-
-def calculate_grade(points):
-    points = round(points, 0) - round(points, 0) % 10
-    if points < 100:
-        grade = 5.0
-    else:
-        grades = {
-            100: 4.0,
-            110: 3.7,
-            120: 3.3,
-            130: 3.0,
-            140: 2.7,
-            150: 2.3,
-            160: 2.0,
-            170: 1.7,
-            180: 1.3,
-            190: 1.0
-        }
-        grade = grades[points]
-    return grade
