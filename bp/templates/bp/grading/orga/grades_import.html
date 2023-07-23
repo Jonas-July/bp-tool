@@ -44,8 +44,8 @@
             <li><u>{{ project }}</u>: Nummer des Projekts</li>
             <li>Eine oder beide der folgenden Spalten:</li>
             <ul>
-                <li><u>{{ pitch_grade }}</u>: Note des Vortrags (Dezimaltrennzeichen: Punkt)</li>
-                <li><u>{{ docs_grade }}</u>: Note der Dokumentation (Dezimaltrennzeichen: Punkt)</li>
+                <li><u>{{ pitch_grade }}</u>: Punkte des Vortrags (Dezimaltrennzeichen: Punkt)</li>
+                <li><u>{{ docs_grade }}</u>: Punkte der Dokumentation (Dezimaltrennzeichen: Punkt)</li>
             </ul>
             <li>Falls Spalte '{{ pitch_grade }}' vorhanden ist - <u>{{ pitch_notes }}</u>: Notizen zur Bewertung des Vortrags</li>
             <li>Falls Spalte '{{ docs_grade }}' vorhanden ist - <u>{{ docs_notes }}</u>: Notizen zur Bewertung der Dokumentation</li>
@@ -55,17 +55,17 @@
     <h5>Beispielhafte CSV-Dateien:</h5>
     <div class="code-example">
         {{ project }}{{ separator }}{{ pitch_notes }}{{ separator }}{{ pitch_grade }}<br>
-        2{{ separator }}Toll gemacht!{{ separator }}1<br>
-        4{{ separator }}Geht besser!{{ separator }}3.7<br>
-        7{{ separator }}Beispieltext{{ separator }}1.3
+        2{{ separator }}Toll gemacht!{{ separator }}76<br>
+        4{{ separator }}Geht besser!{{ separator }}47<br>
+        7{{ separator }}Beispieltext{{ separator }}60
     </div>
     <br>
     <br>
     <div class="code-example">
         {{ project }}{{ separator }}{{ pitch_notes }}{{ separator }}{{ pitch_grade }}{{ separator }}{{ docs_notes }}{{ separator }}{{ docs_grade }}<br>
-        2{{ separator }}Toller Vortrag!{{ separator }}1{{ separator }}Tolle Dokumentation!{{ separator }}1.3<br>
-        4{{ separator }}Nicht frei gesprochen.{{ separator }}3.7{{ separator }}Könnte besser geschrieben sein.{{ separator }}3<br>
-        7{{ separator }}Beispieltext{{ separator }}1.3{{ separator }}Beispieltext{{ separator }}2
+        2{{ separator }}Toller Vortrag!{{ separator }}77{{ separator }}Tolle Dokumentation!{{ separator }}74<br>
+        4{{ separator }}Nicht frei gesprochen.{{ separator }}32{{ separator }}Könnte besser geschrieben sein.{{ separator }}37<br>
+        7{{ separator }}Beispieltext{{ separator }}60{{ separator }}Beispieltext{{ separator }}60
     </div>
 
 {% endblock %}

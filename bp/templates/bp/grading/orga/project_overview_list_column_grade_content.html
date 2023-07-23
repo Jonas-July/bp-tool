@@ -1,7 +1,7 @@
 <div id='{{ div_id }}'>
 
-<pre style="margin-bottom:0">{{ pitch | default:"--" | rjust:"5" }} / {{ ag | default:"---" | rjust:"2" }} /
-{{ docs | default:"--" | rjust:"5" }}</pre>
+<pre style="margin-bottom:0">{% if grade %}{{ grade }} ({{ total }}){% else %}<s>  </s>{% endif %}
+<span style="color: grey">[{{ pitch | default:"<s>  </s>"}} / {{ ag | default:"<s>  </s>"}} / {{ docs | default:"<s>  </s>"}}]</span></pre>
 
 </div>
 

@@ -10,8 +10,8 @@ class OrgaGradeCsvImportSpecification(Enum):
     PROJECT = 'nr'
     PITCH_NOTES = 'pitch_notizen'
     DOCS_NOTES = 'documentation_notizen'
-    PITCH_GRADE = 'pitch_grade'
-    DOCS_GRADE = 'documentation_grade'
+    PITCH_GRADE = 'pitch_punkte'
+    DOCS_GRADE = 'documentation_punkte'
 
 
 class OrgaGradesImportForm(forms.Form):
