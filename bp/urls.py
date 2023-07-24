@@ -10,8 +10,7 @@ from bp.timetracking.views import TimetrackingStatisticsOrgaView
 
 from bp.views import \
     ProjectListView, ProjectUngradedListView, ProjectView, grade_export_view, ProjectImportView, \
-    TLView, TLListView, StudentListView, StudentImportView, ProjectEditPitchPoints, ProjectEditAGPoints, \
-    ProjectEditDocumentationPoints
+    TLView, TLListView, StudentListView, StudentImportView, ProjectEditPitchPoints, ProjectEditDocumentationPoints
 
 app_name = "bp"
 
@@ -23,7 +22,6 @@ urlpatterns = [
     path('project/export_grades/', grade_export_view, name="project_export_grades"),
     path('project/<pk>/', ProjectView.as_view(), name="project_detail"),
     path('project/<pk>/edit_points/pitch', ProjectEditPitchPoints.as_view(), name="project_edit_pitch_points"),
-    path('project/<pk>/edit_points/ag', ProjectEditAGPoints.as_view(), name="project_edit_ag_points"),
     path('project/<pk>/edit_points/documentation', ProjectEditDocumentationPoints.as_view(), name="project_edit_documentation_points"),
     path('project/ungraded', ProjectUngradedListView.as_view(), name="project_list_ungraded"),
     path('tl/', TLListView.as_view(), name="tl_list"),

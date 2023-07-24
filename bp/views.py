@@ -19,11 +19,11 @@ from django.views.generic import TemplateView, ListView, DetailView, UpdateView,
 
 from bp.forms import ProjectImportForm, StudentImportForm, ProjectImportSpecification as ProjectSpec, \
     StudentImportSpecification as StudentSpec
-from bp.grading.models import DocsGrade, PitchGrade, AGGrade
+from bp.grading.models import DocsGrade, PitchGrade
 from bp.models import BP, Project, Student, TL
 from bp.forms import ProjectImportForm as Spec
 from bp.roles import is_orga
-from bp.timetracking.forms import ProjectPitchPointsUpdateForm
+from bp.timetracking.forms import ProjectPitchPointsUpdateForm, ProjectDocumentationPointsUpdateForm
 
 
 def error_400(request, exception):
@@ -116,39 +116,42 @@ class TLView(PermissionRequiredMixin, DetailView):
         return context
 
 
-class ProjectEditPitchPoints(LoginRequiredMixin, UpdateView):
-    model = PitchGrade
-    form_class = ProjectPitchPointsUpdateForm
+class ProjectEditPoints(LoginRequiredMixin, UpdateView):
     template_name = "bp/project/edit_points.html"
-    context_object_name = "pitch_grade"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["project"] = Project.objects.get(nr=self.kwargs.get("pk"))
-        # print(self.object)
-        # print(context["project"])
-        # print(Project.objects.get(nr=self.kwargs.get("pk")))
-        context["grade_type"] = "Pitch"
+        context["project"] = self.object.project
+        context["grade_type"] = self.assessment_name
         return context
 
     def get_success_url(self):
-        messages.add_message(self.request, messages.SUCCESS, "Pitch-Punkte aktualisiert")
-        return reverse_lazy('bp:project_detail', kwargs={'pk': self.kwargs.get("pk")})
+        messages.add_message(self.request, messages.SUCCESS, f"{self.assessment_name}-Punkte aktualisiert")
+        return reverse_lazy('bp:project_detail', kwargs={'pk': self.object.project.nr})
 
     def get(self, request, *args, **kwargs):
         if not is_orga(request.user):
             return redirect("bp:index")
         return super().get(request, *args, **kwargs)
 
-class ProjectEditAGPoints(LoginRequiredMixin, UpdateView):
-    model = AGGrade
-    # form_class = TimeIntervalEntryForm
-    template_name = "bp/timetracking/timetracking_entry_correct.html"
+    def get_object(self, queryset=None):
+        return getattr(Project.objects.get(nr=self.kwargs.get("pk")), self.project_field_name)
 
-class ProjectEditDocumentationPoints(LoginRequiredMixin, UpdateView):
+
+class ProjectEditPitchPoints(ProjectEditPoints):
+    model = PitchGrade
+    form_class = ProjectPitchPointsUpdateForm
+    context_object_name = "pitch_grade"
+    project_field_name = "pitchgrade"
+    assessment_name = "Pitch"
+
+
+class ProjectEditDocumentationPoints(ProjectEditPoints):
     model = DocsGrade
-    # form_class = TimeIntervalEntryForm
-    template_name = "bp/timetracking/timetracking_entry_correct.html"
+    form_class = ProjectDocumentationPointsUpdateForm
+    context_object_name = "documentation_grade"
+    project_field_name = "docsgrade"
+    assessment_name = "Documentation"
 
 
 @permission_required("bp.view_student")
