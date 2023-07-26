@@ -83,6 +83,18 @@ class ProjectUngradedListView(ProjectListView):
             Q(early_grades=0) & Q(ag_grade__isnull=True))
 
 
+class ProjectCloseToHigherGradeListView(ProjectListView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["page_title"] = "Projekte (< 2P. bis zur höheren Note>)"
+        return context
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset_ids = [project.id for project in queryset if project.grade_close_to_higher_grade]
+        return queryset.filter(Q(id__in=queryset_ids))
+
+
 class ProjectView(PermissionRequiredMixin, DetailView):
     model = Project
     template_name = "bp/project/project.html"
