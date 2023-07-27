@@ -6,6 +6,7 @@ from bp.dataimport.urls import import_patterns
 from bp.index.urls import index_and_login_patterns
 from bp.tllogs.urls import tllog_patterns, tllog_orga_patterns
 from bp.orgalogs.urls import orgalog_patterns
+from bp.timetracking.views import TimetrackingStatisticsOrgaView
 
 from bp.views import \
     ProjectListView, ProjectUngradedListView, ProjectView, grade_export_view, ProjectImportView, \
@@ -15,7 +16,8 @@ app_name = "bp"
 
 urlpatterns = [
     path('', include(index_and_login_patterns)),
-    path('project/', ProjectListView.as_view(), name="project_list"),
+    path('projects/', ProjectListView.as_view(), name="project_list"),
+    path('projects/timetracking_statistics', TimetrackingStatisticsOrgaView.as_view(), name="timetracking_statistics_orga"),
     path('project/import/', ProjectImportView.as_view(), name="project_import"),
     path('project/export_grades/', grade_export_view, name="project_export_grades"),
     path('project/<pk>/', ProjectView.as_view(), name="project_detail"),

@@ -1,0 +1,62 @@
+{% extends "bp/base.html" %}
+
+{% load tags_bp %}
+{% load fontawesome_5 %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item"><a href="{% url "bp:index" %}">Übersicht</a></li>
+    <li class="breadcrumb-item"><a href="{% url "bp:project_list" %}">Projekte</a></li>
+    <li class="breadcrumb-item active">Zeiterfassung</li>
+{% endblock %}
+
+{% block content %}
+    <h1>Zeiterfassung</h1>
+<div class="float-right mb-4">
+    <a class="btn btn-success" href="{% url "bp:project_list" %}">Projekt-Übersicht</a>
+</div>
+    <div>
+    <h3>Vergleich bisheriger Zeitaufwand</h3>
+    {% for data in hours_per_group_data %}
+        <h6>{{ data.category_name }}</h6>
+        <canvas id="statusGroupComparison{{ data.chart_id }}" width="100%" height="15vh" class="mb-5"></canvas>
+    {% endfor %}
+    <script>
+        {% for data in hours_per_group_data %}
+            new Chart($('#statusGroupComparison{{ data.chart_id }}'), {
+                type: 'bar',
+                data: {
+                    datasets: [{
+                        label: 'Total hours ({{ data.category_name }})',
+                        data: {{data.data|safe}},
+                        backgroundColor: '#1F9BCF',
+                        borderColor: '#1F9BCF',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            ticks: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return "Hours: " + Number(tooltipItem.parsed.y);
+                                },
+                                title: function() {}
+                            }
+                        },
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        {% endfor %}
+    </script>
+    </div>
+{% endblock %}

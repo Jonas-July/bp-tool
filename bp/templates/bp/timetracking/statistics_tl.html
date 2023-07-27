@@ -1,0 +1,101 @@
+{% extends "bp/base_tl.html" %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item"><a href="{% url "bp:index" %}">Übersicht</a></li>
+    <li class="breadcrumb-item"><a href="{% url "bp:timetracking_tl_start" %}">Zeiterfassung</a></li>
+    <li class="breadcrumb-item active">{{ project.nr }}: {{ project.title }}</li>
+    <li class="breadcrumb-item active">Graphen</li>
+{% endblock %}
+
+{% block imports %}
+    <style>
+        @media only print {
+            body { visibility: hidden; }
+            .printthis { visibility: visible; }
+        }
+    </style>
+{% endblock %}
+
+
+{% block student_content %}
+{% block tl_content %}
+{% block orga_content %}
+    <h3 class="my-4 printthis">{{ project.nr }}: {{ project.title }}</h3>
+        <div class="float-right mb-4">
+            <a class="btn btn-success" href="{% url "bp:timetracking_project_overview" group=project.nr %}">Projekt-Übersicht</a>
+        </div>
+        <h5>Zeitaufwand nach Intervall (Stunden pro Tag)</h5>
+        <canvas id="statusPerInterval" width="100%" height="15vh" class="mb-5"></canvas>
+        <br>
+        <h5>Vergleich bisheriger Zeitaufwand</h5>
+        {% for data in hours_per_group_data %}
+            <h6>{{ data.category_name }}</h6>
+            <canvas id="statusGroupComparison{{ data.chart_id }}" width="100%" height="15vh" class="mb-5"></canvas>
+        {% endfor %}
+        <script>
+            new Chart($('#statusPerInterval'), {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: 'Normalised hours in interval',
+                        data: {{hours_per_interval|safe}},
+                        backgroundColor: '#1F9BCF',
+                        borderColor: '#1F9BCF',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            suggestedMin: 0,
+                            suggestedMax: 8
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+            {% for data in hours_per_group_data %}
+                new Chart($('#statusGroupComparison{{ data.chart_id }}'), {
+                    type: 'bar',
+                    data: {
+                        datasets: [{
+                            label: 'Total hours ({{ data.category_name }})',
+                            data: {{data.data|safe}},
+                            backgroundColor: {{data.colors|safe}},
+                            borderColor: {{data.colors|safe}},
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: {
+                                ticks: {
+                                    display: false
+                                }
+                            }
+                        },
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function(tooltipItem) {
+                                        return "Hours: " + Number(tooltipItem.parsed.y);
+                                    },
+                                    title: function() {}
+                                }
+                            },
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+            {% endfor %}
+        </script>
+
+{% endblock %}
+{% endblock %}
+{% endblock %}
