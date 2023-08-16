@@ -82,27 +82,33 @@ class OrgaGradesImportView(LoginRequiredMixin, FormView):
 
             '''try to create object(s) from row'''
             if has_pitch_col:
-                try:
-                    PitchGrade.objects.create(project=project,
-                                              grade_points=row[Spec.PITCH_GRADE.value],
-                                              grade_notes=row[Spec.PITCH_NOTES.value])
-                except IntegrityError:
-                    grading_ignored[f"Bewertung aus Spalte '{Spec.PITCH_GRADE.value}' existiert bereits"] += 1
-                except ValidationError:
-                    grading_ignored[f"Ungültiger Wert für '{Spec.PITCH_GRADE.value}' (ValidationError)"] += 1
+                if not 0 <= float(row[Spec.PITCH_GRADE.value]) <= 20:
+                    grading_ignored[f"Ungültiger Wert für '{Spec.PITCH_GRADE.value}' (Der Wert muss eine Zahl zwischen 0 und 20 sein.)"] += 1
                 else:
-                    pitch_import_count += 1
+                    try:
+                        PitchGrade.objects.create(project=project,
+                                                  grade_points=row[Spec.PITCH_GRADE.value],
+                                                  grade_notes=row[Spec.PITCH_NOTES.value])
+                    except IntegrityError:
+                        grading_ignored[f"Bewertung aus Spalte '{Spec.PITCH_GRADE.value}' existiert bereits"] += 1
+                    except ValidationError:
+                        grading_ignored[f"Ungültiger Wert für '{Spec.PITCH_GRADE.value}' (Der Wert muss eine Zahl zwischen 0 und 20 sein.)"] += 1
+                    else:
+                        pitch_import_count += 1
             if has_docs_col:
-                try:
-                    DocsGrade.objects.create(project=project,
-                                             grade_points=row[Spec.DOCS_GRADE.value],
-                                             grade_notes=row[Spec.DOCS_GRADE.value])
-                except IntegrityError:
-                    grading_ignored[f"Bewertung aus Spalte '{Spec.DOCS_GRADE.value}' existiert bereits"] += 1
-                except ValidationError:
-                    grading_ignored[f"Ungültiger Wert für '{Spec.DOCS_GRADE.value}' (ValidationError)"] += 1
+                if not 0 <= float(row[Spec.DOCS_GRADE.value]) <= 80:
+                    grading_ignored[f"Ungültiger Wert für '{Spec.DOCS_GRADE.value}' (Der Wert muss eine Zahl zwischen 0 und 80 sein.)"] += 1
                 else:
-                    docs_import_count += 1
+                    try:
+                        DocsGrade.objects.create(project=project,
+                                                 grade_points=row[Spec.DOCS_GRADE.value],
+                                                 grade_notes=row[Spec.DOCS_GRADE.value])
+                    except IntegrityError:
+                        grading_ignored[f"Bewertung aus Spalte '{Spec.DOCS_GRADE.value}' existiert bereits"] += 1
+                    except ValidationError:
+                        grading_ignored[f"Ungültiger Wert für '{Spec.DOCS_GRADE.value}' (Der Wert muss eine Zahl zwischen 0 und 80 sein.)"] += 1
+                    else:
+                        docs_import_count += 1
 
         '''print success/error messages'''
         messages.add_message(self.request, messages.SUCCESS,
