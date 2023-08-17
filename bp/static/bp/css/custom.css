@@ -12,12 +12,14 @@
     background-color: #939393;
     padding-left: 1em;
     padding-right: 1em;
+    padding-top: 0.7em;
+    max-height: 48px;
 }
 
 .star-rating a {
-	  font-size: 30px;
+    font-size: 2.5em;
     max-height: 30px;
-	  float: right;
+    float: right;
     color: #1a1a1a;
 }
 

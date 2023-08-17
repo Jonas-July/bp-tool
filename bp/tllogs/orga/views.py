@@ -3,6 +3,8 @@ from functools import reduce
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.db.models import Q
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, FormView
 
@@ -100,3 +102,21 @@ class LogReminderView(PermissionRequiredMixin, FormView):
         message = form.send_reminders()
         messages.add_message(self.request, messages.SUCCESS, message)
         return super().form_valid(form)
+
+
+class NextLog(DetailView):
+    model = TLLog
+
+    def get(self, request, *args, **kwargs):
+
+        current_log = self. get_object()
+        unread_logs = list(TLLog.get_active().filter(Q(read=False) | Q(pk=current_log.pk)).order_by('pk'))
+        if len(unread_logs) <= 1:
+            messages.add_message(request, messages.WARNING, "Es gibt keine weiteren ungelesenen Logs.")
+            return redirect("bp:log_detail", current_log.pk)
+        else:
+            try:
+                next_log = unread_logs[unread_logs.index(current_log) + 1]
+            except IndexError:
+                next_log = unread_logs[0]
+        return redirect("bp:log_detail", next_log.pk)
