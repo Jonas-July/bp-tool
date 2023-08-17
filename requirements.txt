@@ -1,7 +1,7 @@
-Django==3.2.18
+Django==3.2.20
 django-bootstrap4==3.0.1
 django-fontawesome-5==1.0.18
 django-debug-toolbar==3.2.2
 django-split-settings==1.1.0
 django-lti-provider==0.4.7
-requests==2.26.0
+requests==2.31.0

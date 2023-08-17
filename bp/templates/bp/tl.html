@@ -23,7 +23,7 @@
         </tr>
         <tr>
             <td>⌀ Bewertung:</td>
-            <td>{{ tl.average_rating }}{% fa5_icon "star" 'fas' %}</td>
+            <td>{% if tl.average_rating %}{{ tl.average_rating }}{% fa5_icon "star" 'fas' %}{% else %}Noch keine Bewertung.{% endif %}</td>
         </tr>
         <tr>
             <td># Erinnerungen nötig:</td>

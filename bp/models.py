@@ -268,8 +268,9 @@ class TL(models.Model):
 
     @property
     def average_rating(self):
-        # logs = TLLog.objects.filter(TL=self)
         ratings = [log.rating for log in self.tllog_set.all() if log.rating]
+        if not ratings:
+            return
         return round(sum(ratings)/len(ratings), 2)
 
     def __str__(self):
