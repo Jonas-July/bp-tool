@@ -4,7 +4,7 @@ from .views import \
     TimetrackingOverview, TimetrackingProjectOverview, TimetrackingIntervalsDetailView, \
     TimetrackingIntervalsView, TimetrackingIntervalsCreateView, TimetrackingIntervalsGenerationView, \
     TimetrackingIntervalUpdateView, TimetrackingIntervalDeleteView, \
-    TLTimetrackingEntryCorrectView, StudentTimetrackingEntryCorrectView, ApiTimetrackingEntryAddHours, \
+    TLTimetrackingEntryCorrectView, ApiTimetrackingEntryUpdateHours, \
     TimetrackingMembersDetailView, TimetrackingStatisticsTLStudentView
 
 timetracking_intervals_patterns = [
@@ -20,8 +20,7 @@ timetracking_interval_content_patterns = [
     path('overview/graphs', TimetrackingStatisticsTLStudentView.as_view(), name="timetracking_statistics_tl_and_student"),
     path('intervals/<pk>/detail/', TimetrackingIntervalsDetailView.as_view(), name="timetracking_interval_detail"),
     path('intervals/<pk>/correct/', TLTimetrackingEntryCorrectView.as_view(), name="timetracking_interval_tl_correct"),
-    path('intervals/<pk>/edit/', StudentTimetrackingEntryCorrectView.as_view(), name="timetracking_interval_edit"),
-    path('intervals/<pk>/add_hours/', ApiTimetrackingEntryAddHours.as_view(), name="timetracking_api_add_hours"),
+    path('intervals/<pk>/add_hours/', ApiTimetrackingEntryUpdateHours.as_view(), name="timetracking_api_add_hours"),
     path('members/<pk>/detail/', TimetrackingMembersDetailView.as_view(), name="timetracking_members_detail"),
 ]
 
