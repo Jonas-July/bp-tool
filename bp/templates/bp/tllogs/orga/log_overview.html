@@ -47,8 +47,6 @@
                 <td>{{ tllog.problems }}</td>
                 <td>{{ tllog.text | linebreaksbr | truncatewords:50 }}</td>
                 <td>
-                    <a href="{% url "bp:log_detail" pk=tllog.pk %}">{% fa5_icon "link" "fas" %}</a>
-
                     {% if tllog.handled %}
                         {% fa5_icon "check-square" "fas" %}
                     {% endif %}

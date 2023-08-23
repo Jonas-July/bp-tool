@@ -129,7 +129,8 @@
             <td>Projekt:</td><td><a href="{% url "bp:project_detail" pk=log.group.pk %}">{{ log.group }}</a></td>
         </tr>
         <tr>
-            <td>Timestamp:</td><td>{{ log.simple_timestamp }}</td>
+            <td>Timestamp:</td>
+            <td>{{ log.simple_timestamp }}</td>
         </tr>
         {% if log.requires_attention %}
             <tr>
@@ -148,7 +149,8 @@
             <td id="labelLogQuality">{% if rating > 0 %}{{ rating }}{% fa5_icon "star" 'fas' %}{% else %}Noch keine Bewertung.{% endif %}</td>
         </tr>
         <tr>
-            <td>Von:</td><td>{{ log.tl }}</td>
+            <td>Von:</td>
+            <td><a href="{% url "bp:tl_detail" log.tl.pk %}">{{ log.tl }}</a></td>
         </tr>
         <tr>
             <td>Status:</td>

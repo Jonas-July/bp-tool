@@ -17,10 +17,12 @@
 
     <table class="table mt-3">
         <tr>
-            <td>Gruppe:</td><td>{{ log.group }}</td>
+            <td>Gruppe:</td>
+            <td><a href="{% url "bp:timetracking_project_overview" log.group.nr %}">{{ log.group }}</a></td>
         </tr>
         <tr>
-            <td>Timestamp:</td><td>{{ log.simple_timestamp }}</td>
+            <td>Timestamp:</td>
+            <td>{{ log.simple_timestamp }}</td>
         </tr>
         {% if log.requires_attention %}
             <tr>

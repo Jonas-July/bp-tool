@@ -15,7 +15,7 @@
     <table class="table table-responsive">
         <tr>
             <td>Letztes Log:</td>
-            <td>{{ logs.first.simple_timestamp }}</td>
+            <td><a href="{% url "bp:log_detail" logs.first.pk %}">{{ logs.first.simple_timestamp }}</a></td>
         </tr>
         <tr>
             <td># Logs:</td>
@@ -28,6 +28,14 @@
         <tr>
             <td># Erinnerungen nötig:</td>
             <td>{{ reminder_count }}</td>
+        </tr>
+        <tr>
+            <td>Projekte:</td>
+            <td>
+                {% for project in projects %}
+                    <a href="{% url "bp:project_detail" pk=project.pk %}">{{ project.title }}</a>{% if project != projects.last %}, {% endif %}
+                {% endfor %}
+            </td>
         </tr>
     </table>
 
