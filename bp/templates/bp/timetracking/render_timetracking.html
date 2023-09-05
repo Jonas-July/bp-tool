@@ -111,14 +111,20 @@
                    <span id="{{ category }}-{{ student.pk }}-difference"></span>
                    <span id="{{ category }}-{{ student.pk }}-original-value" hidden>{{entry}}</span>
                    {% if not forloop.parentloop.first and is_student_editable and student == editing_student %}
-		                <a class="btn btn-secondary" onclick='editValue("{{ category }}-{{ student.pk }}")'>{% fa5_icon "pen" 'fas' %}</a>
+                        <abbr title='Bearbeite Stundenanzahl für {{ category }}'>
+                            <a class="btn btn-secondary" onclick='editValue("{{ category }}-{{ student.pk }}")'>
+                                    {% fa5_icon "pen" 'fas' %}
+                            </a>
+                        </abbr>
 		                <input type="number" hidden id="{{category}}-{{ student.pk }}" min=0 max=999 step="0.25">
-                        <a class="btn btn-primary btn-success" hidden id="{{ category }}-{{ student.pk }}-send"
-                           onclick='check_and_add_hours("{{ category }}",
-                                                        document.getElementById("{{ category }}-{{ student.pk }}"),
-                                                        "{% url "bp:timetracking_api_add_hours" group=group.nr pk=timeinterval.pk %}",
-                                                        "{{ category }}-{{ student.pk }}"
-                                                       )'>Speichern</a>
+                        <abbr title='Die eingegebene Stundenanzahl wir als neue Stundenzahl für {{ category }} im ausgewählte Intervall gespeichert.'>
+                            <a class="btn btn-primary btn-success" hidden id="{{ category }}-{{ student.pk }}-send"
+                               onclick='check_and_add_hours("{{ category }}",
+                                                            document.getElementById("{{ category }}-{{ student.pk }}"),
+                                                            "{% url "bp:timetracking_api_add_hours" group=group.nr pk=timeinterval.pk %}",
+                                                            "{{ category }}-{{ student.pk }}"
+                                                           )'>Speichern</a>
+                        </abbr>
                    {% endif %}
                {% endif %}
             </td>
