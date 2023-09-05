@@ -111,14 +111,18 @@
                    <span id="{{ category }}-{{ interval.pk }}-difference"></span>
                    <span id="{{ category }}-{{ interval.pk }}-original-value" hidden>{{entry}}</span>
                    {% if not forloop.parentloop.first and interval.is_editable_by_students and can_edit_entries %}
-                       <a class="btn btn-secondary" onclick='editValue("{{ category }}-{{ interval.pk }}")'>{% fa5_icon "pen" 'fas' %}</a>
-		                <input type="number" hidden id="{{category}}-{{ interval.pk }}" min=0 max=999 step="0.25">
-                        <a class="btn btn-primary btn-success" hidden id="{{ category }}-{{ interval.pk }}-send"
-                           onclick='check_and_add_hours("{{ category }}",
-                                                        document.getElementById("{{ category }}-{{ interval.pk }}"),
-                                                        "{% url "bp:timetracking_api_add_hours" group=group.nr pk=interval.pk %}",
-                                                        "{{ category }}-{{ interval.pk }}"
-                                                       )'>Speichern</a>
+                       <abbr title='Bearbeite Stundenanzahl für {{ category }} in {{ entry.name }}'>
+                            <a class="btn btn-secondary" onclick='editValue("{{ category }}-{{ interval.pk }}")'>{% fa5_icon "pen" 'fas' %}</a>
+                       </abbr>
+                       <input type="number" hidden id="{{category}}-{{ interval.pk }}" min=0 max=999 step="0.25">
+                       <abbr title='Die eingegebene Stundenanzahl wir als neue Stundenzahl für {{ category }} im ausgewählte Intervall gespeichert.'>
+                            <a class="btn btn-primary btn-success" hidden id="{{ category }}-{{ interval.pk }}-send"
+                               onclick='check_and_add_hours("{{ category }}",
+                                                            document.getElementById("{{ category }}-{{ interval.pk }}"),
+                                                            "{% url "bp:timetracking_api_add_hours" group=group.nr pk=interval.pk %}",
+                                                            "{{ category }}-{{ interval.pk }}"
+                                                           )'>Speichern</a>
+                       </abbr>
                    {% endif %}
                {% endif %}
             </td>

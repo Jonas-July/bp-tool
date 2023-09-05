@@ -84,6 +84,10 @@ class Project(models.Model):
         return ", ".join(s.mail for s in self.student_set.all())
 
     @property
+    def student_mail_as_list(self):
+        return [s.mail for s in self.student_set.all()]
+
+    @property
     def total_hours(self):
         total_hours = sum((s.total_hours for s in self.student_set.all()), Decimal(0))
         return round(total_hours, 2)

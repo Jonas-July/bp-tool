@@ -10,5 +10,7 @@ Mitglieder:
     <a href="mailto:{{ student_mails }}">
         {{ student_list }}&nbsp;{% fa5_icon "envelope" "far" %}
     </a><br>
-    {{ student_mails }}
+    {% for student_mail in student_mails %}
+        <a href="mailto:{{ student_mail }}">{{ student_mail }}</a>{% if not forloop.last %},{% endif %}
+    {% endfor %}
 {% endblock %}

@@ -63,7 +63,7 @@ def tl_info(project):
 def member_info(project):
     return {
         'student_list'  : project.student_list,
-        'student_mails' : project.student_mail,
+        'student_mails' : project.student_mail_as_list,
     }
 
 @ProjectInfoTable.register('bp/project/project_info/table_ag_info.html', priority=3)
