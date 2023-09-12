@@ -30,7 +30,7 @@
                 <td><a href="mailto:{{ student.mail }}">{{ student }} {% fa5_icon "envelope" "far" %}</a></td>
                 <td>
                     {% if student.project %}
-                        <a href="{% url "bp:project_detail" pk=student.project.pk %}">{{ student.project }}</a>
+                        <a href="{% url "bp:project_detail" pk=student.project.pk %}">{{ student.project_title }}</a>
                     {% else %}
                         -
                     {% endif %}

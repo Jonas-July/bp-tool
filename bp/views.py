@@ -195,6 +195,7 @@ class ProjectImportView(PermissionRequiredMixin, FormView):
                      'client': ProjectSpec.CLIENT.value,
                      'client_mail': ProjectSpec.CLIENT_MAIL.value,
                      'project_name': ProjectSpec.PROJECT_NAME.value,
+                     'short_name': ProjectSpec.PROJECT_SHORT_NAME.value,
                      'pretix_id': ProjectSpec.PRETIX_ID.value
                      }
 
@@ -227,12 +228,14 @@ class ProjectImportView(PermissionRequiredMixin, FormView):
             client = row[ProjectSpec.CLIENT.value]
             client_mail = row[ProjectSpec.CLIENT.value]
             project_name = row[ProjectSpec.PROJECT_NAME.value]
+            project_short_name = row[ProjectSpec.PROJECT_SHORT_NAME.value] if not row[ProjectSpec.PROJECT_SHORT_NAME.value] == "" else None
             pretix_id = row[ProjectSpec.PRETIX_ID.value]
             try:
                 Project.objects.create(nr=project_nr,
                                        ag=client,
                                        ag_mail=client_mail,
                                        title=project_name,
+                                       short_title=project_short_name,
                                        order_id=pretix_id,
                                        bp=active_bp
                                        )

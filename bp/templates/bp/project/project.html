@@ -6,12 +6,12 @@
 {% block breadcrumbs %}
     <li class="breadcrumb-item"><a href="{% url "bp:index" %}">Übersicht</a></li>
     <li class="breadcrumb-item"><a href="{% url "bp:project_list" %}">Projekte</a></li>
-    <li class="breadcrumb-item active">{{ project.nr }}: {{ project.title }}</li>
+    <li class="breadcrumb-item active">{{ project.nr }}: {{ project.short_title_else_title }}</li>
 {% endblock %}
 
 
 {% block content %}
-    <h1>{{ project.nr }}: {{ project.title }}</h1>
+    <h1>{{ project.nr }}: {{ project.short_title_else_title }}</h1>
 
     {% project_info_table %}
 

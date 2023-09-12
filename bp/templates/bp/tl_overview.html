@@ -30,7 +30,7 @@
                 <td>{% if tl.average_rating %}{{ tl.average_rating }}{% fa5_icon "star" 'fas' %}{% else %}Noch keine Bewertung.{% endif %}</td>
                 <td>
                     {% for project in tl.project_set.all %}
-                        <a href="{% url 'bp:project_detail' project.pk %}">{{ project.nr }}: {{ project.title }}</a>{% if not forloop.last %}, {% endif %}
+                        <a href="{% url 'bp:project_detail' project.pk %}">{{ project.nr }}: {{ project.short_title_else_title }}</a>{% if not forloop.last %}, {% endif %}
                     {% endfor %}
                 </td>
             </tr>

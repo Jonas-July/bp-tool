@@ -11,6 +11,7 @@ class ProjectImportSpecification(Enum):
     CLIENT = 'ag'
     CLIENT_MAIL = 'ag_mail'
     PROJECT_NAME = 'titel'
+    PROJECT_SHORT_NAME = 'short_name'
     PRETIX_ID = 'order_id'
 
 

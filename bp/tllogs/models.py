@@ -48,6 +48,10 @@ class TLLog(models.Model):
         return self.timestamp.strftime('%d.%m.%y %H:%M')
 
     @property
+    def project_title(self):
+        return f"{self.group.nr}: {self.group.short_title_else_title}"
+
+    @property
     def problems(self):
         problems_string = ", ".join(str(p) for p in self.current_problems.all())
         return problems_string if problems_string != "" else "-"
