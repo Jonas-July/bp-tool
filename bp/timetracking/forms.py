@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.core.exceptions import ValidationError
 
 from .models import TimeInterval, TimeTrackingEntry
+from ..grading.models import PitchGrade, DocsGrade
 
 
 class TimeIntervalForm(forms.ModelForm):
@@ -15,7 +16,7 @@ class TimeIntervalForm(forms.ModelForm):
         widgets = {
             'group': forms.HiddenInput,
             'start': forms.DateInput(attrs={'type': 'date'}),
-            'end'  : forms.DateInput(attrs={'type': 'date'}),
+            'end': forms.DateInput(attrs={'type': 'date'}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -35,21 +36,25 @@ class TimeIntervalForm(forms.ModelForm):
 
         return cleaned_data
 
+
 class NameGeneratorFactory():
     def kw_start(start, end):
         return f"KW {start.isocalendar().week}"
+
     def kw_end(start, end):
         return f"KW {end.isocalendar().week}"
+
     def full_name(start, end):
         return f"{start.strftime('%d.%m.%y')} - {end.strftime('%d.%m.%y')}"
+
     def end_date_only(start, end):
         return f"{end.strftime('%d.%m.%y')}"
 
     generators = {
-        "kw_end" : (kw_end, "KW nach Enddatum: KW 2"),
-        "kw_start" : (kw_start, "KW nach Startdatum: KW 1"),
-        "full_name" : (full_name, "Voller Name: 01.01.04 - 07.01.04"),
-        "end_date_only" : (end_date_only, "Enddatum: 07.01.04"),
+        "kw_end": (kw_end, "KW nach Enddatum: KW 2"),
+        "kw_start": (kw_start, "KW nach Startdatum: KW 1"),
+        "full_name": (full_name, "Voller Name: 01.01.04 - 07.01.04"),
+        "end_date_only": (end_date_only, "Enddatum: 07.01.04"),
     }
 
     @classmethod
@@ -60,15 +65,18 @@ class NameGeneratorFactory():
     def get_name_generator(cls, choice):
         return cls.generators.get(choice, (None, None))[0]
 
+
 class TimeIntervalGenerationForm(forms.Form):
     group = forms.ModelChoiceField(queryset=None, widget=forms.HiddenInput)
     interval_length = forms.IntegerField(label="Länge der Intervalle (Tage)",
-                                         widget=forms.NumberInput(attrs={'min': 1, 'max': 999, 'required': True, 'type': 'number',}))
-    name_generator = forms.TypedChoiceField(label="Namensvergabe", choices=NameGeneratorFactory.get_choices(), coerce=NameGeneratorFactory.get_name_generator)
+                                         widget=forms.NumberInput(
+                                             attrs={'min': 1, 'max': 999, 'required': True, 'type': 'number', }))
+    name_generator = forms.TypedChoiceField(label="Namensvergabe", choices=NameGeneratorFactory.get_choices(),
+                                            coerce=NameGeneratorFactory.get_name_generator)
     start = forms.DateField(label="Beginn des ersten Intervalls",
                             widget=forms.DateInput(attrs={'type': 'date'}))
     end = forms.DateField(label="Ende des letzten Intervalls",
-                            widget=forms.DateInput(attrs={'type': 'date'}))
+                          widget=forms.DateInput(attrs={'type': 'date'}))
 
     def __init__(self, *args, **kwargs):
         """ Grants access to the request object so that only projects of the current user
@@ -110,20 +118,22 @@ class TimeIntervalGenerationForm(forms.Form):
         generate_name = self.cleaned_data['name_generator']
         group = self.cleaned_data['group']
         created_intervals = 0
-        for start, end in generate_intervals(self.cleaned_data['start'], self.cleaned_data['end'], self.cleaned_data['timedelta']):
+        for start, end in generate_intervals(self.cleaned_data['start'], self.cleaned_data['end'],
+                                             self.cleaned_data['timedelta']):
             try:
                 interval = TimeInterval.objects.create(**{
-                    "name" : generate_name(start, end),
-                    "start" : start,
-                    "end" : end,
-                    "group" : group,
-                    })
+                    "name": generate_name(start, end),
+                    "start": start,
+                    "end": end,
+                    "group": group,
+                })
                 interval.save()
                 created_intervals += 1
             except IntegrityError:
                 messages.add_message(self.request, messages.ERROR,
                                      f"Intervall von {start} bis {end} mit Namen '{generate_name(start, end)}' konnte nicht erstellt werden")
         messages.add_message(self.request, messages.SUCCESS, f"{created_intervals} Intervalle gespeichert!")
+
 
 class TimeIntervalUpdateForm(forms.ModelForm):
     class Meta:
@@ -144,6 +154,7 @@ class TimeIntervalUpdateForm(forms.ModelForm):
 
         return cleaned_data
 
+
 class TimeIntervalEntryForm(forms.ModelForm):
     class Meta:
         model = TimeTrackingEntry
@@ -151,7 +162,7 @@ class TimeIntervalEntryForm(forms.ModelForm):
 
         widgets = {
             'interval': forms.HiddenInput,
-            'hours'   : forms.NumberInput(attrs={'min': 0, 'max': 999, 'step' : 0.25, 'required': True, 'type': 'number',})
+            'hours': forms.NumberInput(attrs={'min': 0, 'max': 999, 'step': 0.25, 'required': True, 'type': 'number', })
         }
 
     def __init__(self, *args, **kwargs):
@@ -181,12 +192,13 @@ class TimeIntervalEntryForm(forms.ModelForm):
         return cleaned_data
 
     def save(self):
-        obj, created = TimeTrackingEntry.objects.update_or_create(student =self.cleaned_data['student'],
+        obj, created = TimeTrackingEntry.objects.update_or_create(student=self.cleaned_data['student'],
                                                                   interval=self.cleaned_data['interval'],
                                                                   category=self.cleaned_data['category'],
-                                                                  defaults={'hours' : self.cleaned_data['hours']})
+                                                                  defaults={'hours': self.cleaned_data['hours']})
 
         self.instance = obj
+
 
 class TLTimeIntervalEntryCorrectionForm(forms.ModelForm):
     class Meta:
@@ -195,7 +207,7 @@ class TLTimeIntervalEntryCorrectionForm(forms.ModelForm):
 
         widgets = {
             'interval': forms.HiddenInput,
-            'hours'   : forms.NumberInput(attrs={'min': 0, 'max': 999, 'step' : 0.25, 'required': True, 'type': 'number',})
+            'hours': forms.NumberInput(attrs={'min': 0, 'max': 999, 'step': 0.25, 'required': True, 'type': 'number', })
         }
 
     def __init__(self, *args, **kwargs):
@@ -227,9 +239,31 @@ class TLTimeIntervalEntryCorrectionForm(forms.ModelForm):
         return cleaned_data
 
     def save(self):
-        obj, created = TimeTrackingEntry.objects.update_or_create(student =self.cleaned_data['student'],
+        obj, created = TimeTrackingEntry.objects.update_or_create(student=self.cleaned_data['student'],
                                                                   interval=self.cleaned_data['interval'],
                                                                   category=self.cleaned_data['category'],
-                                                                  defaults={'hours' : self.cleaned_data['hours']})
+                                                                  defaults={'hours': self.cleaned_data['hours']})
 
         self.instance = obj
+
+
+class ProjectPitchPointsUpdateForm(forms.ModelForm):
+    class Meta:
+        model = PitchGrade
+        fields = ['grade_points', 'grade_notes']
+
+        widgets = {
+            'grade_points': forms.NumberInput(attrs={'step': 0.25}),
+            'grade_notes': forms.TextInput()
+        }
+
+
+class ProjectDocumentationPointsUpdateForm(forms.ModelForm):
+    class Meta:
+        model = DocsGrade
+        fields = ['grade_points', 'grade_notes']
+
+        widgets = {
+            'grade_points': forms.NumberInput(attrs={'step': 0.25}),
+            'grade_notes': forms.TextInput()
+        }

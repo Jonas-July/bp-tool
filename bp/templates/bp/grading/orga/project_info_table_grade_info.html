@@ -1,11 +1,11 @@
 {% load fontawesome_5 %}
 
-    <td>Gesamtbewertung:</td>
-    <td>
+    <td>Note:</td>
+    <td {% if grade_is_close_to_higher_grade %}class="bg-warning"{% endif %}>
         {% if is_complete %}
-            {{ total_points }} Punkte
+            {{ grade }} ({{ total_points }} Punkte)
         {% else %}
-            ({{ total_points }}) Punkte
+            Bewertungen unvollständig.
         {% endif %}
     </td>
 </tr>
@@ -16,7 +16,9 @@
         Doku:<br>
     </td>
     <td>
-        {{ pitch_points|default:"-" }} Punkte {{ pitch_grade_notes }}<br>
+        {{ pitch_points|default:"-" }} Punkte {{ pitch_grade_notes }}
+        {% if pitch_points %}<a href="{% url "bp:project_edit_pitch_points" project.nr %}">{% fa5_icon "pen" 'fas' %}</a>{% endif %}<br>
         {{ ag_points   |default:"-" }} Punkte<br>
-        {{ docs_points |default:"-" }} Punkte {{ docs_grade_notes }}
+        {{ docs_points |default:"-" }} Punkte {{ docs_grade_notes }}
+        {% if docs_points %}<a href="{% url "bp:project_edit_documentation_points" project.nr %}">{% fa5_icon "pen" 'fas' %}</a>{% endif %}
     </td>
