@@ -168,9 +168,6 @@
         {% endif %}
     </table>
 
-    <a href="#" class="btn btn-primary" id="btnMarkRead">{% fa5_icon "eye" "fas" %} Als gelesen markieren</a>
-    <a href="#" class="btn btn-info" id="btnMarkHandled">{% fa5_icon "check-square" "fas" %} Als erledigt markieren</a>
-
     <div class="star-rating btn">
         <a href="#" {% if rating >= 5 %}style="color: orange"{% endif %} data-value="5">{% fa5_icon "star" 'fas' %}</a>
         <a href="#" {% if rating >= 4 %}style="color: orange"{% endif %} data-value="4">{% fa5_icon "star" 'fas' %}</a>
@@ -178,4 +175,8 @@
         <a href="#" {% if rating >= 2 %}style="color: orange"{% endif %} data-value="2">{% fa5_icon "star" 'fas' %}</a>
         <a href="#" {% if rating >= 1 %}style="color: orange"{% endif %} data-value="1">{% fa5_icon "star" 'fas' %}</a>
     </div>
+    <a href="#" class="btn btn-primary" id="btnMarkRead">{% fa5_icon "eye" "fas" %} Als gelesen markieren</a>
+    <a href="#" class="btn btn-success" id="btnMarkHandled">{% fa5_icon "check-square" "fas" %} Als erledigt markieren</a>
+    <a href="{% url "bp:next_log" log.pk %}" class="btn btn-info" id="btnMarkRead">{% fa5_icon "arrow-right" "fas" %} Nächster ungelesener Log</a>
+
 {% endblock %}

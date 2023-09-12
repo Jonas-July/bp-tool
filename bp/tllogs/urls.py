@@ -2,7 +2,7 @@ from django.urls import path
 
 from .api.views import APILogMarkReadView, APILogMarkHandledView, APILogRate
 from .orga.views import LogListView, LogAttentionListView, LogUnreadListView, LogReminderView, LogView, \
-    LogUnratedListView
+    LogUnratedListView, NextLog
 from .tl.views import LogTLOverview, LogTLCreateView, LogTLUpdateView, LogTLDeleteView, LogTLDetailView
 
 tllog_patterns = [
@@ -23,4 +23,5 @@ tllog_orga_patterns = [
     path('<pk>/read/', APILogMarkReadView.as_view(), name='log_api_mark_read'),
     path('<pk>/handled/', APILogMarkHandledView.as_view(), name='log_api_mark_handled'),
     path('<pk>/rate/', APILogRate.as_view(), name='log_api_rate'),
+    path('<pk>/next_log', NextLog.as_view(), name='next_log'),
 ]
