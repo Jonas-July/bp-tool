@@ -47,14 +47,18 @@
             <li><u>{{ project_name }}</u>: Name des Projekts</li>
             <li><u>{{ pretix_id }}</u>: Pretix Order ID des Projekts</li>
         </ul>
+        <li>Die Datei kann optional folgende Spalten enthalten:</li>
+        <ul>
+            <li><u>{{ short_name }}</u>: Kurzer Name des Projekts (falls voller Name sehr lang ist)</li>
+        </ul>
     </ul>
 
     <h5>Beispielhafte CSV-Datei:</h5>
     <div class="code-example">
-        {{ project }}{{ separator }}{{ client }}{{ separator }}{{ client_mail }}{{ separator }}{{ project_name }}{{ separator }}{{ pretix_id }}<br>
-        1{{ separator }}Auftraggeber2{{ separator }}auftraggeber2@mail.de{{ separator }}Projekt 4{{ separator }}2<br>
-        3{{ separator }}Auftraggeber15{{ separator }}auftraggeber15@mail.de{{ separator }}Projekt 3{{ separator }}3<br>
-        4{{ separator }}Auftraggeber7{{ separator }}auftraggeber7@mail.de{{ separator }}Projekt 6{{ separator }}4
+        {{ project }}{{ separator }}{{ client }}{{ separator }}{{ client_mail }}{{ separator }}{{ project_name }}{{ separator }}{{ short_name }}{{ separator }}{{ pretix_id }}<br>
+        1{{ separator }}Auftraggeber2{{ separator }}auftraggeber2@mail.de{{ separator }}KIWA APP{{ separator }}{{ separator }}2<br>
+        3{{ separator }}Auftraggeber15{{ separator }}auftraggeber15@mail.de{{ separator }}Noise APP{{ separator }}{{ separator }}3<br>
+        4{{ separator }}Auftraggeber7{{ separator }}auftraggeber7@mail.de{{ separator }}MOTIS Project OnDemand Fahrten Verwaltung{{ separator }}OnDemand Fahrten Verwaltung{{ separator }}4
     </div>
 
 {% endblock %}

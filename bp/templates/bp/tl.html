@@ -33,7 +33,7 @@
             <td>Projekte:</td>
             <td>
                 {% for project in projects %}
-                    <a href="{% url "bp:project_detail" pk=project.pk %}">{{ project.title }}</a>{% if project != projects.last %}, {% endif %}
+                    <a href="{% url "bp:project_detail" pk=project.pk %}">{{ project.short_title_else_title }}</a>{% if not forloop.last %}, {% endif %}
                 {% endfor %}
             </td>
         </tr>
@@ -45,7 +45,7 @@
             <li class="nav-item">
                 <a class="nav-link {% if forloop.first %}active{% endif %}" data-toggle="tab"
                    href="#g_{{ project.nr }}">
-                    {{ project.nr }}: {{ project.title }}
+                    {{ project.nr }}: {{ project.short_title_else_title }}
                 </a>
             </li>
         {% endfor %}
@@ -55,7 +55,7 @@
 
         {% for project in projects %}
             <div class="tab-pane fade {% if forloop.first %}active show{% endif %}" id="g_{{ project.nr }}">
-                <h3 class="my-4">{{ project.nr }}: {{ project.title }}</h3>
+                <h3 class="my-4">{{ project.nr }}: {{ project.short_title_else_title }}</h3>
 
                 <h4>Logs ({{ project.tllog_set.count }})</h4>
                 {% include "bp/tllogs/render_logs.html" with logs=project.tllog_set.all can_read_as_orga=True %}

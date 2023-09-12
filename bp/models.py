@@ -56,6 +56,7 @@ class Project(models.Model):
 
     nr = models.PositiveSmallIntegerField(verbose_name="Projekt-/Gruppennummer")
     title = models.CharField(max_length=255, verbose_name="Titel")
+    short_title = models.CharField(max_length=50, verbose_name="Kurzer Titel", null=True)
 
     ag = models.CharField(max_length=100, verbose_name="AG")
     ag_mail = models.EmailField(verbose_name="AG E-Mail")
@@ -74,6 +75,13 @@ class Project(models.Model):
     @staticmethod
     def get_active():
         return Project.objects.filter(bp__active=True)
+
+    @property
+    def short_title_else_title(self):
+        if self.short_title is not None:
+            return self.short_title
+        else:
+            return self.title
 
     @property
     def student_list(self):
@@ -298,6 +306,10 @@ class Student(models.Model):
     @staticmethod
     def get_active():
         return Student.objects.filter(bp__active=True)
+
+    @property
+    def project_title(self):
+        return f"{self.project.nr}: {self.project.short_title_else_title}"
 
     @property
     def total_hours(self):
