@@ -120,18 +120,14 @@ class TimeIntervalGenerationForm(forms.Form):
         created_intervals = 0
         for start, end in generate_intervals(self.cleaned_data['start'], self.cleaned_data['end'],
                                              self.cleaned_data['timedelta']):
-            try:
-                interval = TimeInterval.objects.create(**{
-                    "name": generate_name(start, end),
-                    "start": start,
-                    "end": end,
-                    "group": group,
-                })
-                interval.save()
-                created_intervals += 1
-            except IntegrityError:
-                messages.add_message(self.request, messages.ERROR,
-                                     f"Intervall von {start} bis {end} mit Namen '{generate_name(start, end)}' konnte nicht erstellt werden")
+            interval = TimeInterval.objects.create(**{
+                "name": generate_name(start, end),
+                "start": start,
+                "end": end,
+                "group": group,
+            })
+            interval.save()
+            created_intervals += 1
         messages.add_message(self.request, messages.SUCCESS, f"{created_intervals} Intervalle gespeichert!")
 
 
@@ -153,51 +149,6 @@ class TimeIntervalUpdateForm(forms.ModelForm):
                 self.add_error('end', "Ende muss später als Beginn sein")
 
         return cleaned_data
-
-
-class TimeIntervalEntryForm(forms.ModelForm):
-    class Meta:
-        model = TimeTrackingEntry
-        fields = ['category', 'hours', 'interval']
-
-        widgets = {
-            'interval': forms.HiddenInput,
-            'hours': forms.NumberInput(attrs={'min': 0, 'max': 999, 'step': 0.25, 'required': True, 'type': 'number', })
-        }
-
-    def __init__(self, *args, **kwargs):
-        """ Grants access to the request object so that only projects of the current user
-        are given as options"""
-
-        self.request = kwargs.pop('request')
-        super().__init__(*args, **kwargs)
-        self.fields['interval'].queryset = self.request.user.student.project.timeinterval_set.order_by('-start')
-
-    def clean(self):
-        cleaned_data = super().clean()
-
-        cleaned_data['student'] = self.request.user.student
-        try:
-            if cleaned_data['student'] not in cleaned_data['interval'].group.student_set.all():
-                raise ValidationError("Ungültiges Intervall angegeben")
-        except KeyError:
-            raise ValidationError("Ungültiges Intervall angegeben")
-
-        if cleaned_data.get('hours', 0) < 0:
-            self.add_error('hours', "Stundenzahl muss nicht-negativ sein")
-
-        if not cleaned_data.get('category', None):
-            self.add_error('category', "Bitte gib eine Kategorie an")
-
-        return cleaned_data
-
-    def save(self):
-        obj, created = TimeTrackingEntry.objects.update_or_create(student=self.cleaned_data['student'],
-                                                                  interval=self.cleaned_data['interval'],
-                                                                  category=self.cleaned_data['category'],
-                                                                  defaults={'hours': self.cleaned_data['hours']})
-
-        self.instance = obj
 
 
 class TLTimeIntervalEntryCorrectionForm(forms.ModelForm):

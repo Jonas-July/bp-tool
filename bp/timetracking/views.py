@@ -17,7 +17,7 @@ from bp.roles import is_tl, is_student, is_orga, is_tl_or_student, is_tl_of_grou
 from bp.roles import get_bp_of_user
 
 from .forms import TimeIntervalForm, TimeIntervalGenerationForm, TimeIntervalUpdateForm, \
-    TimeIntervalEntryForm, TLTimeIntervalEntryCorrectionForm
+    TLTimeIntervalEntryCorrectionForm
 from .models import TimeInterval, TimeTrackingEntry, TimeSpentCategory
 
 # necessary to load the project info tags
@@ -369,38 +369,6 @@ class TimetrackingEntryCreateView(ProjectByRequestMixin, TimeIntervalByRequestMi
         return initials
 
 
-class StudentTimetrackingEntryCorrectView(TimetrackingEntryCreateView, LoginRequiredMixin, CreateView):
-    model = TimeTrackingEntry
-    form_class = TimeIntervalEntryForm
-    template_name = "bp/timetracking/timetracking_entry_correct.html"
-
-    def get_form_kwargs(self):
-        """ Passes the request object to the form class.
-         This is necessary to only display projects that belong to a given user"""
-
-        kwargs = super().get_form_kwargs()
-        kwargs['request'] = self.request
-        return kwargs
-
-    def get(self, request, *args, **kwargs):
-        project = self.get_project_by_request(request)
-        interval = self.get_interval_by_request(request)
-        if not is_student(request.user):
-            messages.add_message(request, messages.WARNING, "Ungültige Aktion")
-            return redirect("bp:timetracking_tl_start")
-        if not is_student_of_group(project, request.user):
-            messages.add_message(request, messages.WARNING, "Ungültige Gruppe")
-            return redirect("bp:timetracking_tl_start")
-        if not interval in project.get_past_and_current_intervals:
-            messages.add_message(request, messages.WARNING, "Ungültiges Intervall")
-            return redirect("bp:timetracking_tl_start")
-        if not interval.is_editable_by_students():
-            messages.add_message(request, messages.WARNING,
-                                 f"{interval.name} darf nicht mehr bearbeitet werden. Wende dich an die Orga für weitere Infos.")
-            return redirect("bp:timetracking_interval_detail", group=project.nr, pk=interval.pk)
-        return super().get(request, *args, **kwargs)
-
-
 class TLTimetrackingEntryCorrectView(TimetrackingEntryCreateView, LoginRequiredMixin, CreateView):
     model = TimeTrackingEntry
     form_class = TLTimeIntervalEntryCorrectionForm
@@ -433,7 +401,7 @@ class TLTimetrackingEntryCorrectView(TimetrackingEntryCreateView, LoginRequiredM
         return super().get(request, *args, **kwargs)
 
 
-class ApiTimetrackingEntryAddHours(ProjectByRequestMixin, TimeIntervalByRequestMixin, LoginRequiredMixin, TemplateView):
+class ApiTimetrackingEntryUpdateHours(ProjectByRequestMixin, TimeIntervalByRequestMixin, LoginRequiredMixin, TemplateView):
     http_method_names = ['post']
 
     def post(self, request, *args, **kwargs):
@@ -463,7 +431,7 @@ class ApiTimetrackingEntryAddHours(ProjectByRequestMixin, TimeIntervalByRequestM
                                                                category=category,
                                                                defaults={'hours': 0})
         try:
-            obj.hours += hours
+            obj.hours = hours
             obj.save()
         except InvalidOperation:
             return HttpResponseForbidden("")
