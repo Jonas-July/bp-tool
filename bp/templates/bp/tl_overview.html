@@ -27,7 +27,7 @@
                 <td><a href="{% url 'bp:tl_detail' tl.pk %}">{{ tl.name }}</a></td>
                 <td>{{ tl.project_set.count }}</td>
                 <td>{{ tl.tllog_set.count}}</td>
-                <td>{{ tl.average_rating}}{% fa5_icon "star" 'fas' %}</td>
+                <td>{% if tl.average_rating %}{{ tl.average_rating }}{% fa5_icon "star" 'fas' %}{% else %}Noch keine Bewertung.{% endif %}</td>
                 <td>
                     {% for project in tl.project_set.all %}
                         <a href="{% url 'bp:project_detail' project.pk %}">{{ project.nr }}: {{ project.title }}</a>{% if not forloop.last %}, {% endif %}

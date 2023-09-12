@@ -28,7 +28,7 @@
 
     <div class="float-right mb-4">
         <button class="btn btn-info" onclick="window.print()">Zeiterfassung für Moodle exportieren</button>
-        <a class="btn btn-success" href="{% url "bp:timetracking_statistics_tl" group=project.nr %}">{% fa5_icon "chart-bar" "fas" %} Graphen</a>
+        <a class="btn btn-success" href="{% url "bp:timetracking_statistics_tl_and_student" group=project.nr %}">{% fa5_icon "chart-bar" "fas" %} Graphen</a>
     </div>
     <h4 class="mt-3 printthis">Überblick ({{ total_hours }}h / {{ project.expected_hours }}h)</h4>
     <div id="tt_table" class="printthis">

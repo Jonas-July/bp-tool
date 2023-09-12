@@ -530,16 +530,19 @@ class TimetrackingStatisticsOrgaView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class TimetrackingStatisticsTLView(LoginRequiredMixin, TemplateView, ProjectByGroupMixin):
-    template_name = "bp/timetracking/statistics_tl.html"
-    context_object_name = "statistics_tl"
+class TimetrackingStatisticsTLStudentView(LoginRequiredMixin, TemplateView, ProjectByGroupMixin):
+    template_name = "bp/timetracking/statistics_tl_student.html"
+    context_object_name = "statistics_tl_student"
 
     def get(self, request, *args, **kwargs):
-        if not is_tl(request.user):
+        if not is_tl_or_student(request.user):
             return redirect("bp:index")
-        if not is_tl_of_group(self.get_object(), request.user):
-            messages.add_message(request, messages.WARNING, "Du darfst nur die Zeiten deiner eigenen Gruppe(n) sehen")
+        if is_tl(request.user) and not is_tl_of_group(self.get_object(), request.user):
+            messages.add_message(request, messages.WARNING, "Du darfst nur die Zeiten deiner eigenen Gruppe(n) sehen.")
             return redirect("bp:timetracking_tl_start")
+        if is_student(request.user) and not is_student_of_group(self.get_object(), request.user):
+            messages.add_message(request, messages.WARNING, "Du darfst nur die Zeiten deiner Gruppe sehen.")
+            return redirect("bp:index")
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -553,23 +556,25 @@ class TimetrackingStatisticsTLView(LoginRequiredMixin, TemplateView, ProjectByGr
         context = super().get_context_data(**kwargs)
         categories = TimeSpentCategory.objects.all()
         charts = [get_hours_per_group()] + [get_hours_per_group(category=c) for c in categories]
-        project = self.get_object()
-        students = project.student_set.all()
+        context["project"] = self.get_object()
+        students = context["project"].student_set.all()
 
         # data for graph 1 (time spent per interval)
         context["hours_per_interval"] = Chart([
             {
                 'x': f'{itv.name}',
                 'y': f"{sum([hours_of_student_in_interval(s, itv) / len(itv) for s in students])}"
-            } for itv in reversed(project.get_past_and_current_intervals)
+            } for itv in reversed(context["project"].get_past_and_current_intervals)
         ]).get_chart_data()
 
         # data for remaining graphs (time spent - group comparison: total and for every category)
-        context["project"] = project
-        context["hours_per_group_data"] = [
-            HoursPerGroupData(cat, chart.get_chart_data(), chart.single_bar_highlighted(project.nr), i)
-            for cat, chart, i in zip(["Gesamt"] + list(categories.values_list("name", flat=True)),
-                                     charts,
-                                     range(len(charts)))
-        ]
+        if is_tl(self.request.user):
+            context["hours_per_group_data"] = [
+                HoursPerGroupData(cat, chart.get_chart_data(), chart.single_bar_highlighted(context["project"].nr), i)
+                for cat, chart, i in zip(["Gesamt"] + list(categories.values_list("name", flat=True)),
+                                         charts,
+                                         range(len(charts)))
+            ]
+        else:
+            context["hours_per_group_data"] = None
         return context
