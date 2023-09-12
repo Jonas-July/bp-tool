@@ -20,7 +20,6 @@
 
 {% block student_content %}
 {% block tl_content %}
-{% block orga_content %}
     <h3 class="my-4 printthis">{{ project.nr }}: {{ project.title }}</h3>
 
 
@@ -37,4 +36,19 @@
 </div>
 {% endblock %}
 {% endblock %}
+
+{% block orga_content %}
+    <h3 class="my-4 printthis">{{ project.nr }}: {{ project.title }}</h3>
+
+
+<div id="myTabContent" class="tab-content">
+
+    <div class="float-right mb-4">
+        <button class="btn btn-info" onclick="window.print()">Zeiterfassung für Moodle exportieren</button>
+    </div>
+    <h4 class="mt-3 printthis">Überblick ({{ total_hours }}h / {{ project.expected_hours }}h)</h4>
+    <div id="tt_table" class="printthis">
+        {% include "bp/timetracking/render_timetracking_overview.html" with project=project timetable=timetable %}
+    </div>
+</div>
 {% endblock %}

@@ -11,21 +11,24 @@ This template is used in
 <table class="table">
     {% for tllog in logs %}
         <tr {% if tllog.requires_attention %} class="table-warning" {% endif %}>
-            <td>{{ tllog.simple_timestamp }}</td>
+            <td>
+                {% if can_read_as_orga %}
+                    <a href="{% url "bp:log_detail" tllog.pk %}">{{ tllog.simple_timestamp }}</a>
+                {% elif can_read_as_tl %}
+                    <a href="{% url "bp:log_tl_detail" tllog.group.nr tllog.pk %}">{{ tllog.simple_timestamp }}</a>
+                {% else %}
+                    {{ tllog.simple_timestamp }}
+                {% endif %}
+            </td>
             <td>{{ tllog.status | log_status }}</td>
             <td>{{ tllog.problems }}</td>
             <td>{{ tllog.text | linebreaksbr | truncatewords:50 }}</td>
-            <td>
-                {% if can_read_as_orga %}
-                    <a href="{% url "bp:log_detail" tllog.pk %}">{% fa5_icon "link" 'fas' %}</a>
-                {% elif can_read_as_tl %}
-                    <a href="{% url "bp:log_tl_detail" tllog.group.nr tllog.pk %}">{% fa5_icon "link" 'fas' %}</a>
-                {% endif %}
-                {% if user_tl == tllog.tl %}
-	                <a href="{% url "bp:log_tl_update" tllog.group.nr tllog.pk %}">{% fa5_icon "pen" 'fas' %}</a>
-	                <a href="{% url "bp:log_tl_delete" tllog.group.nr tllog.pk %}">{% fa5_icon "trash" 'fas' %}</a>
-                {% endif %}
-            </td>
+            {% if user_tl == tllog.tl %}
+                <td>
+                    <a href="{% url "bp:log_tl_update" tllog.group.nr tllog.pk %}">{% fa5_icon "pen" 'fas' %}</a>
+                    <a href="{% url "bp:log_tl_delete" tllog.group.nr tllog.pk %}">{% fa5_icon "trash" 'fas' %}</a>
+                </td>
+            {% endif %}
         </tr>
     {% endfor %}
 </table>

@@ -36,20 +36,7 @@
                 }
             });
 
-            // Hide all buttons and fields for adding hours
-            hide_all = function() {
-                {% for cat in categories %}
-                    {% for itv in intervals %}
-                        {% if can_edit_entries and itv.is_editable_by_students %}
-	                        document.getElementById("{{ cat }}-{{ itv.pk }}").hidden=true;
-	                        document.getElementById("{{ cat }}-{{ itv.pk }}-send").hidden=true;
-                        {% endif %}
-                    {% endfor %}
-                {% endfor %}
-            };
-
-            // Add hours
-            add_hours = function (category, hours, url, text_field) {
+            update_hours = function (category, hours, url, id) {
                 $.ajax({
                     url: url,
                     type: 'POST',
@@ -58,22 +45,57 @@
                         hours : hours
                     },
                     success: function (response) {
-                        text_field.firstChild.textContent = response;
+                        let diff = hours-getOriginalValueOf(id);
+                        let sign = "";
+                        let color = 'red'
+                        if (diff === 0) {
+                            sign = "±"
+                            color = 'grey';
+                        } else if (diff > 0) {
+                            sign = "+"
+                            color = 'green';
+                        }
+                        document.getElementById(id + "-difference").textContent = "(" + sign + diff + ")";
+                        document.getElementById(id + "-difference").style.color = color;
+                        document.getElementById(id + "-current-value").textContent = response;
+                        editValue(id)
                     },
                     error: function (response) {
-                       alert("Fehler! Stunden konnten nicht hinzugefügt werden: " + hours + ".");
+                       alert("Fehler! Stunden konnten nicht bearbeitet werden: " + hours + ".");
                     }
                });
             };
+
+
+
             // check field for validity and add if valid
-            check_and_add_hours = function(category, input_field, url, text_field) {
+            check_and_add_hours = function(category, input_field, url, id) {
                 if (input_field.checkValidity()) {
-                    add_hours(category, input_field.valueAsNumber, url, text_field);
+                    update_hours(category, input_field.valueAsNumber, url, id);
                 } else {
                     input_field.reportValidity();
                 }
             };
         });
+
+        function getCurrentValueOf(id) {
+            return parseFloat(document.getElementById(id + "-current-value").innerHTML.replace(",", "."));
+        }
+
+        function getOriginalValueOf(id) {
+            return parseFloat(document.getElementById(id + "-original-value").innerHTML.replace(",", "."));
+        }
+
+        // Edit value
+        function editValue(id) {
+            let hide = true;
+            if(document.getElementById(id).hidden === true) {
+                hide = false
+                document.getElementById(id).value = getCurrentValueOf(id);
+            }
+            document.getElementById(id).hidden = hide;
+            document.getElementById(id + "-send").hidden = hide;
+        }
     </script>
 {% endblock %}
 
@@ -85,20 +107,22 @@
                {% if forloop.first and not forloop.parentloop.first %}
                    <a href="{% url "bp:timetracking_interval_detail" group=group.nr pk=entry.pk %}">{{entry.name}}</a>
                {% else %}
-                   {{entry}}
+                   <span id="{{ category }}-{{ interval.pk }}-current-value">{{entry}}</span>
+                   <span id="{{ category }}-{{ interval.pk }}-difference"></span>
+                   <span id="{{ category }}-{{ interval.pk }}-original-value" hidden>{{entry}}</span>
                    {% if not forloop.parentloop.first and interval.is_editable_by_students and can_edit_entries %}
-		                <a class="btn btn-secondary" onclick='{hide_all();
-		                                                       document.getElementById("{{ category }}-{{ interval.pk }}").hidden=false;
-		                                                       document.getElementById("{{ category }}-{{ interval.pk }}-send").hidden=false;}'>
-		                    {% fa5_icon "plus" 'fas' %}
-		                </a>
-		                <input type="number" hidden id="{{ category }}-{{ interval.pk }}" min=0 max=999 step="0.25"></input>
-                        <a class="btn btn-primary btn-success" hidden id="{{ category }}-{{ interval.pk }}-send"
-                           onclick='check_and_add_hours("{{category}}",
-                                                        document.getElementById("{{ category }}-{{ interval.pk }}"),
-                                                        "{% url "bp:timetracking_api_add_hours" group=group.nr pk=interval.pk %}",
-                                                        document.getElementById("{{ category }}-{{ interval.pk }}-text")
-                                                       )'>Hinzufügen</a>
+                       <abbr title='Bearbeite Stundenanzahl für {{ category }} in {{ entry.name }}'>
+                            <a class="btn btn-secondary" onclick='editValue("{{ category }}-{{ interval.pk }}")'>{% fa5_icon "pen" 'fas' %}</a>
+                       </abbr>
+                       <input type="number" hidden id="{{category}}-{{ interval.pk }}" min=0 max=999 step="0.25">
+                       <abbr title='Die eingegebene Stundenanzahl wir als neue Stundenzahl für {{ category }} im ausgewählte Intervall gespeichert.'>
+                            <a class="btn btn-primary btn-success" hidden id="{{ category }}-{{ interval.pk }}-send"
+                               onclick='check_and_add_hours("{{ category }}",
+                                                            document.getElementById("{{ category }}-{{ interval.pk }}"),
+                                                            "{% url "bp:timetracking_api_add_hours" group=group.nr pk=interval.pk %}",
+                                                            "{{ category }}-{{ interval.pk }}"
+                                                           )'>Speichern</a>
+                       </abbr>
                    {% endif %}
                {% endif %}
             </td>

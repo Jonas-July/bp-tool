@@ -106,6 +106,12 @@
             <td id="{{ category }}-{{ student.pk }}-text">
                {% if forloop.first and not forloop.parentloop.first %}
                    {{entry.name}}
+               {% elif not forloop.first and forloop.parentloop.first %}
+                   {% if not user.is_superuser %}
+                       <a href="{% url "bp:timetracking_members_detail" group=entry.project.nr pk=entry.pk %}">{{entry}}</a>
+                   {% else %}
+                       {{entry}}
+                   {% endif %}
                {% else %}
                    <span id="{{ category }}-{{ student.pk }}-current-value">{{entry}}</span>
                    <span id="{{ category }}-{{ student.pk }}-difference"></span>
