@@ -42,6 +42,14 @@
             return $("#row-" + id)
         }
 
+        function iconsEndEditing(row) {
+            row.find(".orgalog-text").attr('contenteditable', 'false');
+            row.find(".orgalog-text").css("border", "none");
+            row.find(".save").css("visibility", "hidden");
+            row.find(".cancel").hide();
+            row.find(".edit").css("display", "inline-block");
+        }
+
         edit = function (id) {
             const row = getRow(id);
             edited_texts[id] = row.find(".orgalog-text").html()
@@ -57,11 +65,7 @@
             if(confirm('Willst du die Änderungen wirklich verwerfen?')) {
                 const row = getRow(id);
                 row.find(".orgalog-text").html(edited_texts[id]);
-                row.find(".orgalog-text").attr('contenteditable', 'false');
-                row.find(".orgalog-text").css("border", "none");
-                row.find(".save").css("visibility", "hidden");
-                row.find(".cancel").hide();
-                row.find(".edit").css("display", "inline-block");
+                iconsEndEditing(row)
             }
         }
 
@@ -75,7 +79,7 @@
                 },
                 success: function (response) {
                     row.find(".last-updated").html('(Bearbeitet: {% now "d.m.y H:i" %})')
-                    cancel(id)
+                    iconsEndEditing(row)
                 },
                 error: function (response) {
                     alert("Fehler! Der Text konnte nicht gespeichert werden.");
@@ -141,7 +145,7 @@
 
                     row.find(".time_created").html('{% now "d.m.y H:i" %}');
                     row.find(".delete").css("visibility", "visible");
-                    cancel(id)
+                    iconsEndEditing(row)
                 },
                 error: function (response) {
                     alert("Fehler! Der Log konnte nicht gelöscht werden.");
