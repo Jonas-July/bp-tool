@@ -11,7 +11,7 @@
 {% block content %}
     <div class="float-right mb-4">
         {% if user.is_staff %}
-            <a class="btn btn-danger" href="{% url "bp:student_import" %}">Teilnehmende importieren</a>
+            <a class="btn btn-danger" href="{% url "bp:student_import" %}">{% fa5_icon "file-import" "fas" %} Teilnehmende importieren</a>
         {% endif %}
     </div>
 

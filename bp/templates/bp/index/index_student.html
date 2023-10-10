@@ -12,11 +12,13 @@
                 <h4 class="card-title">{{ group }}</h4>
                 <p class="card-text">
                     <br><br>
-                    <a href="{% url "bp:timetracking_project_overview" group=group.nr %}" class="btn btn-secondary mb-1">Zur Zeiterfassung</a><br>
+                    <a href="{% url "bp:timetracking_project_overview" group=group.nr %}" class="btn btn-secondary mb-1">Zur Zeiterfassung</a>
                     {% if current_interval %}
+                        <br>
                         <a href="{% url "bp:timetracking_interval_detail" group=group.nr pk=current_interval.pk %}" class="btn btn-secondary mb-1">Neuestes Intervall</a>
                     {% endif %}
                     {% if most_recently_passed_interval %}
+                        <br>
                         <a href="{% url "bp:timetracking_interval_detail" group=group.nr pk=most_recently_passed_interval.pk %}" class="btn btn-secondary mb-1">Vergangenes Intervall</a>
                     {% endif %}
                 </p>

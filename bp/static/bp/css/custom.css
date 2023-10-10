@@ -64,3 +64,8 @@
 .icon-button.save {
     color: green;
 }
+
+.disabled-button, .disabled-button:hover {
+    background-color: grey;
+    cursor: grab;
+}

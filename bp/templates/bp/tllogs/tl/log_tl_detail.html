@@ -44,6 +44,6 @@
     </table>
 
     <a class="btn btn-primary" href="{% url "bp:log_tl_update" log.group.nr log.pk %}">{% fa5_icon "pen" "fas" %} Bearbeiten</a>
-    <a class="btn btn-warning" href="{% url "bp:log_tl_delete" log.group.nr log.pk %}">{% fa5_icon "trash" "fas" %} Löschen</a>
+    <a class="btn btn-danger" href="{% url "bp:log_tl_delete" log.group.nr log.pk %}">{% fa5_icon "trash" "fas" %} Löschen</a>
 
 {% endblock %}

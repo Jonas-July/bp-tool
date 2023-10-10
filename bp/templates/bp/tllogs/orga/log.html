@@ -52,8 +52,13 @@
                     data: {
                     },
                     success: function (response) {
-                       $("#labelUnread").hide();
-                       $("#btnMarkRead").html('{% fa5_icon 'check' 'fas' %} Gelesen').off('click');
+                       if ($("#labelUnread").is(":visible")) {
+                           $("#labelUnread").css("display", "none")
+                           $("#btnMarkRead").html('{% fa5_icon "eye-slash" "fas" %} Als ungelesen markieren')
+                       } else {
+                           $("#labelUnread").css("display", "inline-block");
+                           $("#btnMarkRead").html('{% fa5_icon "eye" "fas" %} Als gelesen markieren')
+                       }
                     },
                     error: function (response) {
                        alert("Fehler! Konnte nicht als gelesen markiert werden.");
@@ -69,7 +74,13 @@
                     data: {
                     },
                     success: function (response) {
-                       $("#btnMarkHandled").html('{% fa5_icon 'check' 'fas' %} Erledigt').off('click');
+                       if ($("#labelUnhandled").is(":visible")) {
+                           $("#labelUnhandled").css("display", "none")
+                           $("#btnMarkHandled").html('{% fa5_icon "times" "fas" %} Als unerledigt markieren')
+                       } else {
+                           $("#labelUnhandled").css("display", "inline-block");
+                           $("#btnMarkHandled").html('{% fa5_icon "check-square" "fas" %} Als erledigt markieren')
+                       }
                     },
                     error: function (response) {
                        alert("Fehler! Konnte nicht als erledigt markiert werden.");
@@ -111,17 +122,15 @@
     </div>
 
     <h1>Log
-        <span id="labelUnread">
-            {% if not log.read %}
-                {% fa5_icon "eye-slash" "fas" %}
-            {% endif %}
+        <span id="labelUnread" {% if not log.read %}style="display: none"{% endif %}>
+            {% fa5_icon "eye-slash" "fas" %}
         </span>
         {% if log.requires_attention %}
             {% fa5_icon "exclamation-triangle" "fas" %}
         {% endif %}
-        {% if log.handled %}
+        <span id="labelUnhandled" {% if not log.handled %}style="display: none"{% endif %}>
             {% fa5_icon "check-square" "fas" %}
-        {% endif %}
+        </span>
     </h1>
 
     <table class="table mt-3">
@@ -177,8 +186,16 @@
         <a href="#" {% if rating >= 2 %}style="color: orange"{% endif %} data-value="2">{% fa5_icon "star" 'fas' %}</a>
         <a href="#" {% if rating >= 1 %}style="color: orange"{% endif %} data-value="1">{% fa5_icon "star" 'fas' %}</a>
     </div>
-    <a href="#" class="btn btn-primary" id="btnMarkRead">{% fa5_icon "eye" "fas" %} Als gelesen markieren</a>
-    <a href="#" class="btn btn-success" id="btnMarkHandled">{% fa5_icon "check-square" "fas" %} Als erledigt markieren</a>
+    {% if not log.read %}
+        <a href="#" class="btn btn-primary" id="btnMarkRead">{% fa5_icon "eye-slash" "fas" %} Als ungelesen markieren</a>
+    {% else %}
+        <a href="#" class="btn btn-primary" id="btnMarkRead">{% fa5_icon "eye" "fas" %} Als gelesen markieren</a>
+    {% endif %}
+    {% if not log.read %}
+        <a href="#" class="btn btn-success" id="btnMarkHandled">{% fa5_icon "check-square" "fas" %} Als erledigt markieren</a>
+    {% else %}
+        <a href="#" class="btn btn-success" id="btnMarkHandled">{% fa5_icon "times" "fas" %} Als unerledigt markieren</a>
+    {% endif %}
     <a href="{% url "bp:next_log" log.pk %}" class="btn btn-info" id="btnMarkRead">{% fa5_icon "arrow-right" "fas" %} Nächster ungelesener Log</a>
 
 {% endblock %}

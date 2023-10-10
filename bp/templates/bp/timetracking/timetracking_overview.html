@@ -1,5 +1,7 @@
 {% extends "bp/base_tl.html" %}
 
+{% load fontawesome_5 %}
+
 {% block breadcrumbs %}
     <li class="breadcrumb-item"><a href="{% url "bp:index" %}">Übersicht</a></li>
     <li class="breadcrumb-item active">Zeiterfassung</li>
@@ -29,7 +31,7 @@
                 <br>
                 <div class="float-left mb-4">
                     <a class="btn btn-info" href="{% url "bp:timetracking_project_overview" group=project.nr %}">
-                        Zur Zeiterfassung von Gruppe {{ project.nr }}
+                        {% fa5_icon "table" 'fas' %} Zur Zeiterfassung von Gruppe {{ project.nr }}
                     </a>
                     <a class="btn btn-info" href="{% url "bp:timetracking_intervals" group=project.nr %}">Intervallverwaltung</a>
                 </div>
