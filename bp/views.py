@@ -86,7 +86,7 @@ class ProjectUngradedListView(ProjectListView):
 class ProjectCloseToHigherGradeListView(ProjectListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["page_title"] = "Projekte (< 2P. bis zur höheren Note>)"
+        context["page_title"] = "Projekte (< 2P. bis zur höheren Note)"
         return context
 
     def get_queryset(self):

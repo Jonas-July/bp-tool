@@ -1,19 +1,229 @@
 {% load fontawesome_5 %}
 {% load tags_bp %}
 
-<table class="table">
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // CSRF Protection/Authentication
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        const csrftoken = getCookie('csrftoken');
+
+        function csrfSafeMethod(method) {
+            // these HTTP methods do not require CSRF protection
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+
+        $.ajaxSetup({
+            beforeSend: function (xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+
+        const edited_texts = [];
+
+        function getRow(id) {
+            return $("#row-" + id)
+        }
+
+        function iconsEndEditing(row) {
+            row.find(".orgalog-text").attr('contenteditable', 'false');
+            row.find(".orgalog-text").css("border", "none");
+            row.find(".save").css("visibility", "hidden");
+            row.find(".cancel").hide();
+            row.find(".edit").css("display", "inline-block");
+        }
+
+        edit = function (id) {
+            const row = getRow(id);
+            edited_texts[id] = row.find(".orgalog-text").html()
+            row.find(".orgalog-text").attr('contenteditable','true');
+            row.find(".orgalog-text").css("border", "1px solid black");
+            row.find(".orgalog-text").focus();
+            row.find(".save").css("visibility", "visible");
+            row.find(".cancel").css("display", "inline-block");
+            row.find(".edit").hide();
+        }
+
+        cancel = function (id) {
+            if(confirm('Willst du die Änderungen wirklich verwerfen?')) {
+                const row = getRow(id);
+                row.find(".orgalog-text").html(edited_texts[id]);
+                iconsEndEditing(row)
+            }
+        }
+
+        save = function (id, url) {
+            const row = getRow(id);
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: {
+                    text : row.find(".orgalog-text").html()
+                },
+                success: function (response) {
+                    row.find(".last-updated").html('(Bearbeitet: {% now "d.m.y H:i" %})')
+                    iconsEndEditing(row)
+                },
+                error: function (response) {
+                    alert("Fehler! Der Text konnte nicht gespeichert werden.");
+                }
+            });
+        }
+
+        delete_log = function (id, url) {
+            if(confirm('Willst du den Orga-Log wirklich löschen?')) {
+                const row = getRow(id);
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: {},
+                    success: function (response) {
+                        row.hide()
+                    },
+                    error: function (response) {
+                        alert("Fehler! Der Log konnte nicht gelöscht werden.");
+                    }
+                });
+            }
+        }
+
+        create_new = function () {
+            const new_row = $("#row-template").clone();
+            const id = Date.now();
+
+            new_row.css("display", "table-row");
+            new_row.attr("id", "row-"+id);
+
+            new_row.find(".save").attr("onclick", "new_log_save(" + id + ", '{% url "bp:orga_log_create" group=group %}')");
+            new_row.find(".cancel").attr("onclick", "new_log_cancel(" + id + ")");
+
+            new_row.find(".orgalog-text").attr('contenteditable','true');
+            new_row.find(".orgalog-text").css("border", "1px solid black");
+            $("#table-orgalog").prepend(new_row);
+            new_row.find(".orgalog-text").focus();
+        }
+
+        new_log_cancel = function (id) {
+            if(confirm('Willst du den Orga-Log wirklich verwerfen?')) {
+                $("#row-"+id).css("display", "none");
+            }
+        }
+
+        new_log_save = function (id, url) {
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: {
+                    group_id: {{ group.pk }},
+                    text: $("#row-"+id).find(".orgalog-text").html()
+                },
+                success: function (log_pk) {
+                    const row = getRow(id);
+                    row.find(".save").attr("onclick",
+                        "save(" + id + ", '{% url "bp:orga_log_update" "-1" %}')".replace("-1", log_pk));
+                    row.find(".edit").attr("onclick", "edit(" + id + ")");
+                    row.find(".cancel").attr("onclick", "cancel(" + id + ")");
+                    row.find(".delete").attr("onclick",
+                        "delete_log(" + id + ", '{% url "bp:orga_log_delete" pk="-1" %}')".replace("-1", log_pk));
+
+                    row.find(".time_created").html('{% now "d.m.y H:i" %}');
+                    row.find(".delete").css("visibility", "visible");
+                    iconsEndEditing(row)
+                },
+                error: function (response) {
+                    alert("Fehler! Der Log konnte nicht gelöscht werden.");
+                }
+            });
+        }
+    });
+
+
+
+</script>
+
+<table class="table" id="table-orgalog">
     {% for orgalog in logs %}
-        <tr>
-            <td>
-                {% if can_view_orgalog_detail %}
-                    <a href="{% url "bp:orga_log_detail" pk=orgalog.pk %}">{{ orgalog.simple_timestamp }}</a>
-                {% else %}
-                    {{ orgalog.simple_timestamp }}
-                {% endif %}
+        <tr id="row-{{ forloop.counter }}">
+            <td class="no-line-break">
+                {{ orgalog.simple_timestamp }}
+                <br>
+                <i class="last-updated" style="color: grey">
+                    {% if orgalog.edited %}(Bearbeitet: {{ orgalog.last_updated | date:"d.m.y H:i" }}){% endif %}
+                </i>
             </td>
-            <td>{{ orgalog.status | log_status }}</td>
-            <td>{{ orgalog.problems }}</td>
-            <td>{{ orgalog.text | linebreaksbr | truncatewords:50 }}</td>
+            <td>
+                <div class="orgalog-text">{{ orgalog.text | safe }}</div>
+            </td>
+            {% if can_view_orgalog_detail %}
+                <td class="no-line-break">
+                    <abbr title="Speichern">
+                        <span class="icon-button save" style="visibility: hidden"
+                              onclick="save({{ forloop.counter }}, '{% url "bp:orga_log_update" pk=orgalog.pk %}')">{% fa5_icon "save" 'fas' %}</span>
+                    </abbr>
+                    <abbr title="Bearbeiten">
+                        <span class="icon-button edit"
+                              onclick="edit({{ forloop.counter }})">{% fa5_icon "pen" 'fas' %}</span>
+                    </abbr>
+                    <abbr title="Abbrechen">
+                        <span class="icon-button cancel" style="display: none"
+                              onclick="cancel({{ forloop.counter }})">{% fa5_icon "times" 'fas' %}</span>
+                    </abbr>
+                    <abbr title="Löschen">
+                        <span class="icon-button delete"
+                            onclick="delete_log({{ forloop.counter }}, '{% url "bp:orga_log_delete" pk=orgalog.pk %}')">{% fa5_icon "trash" 'fas' %}</span>
+                    </abbr>
+                </td>
+            {% endif %}
         </tr>
     {% endfor %}
+
+    {### TEMPLATE FOR NEW ORGALOGS ###}
+    <tr id="row-template" style="display: none">
+        <td class="no-line-break">
+            <span class="time_created"></span>
+            <br>
+            <i class="last-updated" style="color: grey"></i>
+
+        </td>
+        <td>
+            <div class="orgalog-text"></div>
+        </td>
+        <td class="no-line-break">
+            <abbr title="Speichern">
+                <span class="icon-button save"
+                      onclick="save(-1, '{% url "bp:orga_log_update" pk=-1 %}')">{% fa5_icon "save" 'fas' %}</span>
+            </abbr>
+            <abbr title="Bearbeiten">
+                <span class="icon-button edit" style="display: none"
+                      onclick="edit(-1)">{% fa5_icon "pen" 'fas' %}</span>
+            </abbr>
+            <abbr title="Abbrechen">
+                <span class="icon-button cancel"
+                      onclick="new_log_cancel(this.id)">{% fa5_icon "times" 'fas' %}</span>
+            </abbr>
+            <abbr title="Löschen">
+                <span class="icon-button delete"  style="visibility: hidden"
+                    onclick="delete_log(-1, '{% url "bp:orga_log_delete" pk=-1 %}')">{% fa5_icon "trash" 'fas' %}</span>
+            </abbr>
+        </td>
+    </tr>
+    {### TEMPLATE FOR NEW ORGALOGS ###}
+
 </table>

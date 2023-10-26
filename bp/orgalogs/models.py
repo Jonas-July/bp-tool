@@ -6,26 +6,15 @@ class OrgaLog(models.Model):
         verbose_name_plural = "Orga-Logs"
         ordering = ['-timestamp']
 
-    STATUS_CHOICES = [
-        (-2, 'Schlecht'),
-        (-1, 'Eher schlecht'),
-        (0, 'Neutral'),
-        (1, 'Eher gut'),
-        (2, 'Gut'),
-    ]
-
     bp = models.ForeignKey("BP", on_delete=models.CASCADE)
     group = models.ForeignKey("Project", on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True, blank=True)
-    status = models.SmallIntegerField(
-        choices=STATUS_CHOICES,
-        default=0,
-        help_text="Wie läuft es bei der Gruppe insgesamt aktuell?"
-    )
-    current_problems = models.ManyToManyField(verbose_name="Aktuelle Probleme", to="TLLogProblem", blank=True, help_text="Trifft davon etwas bei der Gruppe zu?")
+    last_updated = models.DateTimeField(auto_now=True, null=True)
     text = models.TextField(
         help_text="Notizen zur Gruppe"
     )
+    edited = models.BooleanField(verbose_name="Bearbeitet", blank=True, default=False,
+                                             help_text="Wurde der Orga-Log bearbeitet?")
 
     @property
     def tl(self):

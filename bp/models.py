@@ -145,7 +145,7 @@ class Project(models.Model):
 
     @property
     def grade_close_to_higher_grade(self):
-        return self.grade_complete and self.total_points > 100 and self.total_points % 10 > (10 - 2)
+        return self.grade_complete and self.total_points > 100 and self.total_points % 10 > (10 - 2) and self.grade != 1.0
 
     @property
     def ag_grade_points_value(self):

@@ -1,8 +1,4 @@
 <div class="float-right mb-4">
-    <a href="{% url "bp:orga_log_create" group=group.nr %}" class="btn btn-success">Orgalog hinzufügen</a>
+    <div onclick="create_new()" class="btn btn-success">Orga-Log hinzufügen</div>
 </div>
-{% if orga_log_count > 0 %}
-    {% include "bp/orgalogs/render_orga_logs.html" with logs=orga_logs can_view_orgalog_detail=True  %}
-{% else %}
-
-{% endif %}
+{% include "bp/orgalogs/render_orga_logs.html" with logs=orga_logs can_view_orgalog_detail=True  %}
