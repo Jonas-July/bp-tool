@@ -28,12 +28,12 @@ class APILogMark(LoginRequiredMixin, DetailView):
 
 class APILogMarkReadView(APILogMark):
     def mark(self, log):
-        log.read = True
+        log.read = not log.read
 
 
 class APILogMarkHandledView(APILogMark):
     def mark(self, log):
-        log.handled = True
+        log.handled = not log.handled
 
 
 class APILogRate(APILogMark):

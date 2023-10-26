@@ -20,11 +20,15 @@
 {% endblock %}
 
 {% block tl_content %}
-    {% if not is_student_editable %}
 	    <div class="float-right mb-4">
-	        <a class="btn btn-info" href="{% url "bp:timetracking_interval_tl_correct" group=group.nr pk=timeinterval.pk %}">Stunden korrigieren</a>
+            {% if not is_student_editable %}
+	            <a class="btn btn-primary" href="{% url "bp:timetracking_interval_tl_correct" group=group.nr pk=timeinterval.pk %}">{% fa5_icon "pen" 'fas' %} Stunden korrigieren</a>
+            {% else %}
+                <abbr title="Dieses Intervall kann nicht vom/von der Teamleiter/in bearbeitet werden, da die Bearbeitungszeit der Gruppen-Mitglieder von diesem Intervall noch nicht abgelaufen ist.">
+                    <a class="btn btn-primary disabled-button" style="cursor: not-allowed" disabled>{% fa5_icon "pen" 'fas' %} Stunden korrigieren</a>
+                </abbr>
+            {% endif %}
 	    </div>
-    {% endif %}
 
     <h1>Zeiten für {{ timeinterval.name }} {% if not is_student_editable %}(Archiviert){% endif %}</h1>
     <h5>{{ timeinterval.start }} - {{ timeinterval.end }}</h5>

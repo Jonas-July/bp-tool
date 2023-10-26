@@ -26,8 +26,8 @@
 <div id="myTabContent" class="tab-content">
 
     <div class="float-right mb-4">
-        <button class="btn btn-info" onclick="window.print()">Zeiterfassung für Moodle exportieren</button>
-        <a class="btn btn-success" href="{% url "bp:timetracking_statistics_tl_and_student" group=project.nr %}">{% fa5_icon "chart-bar" "fas" %} Graphen</a>
+        <button class="btn btn-success" onclick="window.print()">{% fa5_icon "file-export" 'fas' %} Zeiterfassung für Moodle exportieren</button>
+        <a class="btn btn-info" href="{% url "bp:timetracking_statistics_tl_and_student" group=project.nr %}">{% fa5_icon "chart-bar" "fas" %} Graphen</a>
     </div>
     <h4 class="mt-3 printthis">Überblick ({{ total_hours }}h / {{ project.expected_hours }}h)</h4>
     <div id="tt_table" class="printthis">

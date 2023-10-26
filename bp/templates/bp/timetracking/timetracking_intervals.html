@@ -1,5 +1,7 @@
 {% extends "bp/base_tl.html" %}
 
+{% load fontawesome_5 %}
+
 {% block breadcrumbs %}
     <li class="breadcrumb-item"><a href="{% url "bp:index" %}">Übersicht</a></li>
     <li class="breadcrumb-item"><a href="{% url "bp:timetracking_tl_start" %}">Zeiterfassung</a></li>
@@ -9,10 +11,10 @@
 
 {% block tl_content %}
     <div class="float-right mb-4">
-        <a class="btn btn-info" href="{% url "bp:timetracking_interval_create" group=group %}">Intervall anlegen</a>
+        <a class="btn btn-success" href="{% url "bp:timetracking_interval_create" group=group %}">{% fa5_icon "plus" 'fas' %} Intervall anlegen</a>
     </div>
     <div class="float-right mx-2 mb-4">
-        <a class="btn btn-info" href="{% url "bp:timetracking_interval_generate" group=group %}">Intervalle generieren</a>
+        <a class="btn btn-success" href="{% url "bp:timetracking_interval_generate" group=group %}">{% fa5_icon "plus-square" 'fas' %} Intervalle generieren</a>
     </div>
     <h3 class="my-4">{{ project.nr }}: {{ project.title }}</h3>
     {% include "bp/timetracking/render_timetracking_intervals.html" with intervals=intervals %}

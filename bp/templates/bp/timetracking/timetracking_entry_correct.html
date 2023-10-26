@@ -20,11 +20,11 @@
         <form method="POST" class="post-form">{% csrf_token %}
             {% bootstrap_form form %}
             {% buttons %}
-                <button type="submit" class="save btn btn-primary float-right">
+                <button type="submit" class="save btn btn-success float-right">
                     {% fa5_icon "check" 'fas' %} Korrigieren
                 </button>
-                <a href="{% url 'bp:timetracking_interval_detail' group=group.nr pk=timeinterval.pk %}" class="btn btn-secondary">
-                    Abbrechen
+                <a href="{% url 'bp:timetracking_interval_detail' group=group.nr pk=timeinterval.pk %}" class="btn btn-warning">
+                    {% fa5_icon "times" 'fas' %} Abbrechen
                 </a>
             {% endbuttons %}
         </form>

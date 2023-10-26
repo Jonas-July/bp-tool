@@ -21,10 +21,10 @@
     <form method="POST" class="post-form">{% csrf_token %}
         {% bootstrap_form form %}
         {% buttons %}
-            <button type="submit" class="save btn btn-primary float-right">
+            <button type="submit" class="save btn btn-success float-right">
                 {% fa5_icon "check" 'fas' %} Speichern
             </button>
-            <a href="{% url "bp:log_tl_start" %}" class="btn btn-warning float-left">Abbrechen</a>
+            <a href="{% url "bp:log_tl_start" %}" class="btn btn-primary float-left">{% fa5_icon "times" 'fas' %} Abbrechen</a>
         {% endbuttons %}
     </form>
 {% endblock %}
