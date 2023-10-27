@@ -1,3 +1,4 @@
+import datetime
 import json
 from datetime import timedelta, date
 from decimal import Decimal
@@ -5,7 +6,7 @@ from decimal import Decimal
 from django.contrib.auth.models import User
 from django.core.mail import EmailMessage
 from django.db import models
-from django.db.models import Sum, Max
+from django.db.models import Sum, Max, Q
 from django.db.models.functions import Coalesce
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -71,6 +72,9 @@ class Project(models.Model):
 
     peer_group = models.ForeignKey("PeerGroup", related_name='projects', verbose_name='Peer Group', blank=True,
                                    on_delete=models.SET_NULL, null=True)
+
+    last_reminded = models.DateField(blank=True, null=True,
+                                     verbose_name="Datum der letzten Erinnerung, einen Log zu senden")
 
     @staticmethod
     def get_active():
@@ -236,12 +240,28 @@ class Project(models.Model):
             .filter(last_log_date__lte=latest_day_to_remind).all()
         return projects_not_covered
 
+    @staticmethod
+    def no_log_or_reminder_since(period):
+        timestamp_limit = datetime.datetime.now() - datetime.timedelta(days=period)
+        print(timestamp_limit)
+        projects = Project.get_active()
+        projects = projects.annotate(last_log_date=Max('tllog__timestamp'))
+        projects = projects.filter(~Q(tl=None),
+                                   (Q(last_log_date=None) | Q(last_log_date__lte=timestamp_limit)),
+                                   (Q(last_reminded=None) | Q(last_reminded__lte=timestamp_limit)))
+        return projects
+
+
     def __str__(self):
         return f"{self.nr}: {self.title}"
 
     @property
     def moodle_name(self):
         return f"{self.nr:02d}_{self.title}"
+
+    @property
+    def last_log(self):
+        return self.tllog_set.order_by('timestamp').last().timestamp
 
 
 class PeerGroup(models.Model):
@@ -273,6 +293,7 @@ class TL(models.Model):
     bp = models.ForeignKey(BP, verbose_name="Zugehöriges BP", on_delete=models.CASCADE)
     user = models.OneToOneField(verbose_name="Account", to=User, on_delete=models.DO_NOTHING, blank=True, null=True)
     confirmed = models.BooleanField(verbose_name="Bestätigt", default=False, blank=True)
+    log_reminder = models.PositiveSmallIntegerField(verbose_name="Anzahl Reminder für Logs", default=0)
 
     @staticmethod
     def get_active():

@@ -89,17 +89,6 @@ def update_tllog_receiver(sender, instance: TLLog, created, **kwargs):
         )
         mail.send(fail_silently=True)
 
-
-class TLLogReminder(models.Model):
-    class Meta:
-        verbose_name = "TL-Log-Erinnerung"
-        verbose_name_plural = "TL-Log-Erinnerungen"
-
-    bp = models.ForeignKey("BP", on_delete=models.CASCADE)
-    group = models.ForeignKey("Project", on_delete=models.CASCADE)
-    tl = models.ForeignKey("TL", on_delete=models.CASCADE)
-    timestamp = models.DateTimeField(auto_now_add=True, blank=True)
-
     @property
     def simple_timestamp(self):
         return self.timestamp.strftime('%d.%m.%y %H:%M')
