@@ -1,0 +1,56 @@
+{% extends "bp/base.html" %}
+
+{% load tags_bp %}
+{% load fontawesome_5 %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item"><a href="{% url "bp:index" %}">Übersicht</a></li>
+    <li class="breadcrumb-item"><a href="{% url "bp:project_list" %}">Projekte</a></li>
+    <li class="breadcrumb-item active">Peer-Gruppen</li>
+{% endblock %}
+
+
+{% block content %}
+    <script>
+        delete_groups = function (id, url) {
+            if(confirm('Willst du wirklich alle Peer-Gruppen löschen?')) {
+                window.location.href = '{% url "bp:delete_peer_groups" %}';
+            }
+        }
+    </script>
+
+
+    <h1>{{ page_title }}</h1>
+    <div class="float-right mb-4">
+    <a class="btn btn-success" href="{% url "bp:create_peer_groups" %}">{% fa5_icon "plus-square" 'fas' %} Gruppen erstellen</a>
+    <span class="btn btn-danger" onclick="delete_groups()">{% fa5_icon "trash" 'fas' %} Gruppen löschen</span>
+    <a class="btn btn-warning" href="{% url "bp:peer_groups_export" %}">{% fa5_icon "file-export" "fas" %} Gruppen exportieren</a>
+    <a class="btn btn-info" href="{% url "bp:project_list" %}">{% fa5_icon "table" "fas" %} Projekt-Übersicht</a>
+    </div>
+
+    <h1>Peer-Gruppen</h1>
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Nummer</th>
+            <th>Projekte</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for peer in peer_groups %}
+            <tr>
+                <td>{{ peer.nr }}</td>
+                <td>
+                    {% for group in peer.member_groups %}
+                        <a href="{% url "bp:project_detail" pk=group.pk %}">
+                            {{ group.nr }}: {{ group.short_title_else_title }}
+                        </a><br>
+                    {% endfor %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

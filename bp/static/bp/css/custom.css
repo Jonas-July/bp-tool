@@ -90,3 +90,7 @@
 .inline-number-input .check-button:hover {
     cursor: pointer;
 }
+
+.btn {
+    margin-bottom: 7px;
+}

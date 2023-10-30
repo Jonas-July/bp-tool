@@ -11,7 +11,8 @@ from bp.timetracking.views import TimetrackingStatisticsOrgaView
 from bp.views import \
     ProjectListView, ProjectUngradedListView, ProjectView, grade_export_view, ProjectImportView, \
     TLView, TLListView, StudentListView, StudentImportView, ProjectEditPitchPoints, ProjectEditDocumentationPoints, \
-    ProjectCloseToHigherGradeListView
+    ProjectCloseToHigherGradeListView, PeerGroupListView, peer_group_export_view, PeerGroupCreateView, \
+    delete_peer_groups
 
 app_name = "bp"
 
@@ -19,6 +20,10 @@ urlpatterns = [
     path('', include(index_and_login_patterns)),
     path('projects/', ProjectListView.as_view(), name="project_list"),
     path('projects/timetracking_statistics', TimetrackingStatisticsOrgaView.as_view(), name="timetracking_statistics_orga"),
+    path('projects/peer_groups', PeerGroupListView.as_view(), name="peer_group_list"),
+    path('projects/peer_groups/create_groups', PeerGroupCreateView.as_view(), name="create_peer_groups"),
+    path('projects/peer_groups/delete_groups', delete_peer_groups, name="delete_peer_groups"),
+    path('projects/peer_groups/export', peer_group_export_view, name="peer_groups_export"),
     path('project/import/', ProjectImportView.as_view(), name="project_import"),
     path('project/export_grades/', grade_export_view, name="project_export_grades"),
     path('project/<pk>/', ProjectView.as_view(), name="project_detail"),

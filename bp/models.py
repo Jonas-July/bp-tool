@@ -243,7 +243,6 @@ class Project(models.Model):
     @staticmethod
     def no_log_or_reminder_since(period):
         timestamp_limit = datetime.datetime.now() - datetime.timedelta(days=period)
-        print(timestamp_limit)
         projects = Project.get_active()
         projects = projects.annotate(last_log_date=Max('tllog__timestamp'))
         projects = projects.filter(~Q(tl=None),
@@ -278,9 +277,14 @@ class PeerGroup(models.Model):
     def __str__(self):
         return f"Peergroup {self.nr:02}"
 
+
+    @property
+    def member_groups_as_str(self):
+        return "\n".join(str(p) for p in self.projects.all())
+
     @property
     def member_groups(self):
-        return "\n".join(str(p) for p in self.projects.all())
+        return [p for p in self.projects.all()]
 
 
 class TL(models.Model):
