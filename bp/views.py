@@ -122,7 +122,7 @@ class TLView(PermissionRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context["logs"] = context["tl"].tllog_set.all()
         context["logs_count"] = context["logs"].count()
-        context["reminder_count"] = context["tl"].tllogreminder_set.count()
+        context["reminder_count"] = context["tl"].log_reminder
         context["projects"] = context["tl"].project_set.all().prefetch_related("tllog_set",
                                                                                "tllog_set__current_problems")
         return context

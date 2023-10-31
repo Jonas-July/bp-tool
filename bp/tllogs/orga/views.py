@@ -90,12 +90,21 @@ class LogReminderView(PermissionRequiredMixin, FormView):
 
     def get_initial(self):
         initial = super().get_initial()
-        initial['project_choices'] = [(p.pk, f"{p} ({p.tl})") for p in Project.without_recent_logs()]
+        projects_to_remind = [p for p in Project.no_log_or_reminder_since(self.kwargs.get("period"))]
+        tl_choices = {}
+        for p in projects_to_remind:
+            if p.tl in tl_choices:
+                tl_choices.get(p.tl).append(p)
+            else:
+                tl_choices[p.tl] = [p]
+        initial['tl_choices'] = [([tl.pk, [p.pk for p in projects], self.kwargs.get("period")],
+                                  f"{tl.name}: {', '.join([p.short_title_else_title for p in projects])}")
+                                 for tl, projects in tl_choices.items()]
         return initial
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['log_period'] = settings.LOG_REMIND_PERIOD_DAYS
+        context['log_period'] = self.kwargs.get("period")
         return context
 
     def form_valid(self, form):

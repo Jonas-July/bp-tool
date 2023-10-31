@@ -10,9 +10,24 @@
 {% endblock %}
 
 {% block content %}
+    <script>
+        apply_period = function () {
+            window.location.replace("{% url "bp:log_remind" 0 %}".replace("0", $("#timespanInput").val()))
+        }
+
+        abc = function () {
+            $('#confirm-period').css("display", "inline-block");
+        }
+    </script>
+
     <h1>Logs</h1>
 
-    Für folgende Projekte gab es seit mindestens {{ log_period }} Tagen keine neuen Logs mehr:
+    Für folgende Projekte wurde seit
+    <span class="inline-number-input">
+        <input value="{{ log_period }}" type="number" id="timespanInput" max="99" onchange="abc()"/>
+        <span class="check-button" id="confirm-period" onclick="apply_period()" style="display: none">{% fa5_icon "check" 'fas' %}</span>
+    </span>&nbsp
+    Tagen kein neuer Log eingereicht und noch keine Erinnerung versendet:
 
     <form method="POST" class="post-form">{% csrf_token %}
         {% bootstrap_form form %}

@@ -9,7 +9,7 @@ from django.db.models import QuerySet
 from django.http import HttpResponse
 
 from bp.models import BP, Project, AGGradeBeforeDeadline, AGGradeAfterDeadline, TL, Student, TLLog, TLLogTemplate, \
-    TLLogProblem, TLLogReminder, PeerGroup
+    TLLogProblem, PeerGroup
 from bp.models import OrgaLog
 from bp.grading.models import PitchGrade, DocsGrade
 from bp.timetracking.models import TimeSpentCategory, TimeInterval
@@ -228,11 +228,3 @@ class TLLogAdmin(admin.ModelAdmin):
 @admin.register(TLLogProblem)
 class TLLogProblemAdmin(admin.ModelAdmin):
     pass
-
-
-@admin.register(TLLogReminder)
-class TLLogReminderAdmin(admin.ModelAdmin):
-    list_filter = ['bp']
-    list_display = ['timestamp', 'group', 'tl', 'bp']
-    list_display_links = ['timestamp', 'group', 'tl']
-

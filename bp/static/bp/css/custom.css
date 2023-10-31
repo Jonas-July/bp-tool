@@ -1,5 +1,5 @@
 .code-example {
-  border: 0.1vw solid #1a1a1a;
+  border: 0.1vw solEMAid #1a1a1a;
   display: inline-block;
   padding: 0.2vw;
   background-color: #f1f1f1;
@@ -68,4 +68,25 @@
 .disabled-button, .disabled-button:hover {
     background-color: grey;
     cursor: grab;
+}
+
+.inline-number-input {
+    padding: 3px;
+    border: #505050 1px solid;
+    border-radius: 2px;
+}
+
+.inline-number-input input {
+    width: 48px;
+    border: none
+}
+
+.inline-number-input .check-button {
+    color: green;
+    padding: 1px;
+}
+
+
+.inline-number-input .check-button:hover {
+    cursor: pointer;
 }
