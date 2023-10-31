@@ -227,7 +227,7 @@ class ProjectImportView(PermissionRequiredMixin, FormView):
             '''try to create object from row'''
             project_nr = row[ProjectSpec.PROJECT.value]
             client = row[ProjectSpec.CLIENT.value]
-            client_mail = row[ProjectSpec.CLIENT.value]
+            client_mail = row[ProjectSpec.CLIENT_MAIL.value]
             project_name = row[ProjectSpec.PROJECT_NAME.value]
             project_short_name = row[ProjectSpec.PROJECT_SHORT_NAME.value] if not row[
                                                                                       ProjectSpec.PROJECT_SHORT_NAME.value] == "" else None
