@@ -11,7 +11,7 @@ from django.core.exceptions import ValidationError
 from django.core.mail import EmailMessage
 from django.db import IntegrityError
 from django.db.models import Count, Q
-from django.http import HttpResponse, HttpResponseForbidden, Http404
+from django.http import HttpResponse, HttpResponseForbidden, Http404, HttpResponseRedirect
 from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views.defaults import bad_request, permission_denied, server_error, page_not_found
@@ -20,10 +20,11 @@ from django.views.generic import TemplateView, ListView, DetailView, UpdateView,
 from bp.forms import ProjectImportForm, StudentImportForm, ProjectImportSpecification as ProjectSpec, \
     StudentImportSpecification as StudentSpec
 from bp.grading.models import DocsGrade, PitchGrade
-from bp.models import BP, Project, Student, TL
+from bp.models import BP, Project, Student, TL, PeerGroup
 from bp.forms import ProjectImportForm as Spec
 from bp.roles import is_orga
 from bp.timetracking.forms import ProjectPitchPointsUpdateForm, ProjectDocumentationPointsUpdateForm
+from bp.tllogs.orga.forms import CreatePeerGroupsForm
 
 
 def error_400(request, exception):
@@ -228,7 +229,8 @@ class ProjectImportView(PermissionRequiredMixin, FormView):
             client = row[ProjectSpec.CLIENT.value]
             client_mail = row[ProjectSpec.CLIENT.value]
             project_name = row[ProjectSpec.PROJECT_NAME.value]
-            project_short_name = row[ProjectSpec.PROJECT_SHORT_NAME.value] if not row[ProjectSpec.PROJECT_SHORT_NAME.value] == "" else None
+            project_short_name = row[ProjectSpec.PROJECT_SHORT_NAME.value] if not row[
+                                                                                      ProjectSpec.PROJECT_SHORT_NAME.value] == "" else None
             pretix_id = row[ProjectSpec.PRETIX_ID.value]
             try:
                 Project.objects.create(nr=project_nr,
@@ -339,3 +341,59 @@ class StudentImportView(PermissionRequiredMixin, FormView):
                                  f"{ignored_lines} Zeile(n) ignoriert wegen: {error_msg}")
 
         return super().form_valid(form)
+
+
+class PeerGroupListView(PermissionRequiredMixin, FilterByActiveBPMixin, ListView):
+    model = PeerGroup
+    template_name = "bp/project/peer_groups_overview.html"
+    context_object_name = "peer_groups"
+    permission_required = 'bp.view_project'
+
+
+class PeerGroupCreateView(PermissionRequiredMixin, FormView):
+    template_name = "bp/project/peer_groups_create.html"
+    form_class = CreatePeerGroupsForm
+    permission_required = "bp.add_student"
+    success_url = reverse_lazy("bp:peer_group_list")
+
+    def get_initial(self):
+        initial = super().get_initial()
+        projects = Project.get_active()
+        projects = projects.filter(~Q(tl=None))
+        initial['project_choices'] = [(project.pk, f"{project.nr}: {project.short_title_else_title}") for project in projects]
+        return initial
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['log_period'] = self.kwargs.get("period")
+        return context
+
+    def form_valid(self, form):
+        message = form.create_peer_groups(self.request)
+        messages.add_message(self.request, messages.SUCCESS, message)
+        return super().form_valid(form)
+
+
+@permission_required("bp.view_student")
+def delete_peer_groups(request):
+    PeerGroup.objects.all().delete()
+    messages.add_message(request, messages.SUCCESS, "Alle Peer-Gruppen wurden gelöscht.")
+    return redirect("bp:peer_group_list")
+
+
+@permission_required("bp.view_student")
+def peer_group_export_view(request):
+    response = HttpResponse(content_type="application/json")
+    response['Content-Disposition'] = "attachment; filename=peer_groups.csv"
+    writer = csv.writer(response)
+    writer.writerow(["name", "moodle_id", "mail", "group"])
+    for peer_group in PeerGroup.objects.all():
+        for group in peer_group.member_groups:
+            for student in group.student_set.all():
+                writer.writerow([
+                    student.name,
+                    student.moodle_id,
+                    student.mail,
+                    str(group.peer_group)
+                ])
+    return response

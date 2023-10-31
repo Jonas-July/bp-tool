@@ -17,7 +17,8 @@
             <a class="btn btn-warning" href="{% url "bp:project_list_close_to_higher_grade" %}">{% fa5_icon "filter" "fas" %} < 2P. bis höhere Note</a>
             <a class="btn btn-danger" href="{% url "bp:import_overview" %}">{% fa5_icon "file-import" "fas" %} Daten importieren</a>
             <a class="btn btn-success" href="{% url "bp:project_export_grades" %}">{% fa5_icon "file-export" "fas" %} Punkte exportieren</a>
-        <a class="btn btn-info" href="{% url "bp:timetracking_statistics_orga" %}">{% fa5_icon "chart-bar" "fas" %} Zeiterfassung</a>
+            <a class="btn btn-info" href="{% url "bp:peer_group_list" %}">{% fa5_icon "chart-bar" "fas" %} Peer-Gruppen</a>
+            <a class="btn btn-info" href="{% url "bp:timetracking_statistics_orga" %}">{% fa5_icon "chart-bar" "fas" %} Zeiterfassung</a>
         {% endif %}
     </div>
 

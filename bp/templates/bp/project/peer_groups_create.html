@@ -1,0 +1,30 @@
+{% extends "bp/base.html" %}
+
+{% load tags_bp %}
+{% load bootstrap4 %}
+{% load fontawesome_5 %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item"><a href="{% url "bp:index" %}">Übersicht</a></li>
+    <li class="breadcrumb-item"><a href="{% url "bp:project_list" %}">Projekte</a></li>
+    <li class="breadcrumb-item" href="{% url "bp:peer_group_list" %}">Peer-Gruppen</li>
+    <li class="breadcrumb-item active">Gruppen erstellen</li>
+{% endblock %}
+
+
+{% block content %}
+    <h1>Peer-Gruppen erstellen</h1>
+
+    Folgende Gruppen stehen zur Auswahl, um Peer-Gruppen zu erstellen:
+
+    <form method="POST" class="post-form">{% csrf_token %}
+        {% bootstrap_form form %}
+        {% buttons %}
+            <button type="submit" class="save btn btn-primary float-right">
+                {% fa5_icon "check" "fas" %} Erstellen
+            </button>
+            <a href="{% url "bp:peer_group_list" %}" class="btn btn-warning float-left">{% fa5_icon "times" 'fas' %} Abbrechen</a>
+        {% endbuttons %}
+    </form>
+
+{% endblock %}
