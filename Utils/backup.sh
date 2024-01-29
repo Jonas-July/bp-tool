@@ -11,7 +11,7 @@ if [ -z ${VIRTUAL_ENV+x} ]; then
 fi
 
 # set environment variable when we want to update in production
-if [ "$3" = "--prod" ]; then
+if [ "$2" = "--prod" ]; then
     export DJANGO_SETTINGS_MODULE=AKPlanning.settings_production
 fi
 
