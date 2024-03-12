@@ -160,6 +160,7 @@ class TimetrackingProjectOverview(ProjectByGroupMixin, LoginRequiredMixin, Templ
         students = project.student_set.all()
         context["timetable"] = TimeTable(project.get_past_and_current_intervals, students,
                                          hours_of_student_in_interval).get_table()
+        context["students"] = students
 
         return context
 
