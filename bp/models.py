@@ -1,3 +1,4 @@
+import bisect
 import datetime
 import json
 from datetime import timedelta, date
@@ -126,30 +127,45 @@ class Project(models.Model):
     def total_points(self):
         return sum([self.ag_grade_points_value, self.pitch_grade_points_value, self.docs_grade_points_value])
 
+    @staticmethod
+    def grade_with_grade_differences(points):
+        grades = {
+            0  : 5.0,
+            100: 4.0,
+            110: 3.7,
+            120: 3.3,
+            130: 3.0,
+            140: 2.7,
+            150: 2.3,
+            160: 2.0,
+            170: 1.7,
+            180: 1.3,
+            190: 1.0
+        }
+        grade_lower = sorted((*grades.keys(), Decimal("Infinity")))
+
+        # lower_bound = max((g for g in grade_lower if g <= points))
+        # upper_bound = min((g for g in grade_lower if g >  points))
+
+        ip = bisect.bisect(grade_lower, points)
+        lower_bound, upper_bound = grade_lower[ip - 1], grade_lower[ip]
+
+        return grades[lower_bound], (lower_bound - points, upper_bound - points)
+
+    @staticmethod
+    def upper_grade_difference(points):
+        """Absolute number of points necessary for the next higher grade. Can be infinite."""
+        _, (_, upper_grade_difference) = Project.grade_with_grade_differences(points)
+        return upper_grade_difference
+
     @property
     def grade(self):
-        points = round(self.total_points, 0) - round(self.total_points, 0) % 10
-        if points < 100:
-            grade = 5.0
-        else:
-            grades = {
-                100: 4.0,
-                110: 3.7,
-                120: 3.3,
-                130: 3.0,
-                140: 2.7,
-                150: 2.3,
-                160: 2.0,
-                170: 1.7,
-                180: 1.3,
-                190: 1.0
-            }
-            grade = grades[points]
+        grade, _ = self.grade_with_grade_differences(self.total_points)
         return grade
 
     @property
     def grade_close_to_higher_grade(self):
-        return self.grade_complete and self.total_points > 100 and self.total_points % 10 > (10 - 2) and self.grade != 1.0
+        return self.grade_complete and self.total_points > 100 and Project.upper_grade_difference(self.total_points) < 2
 
     @property
     def ag_grade_points_value(self):
