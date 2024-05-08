@@ -129,20 +129,21 @@ class Project(models.Model):
 
     @staticmethod
     def grade_with_grade_differences(points):
+        inf = Decimal("Infinity")
         grades = {
-            0  : 5.0,
-            100: 4.0,
-            110: 3.7,
-            120: 3.3,
-            130: 3.0,
-            140: 2.7,
-            150: 2.3,
-            160: 2.0,
-            170: 1.7,
-            180: 1.3,
-            190: 1.0
+            -inf: 5.0,
+             100: 4.0,
+             110: 3.7,
+             120: 3.3,
+             130: 3.0,
+             140: 2.7,
+             150: 2.3,
+             160: 2.0,
+             170: 1.7,
+             180: 1.3,
+             190: 1.0
         }
-        grade_lower = sorted((*grades.keys(), Decimal("Infinity")))
+        grade_lower = sorted((*grades.keys(), inf))
 
         # lower_bound = max((g for g in grade_lower if g <= points))
         # upper_bound = min((g for g in grade_lower if g >  points))
@@ -165,7 +166,7 @@ class Project(models.Model):
 
     @property
     def grade_close_to_higher_grade(self):
-        return self.grade_complete and self.total_points > 100 and Project.upper_grade_difference(self.total_points) < 2
+        return self.grade_complete and Project.upper_grade_difference(self.total_points) < 2
 
     @property
     def ag_grade_points_value(self):
